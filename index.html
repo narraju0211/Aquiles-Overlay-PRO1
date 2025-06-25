@@ -7,15 +7,16 @@
   <style>
     :root {
       /* Cores padrão do placar */
-      --placar-bg: #222;
+      --placar-bg: rgba(34, 34, 34, 0.8); /* Fundo com leve transparência */
       --placar-text: white;
       --placar-border: #555;
+      --placar-timer-color: #0ff;
     }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #111;
+      background-color: transparent; /* Fundo transparente para OBS/Prism */
       color: white;
       display: flex;
       justify-content: center;
@@ -31,6 +32,7 @@
       flex-direction: column;
       align-items: center;
       transition: opacity 0.5s ease, visibility 0.5s ease;
+      background-color: transparent; /* Fundo transparente */
     }
     .main-overlay-container.hidden-overlay {
       opacity: 0;
@@ -43,39 +45,174 @@
       flex-direction: column;
       align-items: center;
     }
+
+    /* Placar Principal */
     .placar {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: center; /* Centraliza o conteúdo principal */
       background: var(--placar-bg);
       padding: 10px 20px;
       border-radius: 10px;
       margin-top: 10px;
-      font-size: 28px;
       width: 100%;
       box-sizing: border-box;
-      flex-wrap: wrap;
+      flex-wrap: wrap; /* Permite quebras em telas menores */
       transition: background 0.3s ease, color 0.3s ease;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
+      position: relative; /* Para posicionar cronômetro e gol */
+      overflow: hidden; /* Para esconder o gol se sair muito da área */
     }
-    .placar input {
-      width: 150px;
-      margin: 0 15px;
+
+    .placar-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%; /* Ocupa a largura total do placar */
+      gap: 10px; /* Espaço entre os times e a logo */
+    }
+
+    .team-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1; /* Ocupa espaço igual */
+      min-width: 200px; /* Garante que não fique muito espremido */
+    }
+
+    .team-info {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .escudo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      margin: 0 5px;
+    }
+    .placar input[type="text"] { /* Para nomes dos times */
+      width: 120px;
       padding: 5px 10px;
-      font-size: 22px;
+      font-size: 20px;
       text-align: center;
       background: #333;
       color: white;
       border: 1px solid #555;
       border-radius: 5px;
     }
-    .escudo {
-      width: 60px;
-      height: 60px;
-      object-fit: contain;
-      margin: 0 10px;
+    .score-controls {
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
     }
+    .score-controls button {
+      padding: 5px 10px;
+      font-size: 16px;
+      margin: 0 5px;
+    }
+    .placar-numero {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 0 5px;
+    }
+    .cards-display {
+      display: flex;
+      margin-top: 5px;
+      min-height: 25px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+    .card-indicator {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      margin: 0 2px;
+      border: 1px solid #555;
+    }
+    .card-indicator.yellow-card { background-color: #ffc107; }
+    .card-indicator.red-card { background-color: #dc3545; }
+
+    /* Logo Central */
+    .logo-central {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 20px; /* Espaço dos lados */
+      position: relative; /* Para o "X" */
+      flex-shrink: 0; /* Não encolhe */
+    }
+    .logo-central img {
+      width: 80px; /* Tamanho da logo */
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 5px; /* Espaço entre logo e "X" */
+    }
+    .separador-x {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--placar-text);
+    }
+
+    /* Cronômetro no Placar */
+    #cronometro {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--placar-timer-color);
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0.5); /* Fundo para melhor leitura */
+      z-index: 1; /* Garante que fique acima de outros elementos do placar */
+    }
+
+    /* Disputa de Pênaltis (Dentro do Placar) */
+    .penalty-shootout-placar {
+      display: none; /* Inicia oculto */
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px; /* Espaço entre os displays de pênalti dos times */
+      padding: 10px 0;
+    }
+    .penalty-shootout-placar.active {
+      display: flex; /* Ativado */
+    }
+    .penalty-team-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 150px;
+    }
+    .penalty-team-display .escudo {
+      width: 60px; /* Escudo maior nos pênaltis */
+      height: 60px;
+      margin-bottom: 10px;
+    }
+    .penalty-balls-container {
+      display: flex;
+      margin-top: 10px;
+      gap: 8px; /* Espaço entre as bolinhas */
+    }
+    .penalty-ball {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      border: 2px solid white;
+      background-color: transparent;
+    }
+    .penalty-ball.green { background-color: #28a745; border-color: #28a745; }
+    .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
+
+    /* Painel de Controle (geralmente abaixo do placar, visível para o streamer) */
     .painel {
       margin-top: 20px;
       padding: 15px;
@@ -83,14 +220,14 @@
       width: 100%;
       border-radius: 10px;
       box-sizing: border-box;
-      display: flex; /* Usando Flexbox para o layout do painel */
+      display: flex;
       flex-wrap: wrap;
-      justify-content: space-around; /* Distribui os itens */
-      gap: 20px; /* Espaço entre as seções */
+      justify-content: space-around;
+      gap: 20px;
     }
-    .painel > div { /* Estilo para as seções dentro do painel */
-      flex: 1 1 calc(50% - 20px); /* Ocupa metade da largura, com gap */
-      min-width: 300px; /* Garante que não fiquem muito estreitos */
+    .painel > div {
+      flex: 1 1 calc(50% - 20px);
+      min-width: 300px;
       background: #282828;
       padding: 15px;
       border-radius: 8px;
@@ -98,10 +235,11 @@
     }
     @media (max-width: 768px) {
       .painel > div {
-        flex: 1 1 100%; /* Em telas menores, cada seção ocupa a largura total */
+        flex: 1 1 100%;
       }
     }
 
+    /* Botões */
     .btn {
       padding: 8px 15px;
       margin: 5px;
@@ -127,9 +265,8 @@
     .btn.dark-gray { background: #343a40; }
     .btn.dark-gray:hover { background: #23272b; }
 
-
     .section-title {
-      margin-top: 10px; /* Ajustado para melhor espaçamento dentro das caixas do painel */
+      margin-top: 10px;
       margin-bottom: 15px;
       font-weight: bold;
       color: #0ff;
@@ -138,108 +275,93 @@
       padding-bottom: 5px;
       text-align: center;
     }
-    #cronometro {
-      font-size: 48px;
-      font-weight: bold;
-      margin-top: 10px;
-      text-align: center;
-      color: #0ff;
-    }
-    .cards-display {
-      display: flex;
-      margin-top: 5px;
-      min-height: 25px;
-      align-items: center;
-      justify-content: center; /* Centraliza os cartões */
-      width: 100%; /* Ocupa a largura total para centralizar */
-    }
-    .card-indicator {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-      margin: 0 2px; /* Espaço menor entre os cartões */
-      border: 1px solid #555;
-    }
-    .card-indicator.yellow-card { background-color: #ffc107; }
-    .card-indicator.red-card { background-color: #dc3545; }
-
-    .penalty-shootout {
-      display: flex;
-      flex-direction: column; /* Organiza os botões e bolinhas em coluna */
-      align-items: center;
-      margin-top: 10px;
-    }
-    .penalty-shootout .team-penalties {
-      display: flex;
-      margin: 10px 0;
-      gap: 8px; /* Espaço entre as bolinhas */
-    }
-    .penalty-ball {
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      border: 2px solid white;
-      background-color: transparent;
-    }
-    .penalty-ball.green { background-color: #28a745; border-color: #28a745; }
-    .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
-    .score-controls {
-      display: flex;
-      align-items: center;
-      margin: 0 10px;
-    }
 
     /* Animação de Gol */
     .goal-animation {
-      position: fixed; /* Fixado na tela para sobrepor tudo */
-      top: 50%;
+      position: absolute;
       left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 120px; /* Tamanho grande para impacto */
+      transform: translateX(-50%);
+      font-size: 100px;
       font-weight: bold;
       color: #0ff;
       text-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 10px rgba(0, 255, 255, 0.5);
       opacity: 0;
       visibility: hidden;
-      animation-fill-mode: forwards; /* Mantém o estado final da animação */
-      z-index: 1000; /* Garante que fique acima de outros elementos */
-      pointer-events: none; /* Permite clicar através dele */
+      animation-fill-mode: forwards;
+      z-index: 1000;
+      pointer-events: none;
+      bottom: -110px; /* Posiciona abaixo do placar */
+      white-space: nowrap; /* Evita quebra de linha do "GOL!" */
     }
 
     @keyframes fadeInScaleOut {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); visibility: hidden;}
+      0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+      20% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+      80% { opacity: 1; transform: translateX(-50%) scale(1); }
+      100% { opacity: 0; transform: translateX(-50%) scale(1.2); visibility: hidden;}
     }
 
     .goal-animation.active {
-      animation: fadeInScaleOut 2s ease-out; /* Duração total da animação */
+      animation: fadeInScaleOut 2s ease-out;
     }
   </style>
 </head>
 <body>
   <div class="main-overlay-container" id="mainOverlayContainer">
-    <div class="placar" id="placarPrincipal">
-      <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
-      <input id="nome1" placeholder="Time 1">
-      <div class="score-controls">
-        <button class="btn" onclick="alterarPlacar('1', -1)">-</button>
-        <span id="placar1">0</span>
-        <button class="btn" onclick="alterarPlacar('1', 1)">+</button>
-      </div>
-      <span style="margin: 0 15px; font-size: 32px;">X</span>
-      <div class="score-controls">
-        <button class="btn" onclick="alterarPlacar('2', -1)">-</button>
-        <span id="placar2">0</span>
-        <button class="btn" onclick="alterarPlacar('2', 1)">+</button>
-      </div>
-      <input id="nome2" placeholder="Time 2">
-      <img id="escudo2" class="escudo" src="" alt="Escudo Time 2">
+    <div class="overlay">
+      <div class="placar" id="placarPrincipal">
+        <div id="cronometro">00:00</div>
 
-      <div style="width: 100%; display: flex; justify-content: space-around; margin-top: 10px; flex-wrap: wrap;">
-        <div id="cardsDisplay1" class="cards-display"></div>
-        <div id="cardsDisplay2" class="cards-display"></div>
+        <div class="placar-content" id="normalPlacarContent">
+          <div class="team-section">
+            <div class="team-info">
+              <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
+              <input type="text" id="nome1" placeholder="Time 1">
+            </div>
+            <div class="score-controls">
+              <button class="btn" onclick="alterarPlacar('1', -1)">-</button>
+              <span id="placar1" class="placar-numero">0</span>
+              <button class="btn" onclick="alterarPlacar('1', 1)">+</button>
+            </div>
+            <div id="cardsDisplay1" class="cards-display"></div>
+          </div>
+
+          <div class="logo-central">
+            <img id="logoOverlay" src="" alt="Sua Logo">
+            <span class="separador-x">X</span>
+          </div>
+
+          <div class="team-section">
+            <div class="team-info">
+              <input type="text" id="nome2" placeholder="Time 2">
+              <img id="escudo2" class="escudo" src="" alt="Escudo Time 2">
+            </div>
+            <div class="score-controls">
+              <button class="btn" onclick="alterarPlacar('2', -1)">-</button>
+              <span id="placar2" class="placar-numero">0</span>
+              <button class="btn" onclick="alterarPlacar('2', 1)">+</button>
+            </div>
+            <div id="cardsDisplay2" class="cards-display"></div>
+          </div>
+        </div>
+
+        <div class="penalty-shootout-placar" id="penaltyPlacarContent">
+          <div class="penalty-team-display">
+            <img id="escudoPenalty1" class="escudo" src="" alt="Escudo Time 1">
+            <div class="penalty-balls-container" id="penaltiesDisplay1">
+              </div>
+          </div>
+          <div class="logo-central">
+            <img id="logoOverlayPenalty" src="" alt="Sua Logo">
+          </div>
+          <div class="penalty-team-display">
+            <img id="escudoPenalty2" class="escudo" src="" alt="Escudo Time 2">
+            <div class="penalty-balls-container" id="penaltiesDisplay2">
+              </div>
+          </div>
+        </div>
+
+        <div class="goal-animation" id="goalAnimation">GOL!</div>
       </div>
     </div>
 
@@ -252,9 +374,13 @@
       </div>
 
       <div>
-        <div class="section-title">Upload de Escudos</div>
-        <input type="file" accept="image/*" onchange="loadEscudo(event, '1')" style="margin-bottom: 10px; display: block;">
-        <input type="file" accept="image/*" onchange="loadEscudo(event, '2')" style="display: block;">
+        <div class="section-title">Upload de Imagens</div>
+        <label for="uploadEscudo1">Escudo Time 1:</label>
+        <input type="file" id="uploadEscudo1" accept="image/*" onchange="loadEscudo(event, '1')" style="margin-bottom: 10px; display: block;">
+        <label for="uploadEscudo2">Escudo Time 2:</label>
+        <input type="file" id="uploadEscudo2" accept="image/*" onchange="loadEscudo(event, '2')" style="display: block; margin-bottom: 10px;">
+        <label for="uploadLogoOverlay">Sua Logo:</label>
+        <input type="file" id="uploadLogoOverlay" accept="image/*" onchange="loadLogo(event)" style="display: block;">
       </div>
 
       <div>
@@ -262,7 +388,6 @@
         <button class="btn green" onclick="startTimer()">Iniciar</button>
         <button class="btn yellow" onclick="pauseTimer()">Pausar</button>
         <button class="btn red" onclick="resetTimer()">Resetar</button>
-        <div id="cronometro">00:00</div>
       </div>
 
       <div>
@@ -271,27 +396,23 @@
         <button class="btn red" onclick="addCartao('1', 'vermelho')">Vermelho T1</button>
         <button class="btn yellow" onclick="addCartao('2', 'amarelo')">Amarelo T2</button>
         <button class="btn red" onclick="addCartao('2', 'vermelho')">Vermelho T2</button>
+        <hr style="border-top: 1px solid #444; margin: 10px 0;">
+        <button class="btn dark-gray" onclick="resetCards('1', 'amarelo')">Resetar Amarelos T1</button>
+        <button class="btn dark-gray" onclick="resetCards('1', 'vermelho')">Resetar Vermelhos T1</button>
+        <button class="btn dark-gray" onclick="resetCards('2', 'amarelo')">Resetar Amarelos T2</button>
+        <button class="btn dark-gray" onclick="resetCards('2', 'vermelho')">Resetar Vermelhos T2</button>
       </div>
 
-      <div style="flex-basis: 100%;"> <div class="section-title">Disputa de Pênaltis</div>
-        <div class="penalty-shootout">
+      <div style="flex-basis: 100%;">
+        <div class="section-title">Disputa de Pênaltis</div>
+        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
+          <button class="btn purple" onclick="togglePenaltyMode(true)">Ativar Pênaltis</button>
+          <button class="btn dark-gray" onclick="togglePenaltyMode(false)">Desativar Pênaltis</button>
+        </div>
+        <div class="penalty-shootout-controls">
           <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
             <button class="btn green" onclick="addPenalty('1', 'convertido')">Pênalti Convertido T1</button>
             <button class="btn red" onclick="addPenalty('1', 'perdido')">Pênalti Perdido T1</button>
-          </div>
-          <div class="team-penalties" id="penalties1">
-            <div class="penalty-ball"></div>
-            <div class="penalty-ball"></div>
-            <div class="penalty-ball"></div>
-            <div class="penalty-ball"></div>
-            <div class="penalty-ball"></div>
-          </div>
-          <div class="team-penalties" id="penalties2">
-            <div class="penalty-ball"></div>
-            <div class="penalty-ball"></div>
-            <div class="penalty-ball"></div>
-            <div class="penalty-ball"></div>
-            <div class="penalty-ball"></div>
           </div>
           <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
             <button class="btn green" onclick="addPenalty('2', 'convertido')">Pênalti Convertido T2</button>
@@ -303,8 +424,6 @@
     </div>
   </div>
 
-  <div class="goal-animation" id="goalAnimation">GOL!</div>
-
   <script>
     let placar = { '1': 0, '2': 0 };
     let cards = { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
@@ -312,14 +431,15 @@
     let timerInterval;
     let seconds = 0;
     let placarThemeIndex = 0; // Índice para alternar temas do placar
+    let penaltyModeActive = false; // Estado do modo de pênalti
 
     // Definição dos temas do placar
     const placarThemes = [
-      { bg: '#222', text: 'white', border: '#555' }, // Tema padrão
-      { bg: '#007bff', text: 'white', border: '#0056b3' }, // Tema Azul
-      { bg: '#28a745', text: 'white', border: '#218838' }, // Tema Verde
-      { bg: '#dc3545', text: 'white', border: '#c82333' }, // Tema Vermelho
-      { bg: '#ffc107', text: 'black', border: '#e0a800' }  // Tema Amarelo
+      { bg: 'rgba(34, 34, 34, 0.8)', text: 'white', border: '#555', timerColor: '#0ff' },
+      { bg: 'rgba(0, 123, 255, 0.8)', text: 'white', border: '#0056b3', timerColor: '#fff' },
+      { bg: 'rgba(40, 167, 69, 0.8)', text: 'white', border: '#218838', timerColor: '#fff' },
+      { bg: 'rgba(220, 53, 69, 0.8)', text: 'white', border: '#c82333', timerColor: '#fff' },
+      { bg: 'rgba(255, 193, 7, 0.8)', text: 'black', border: '#e0a800', timerColor: '#333' }
     ];
 
     // Funções de inicialização
@@ -342,9 +462,16 @@
       // Carregar escudos
       if (localStorage.getItem('escudo1')) {
         document.getElementById('escudo1').src = localStorage.getItem('escudo1');
+        document.getElementById('escudoPenalty1').src = localStorage.getItem('escudo1');
       }
       if (localStorage.getItem('escudo2')) {
         document.getElementById('escudo2').src = localStorage.getItem('escudo2');
+        document.getElementById('escudoPenalty2').src = localStorage.getItem('escudo2');
+      }
+      // Carregar logo
+      if (localStorage.getItem('logoOverlay')) {
+        document.getElementById('logoOverlay').src = localStorage.getItem('logoOverlay');
+        document.getElementById('logoOverlayPenalty').src = localStorage.getItem('logoOverlay');
       }
       // Carregar cartões
       if (localStorage.getItem('cards')) {
@@ -367,6 +494,10 @@
       if (localStorage.getItem('placarThemeIndex')) {
         placarThemeIndex = parseInt(localStorage.getItem('placarThemeIndex'));
         applyPlacarTheme();
+      }
+      // Carregar modo de pênalti
+      if (localStorage.getItem('penaltyModeActive') === 'true') {
+        togglePenaltyMode(true, false); // Ativa o modo de pênalti sem salvar novamente
       }
 
       // Adicionar listeners para salvar nomes ao digitar
@@ -398,16 +529,32 @@
       document.documentElement.style.setProperty('--placar-bg', theme.bg);
       document.documentElement.style.setProperty('--placar-text', theme.text);
       document.documentElement.style.setProperty('--placar-border', theme.border);
+      document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
     }
 
-    // Funções de Escudo
+    // Funções de Escudo e Logo
     function loadEscudo(event, time) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
           document.getElementById('escudo' + time).src = e.target.result;
+          // Atualiza também o escudo do modo pênalti
+          document.getElementById('escudoPenalty' + time).src = e.target.result;
           localStorage.setItem('escudo' + time, e.target.result); // Salva como Base64
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function loadLogo(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('logoOverlay').src = e.target.result;
+          document.getElementById('logoOverlayPenalty').src = e.target.result;
+          localStorage.setItem('logoOverlay', e.target.result);
         }
         reader.readAsDataURL(file);
       }
@@ -465,6 +612,12 @@
       }
     }
 
+    function resetCards(time, cor) {
+      cards[time][cor] = 0;
+      renderCards(time);
+      localStorage.setItem('cards', JSON.stringify(cards));
+    }
+
     // Funções de Pênaltis
     function addPenalty(time, resultado) {
       if (penalties[time].length < 5) { // Limita a 5 pênaltis
@@ -475,13 +628,17 @@
     }
 
     function renderPenalties(time) {
-      const penaltyBalls = document.querySelectorAll(`#penalties${time} .penalty-ball`);
-      penaltyBalls.forEach((ball, index) => {
-        ball.className = 'penalty-ball'; // Reseta as classes
-        if (penalties[time][index]) {
-          ball.classList.add(penalties[time][index]);
+      const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}`);
+      penaltyBallsContainer.innerHTML = ''; // Limpa as bolinhas existentes
+
+      for (let i = 0; i < 5; i++) { // Renderiza sempre 5 bolinhas
+        const ballDiv = document.createElement('div');
+        ballDiv.className = 'penalty-ball';
+        if (penalties[time][i]) {
+          ballDiv.classList.add(penalties[time][i]);
         }
-      });
+        penaltyBallsContainer.appendChild(ballDiv);
+      }
     }
 
     function resetPenalties() {
@@ -491,17 +648,30 @@
       localStorage.removeItem('penalties');
     }
 
+    // Função para alternar o modo de placar (normal vs pênaltis)
+    function togglePenaltyMode(activate, save = true) {
+      penaltyModeActive = activate;
+      const normalContent = document.getElementById('normalPlacarContent');
+      const penaltyContent = document.getElementById('penaltyPlacarContent');
+
+      if (penaltyModeActive) {
+        normalContent.style.display = 'none';
+        penaltyContent.classList.add('active'); // Usa classe para display: flex
+      } else {
+        normalContent.style.display = 'flex';
+        penaltyContent.classList.remove('active');
+      }
+      if (save) {
+        localStorage.setItem('penaltyModeActive', penaltyModeActive);
+      }
+    }
+
     // Funções de Animação de Gol
     function showGoalAnimation() {
       const goalElement = document.getElementById('goalAnimation');
       goalElement.classList.remove('active'); // Garante que a animação possa ser re-triggered
       void goalElement.offsetWidth; // Trigger reflow to restart animation
       goalElement.classList.add('active');
-
-      // A animação CSS tem 2s de duração, então o display pode ser ajustado depois
-      setTimeout(() => {
-        // A classe 'active' da animação já lida com o fade out e visibility hidden
-      }, 2000); // tempo total da animação
     }
 
     // Função para ocultar/mostrar o overlay (simula interação com OBS/Prism)
