@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Aquiles Overlay PRO</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      /* Cores padrão do placar */
+      --placar-bg: #222;
+      --placar-text: white;
+      --placar-border: #555;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: white;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow-x: hidden; /* Evita scroll horizontal */
+    }
+    /* Contêiner principal para ocultar/mostrar */
+    .main-overlay-container {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .main-overlay-container.hidden-overlay {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .overlay {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .placar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--placar-bg);
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+      font-size: 28px;
+      width: 100%;
+      box-sizing: border-box;
+      flex-wrap: wrap;
+      transition: background 0.3s ease, color 0.3s ease;
+      border: 1px solid var(--placar-border);
+      color: var(--placar-text);
+    }
+    .placar input {
+      width: 150px;
+      margin: 0 15px;
+      padding: 5px 10px;
+      font-size: 22px;
+      text-align: center;
+      background: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 5px;
+    }
+    .escudo {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      margin: 0 10px;
+    }
+    .painel {
+      margin-top: 20px;
+      padding: 15px;
+      background: #1c1c1c;
+      width: 100%;
+      border-radius: 10px;
+      box-sizing: border-box;
+      display: flex; /* Usando Flexbox para o layout do painel */
+      flex-wrap: wrap;
+      justify-content: space-around; /* Distribui os itens */
+      gap: 20px; /* Espaço entre as seções */
+    }
+    .painel > div { /* Estilo para as seções dentro do painel */
+      flex: 1 1 calc(50% - 20px); /* Ocupa metade da largura, com gap */
+      min-width: 300px; /* Garante que não fiquem muito estreitos */
+      background: #282828;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    @media (max-width: 768px) {
+      .painel > div {
+        flex: 1 1 100%; /* Em telas menores, cada seção ocupa a largura total */
+      }
+    }
+
+    .btn {
+      padding: 8px 15px;
+      margin: 5px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn:hover {
+      background: #0056b3;
+    }
+    .btn.red { background: #dc3545; }
+    .btn.red:hover { background: #c82333; }
+    .btn.yellow { background: #ffc107; color: black; }
+    .btn.yellow:hover { background: #e0a800; }
+    .btn.green { background: #28a745; }
+    .btn.green:hover { background: #218838; }
+    .btn.purple { background: #6f42c1; }
+    .btn.purple:hover { background: #5a34a0; }
+    .btn.dark-gray { background: #343a40; }
+    .btn.dark-gray:hover { background: #23272b; }
+
+
+    .section-title {
+      margin-top: 10px; /* Ajustado para melhor espaçamento dentro das caixas do painel */
+      margin-bottom: 15px;
+      font-weight: bold;
+      color: #0ff;
+      font-size: 20px;
+      border-bottom: 1px solid #0ff;
+      padding-bottom: 5px;
+      text-align: center;
+    }
+    #cronometro {
+      font-size: 48px;
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: center;
+      color: #0ff;
+    }
+    .cards-display {
+      display: flex;
+      margin-top: 5px;
+      min-height: 25px;
+      align-items: center;
+      justify-content: center; /* Centraliza os cartões */
+      width: 100%; /* Ocupa a largura total para centralizar */
+    }
+    .card-indicator {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      margin: 0 2px; /* Espaço menor entre os cartões */
+      border: 1px solid #555;
+    }
+    .card-indicator.yellow-card { background-color: #ffc107; }
+    .card-indicator.red-card { background-color: #dc3545; }
+
+    .penalty-shootout {
+      display: flex;
+      flex-direction: column; /* Organiza os botões e bolinhas em coluna */
+      align-items: center;
+      margin-top: 10px;
+    }
+    .penalty-shootout .team-penalties {
+      display: flex;
+      margin: 10px 0;
+      gap: 8px; /* Espaço entre as bolinhas */
+    }
+    .penalty-ball {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      border: 2px solid white;
+      background-color: transparent;
+    }
+    .penalty-ball.green { background-color: #28a745; border-color: #28a745; }
+    .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
+    .score-controls {
+      display: flex;
+      align-items: center;
+      margin: 0 10px;
+    }
+
+    /* Animação de Gol */
+    .goal-animation {
+      position: fixed; /* Fixado na tela para sobrepor tudo */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 120px; /* Tamanho grande para impacto */
+      font-weight: bold;
+      color: #0ff;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 10px rgba(0, 255, 255, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      animation-fill-mode: forwards; /* Mantém o estado final da animação */
+      z-index: 1000; /* Garante que fique acima de outros elementos */
+      pointer-events: none; /* Permite clicar através dele */
+    }
+
+    @keyframes fadeInScaleOut {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); visibility: hidden;}
+    }
+
+    .goal-animation.active {
+      animation: fadeInScaleOut 2s ease-out; /* Duração total da animação */
+    }
+  </style>
+</head>
+<body>
+  <div class="main-overlay-container" id="mainOverlayContainer">
+    <div class="placar" id="placarPrincipal">
+      <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
+      <input id="nome1" placeholder="Time 1">
+      <div class="score-controls">
+        <button class="btn" onclick="alterarPlacar('1', -1)">-</button>
+        <span id="placar1">0</span>
+        <button class="btn" onclick="alterarPlacar('1', 1)">+</button>
+      </div>
+      <span style="margin: 0 15px; font-size: 32px;">X</span>
+      <div class="score-controls">
+        <button class="btn" onclick="alterarPlacar('2', -1)">-</button>
+        <span id="placar2">0</span>
+        <button class="btn" onclick="alterarPlacar('2', 1)">+</button>
+      </div>
+      <input id="nome2" placeholder="Time 2">
+      <img id="escudo2" class="escudo" src="" alt="Escudo Time 2">
+
+      <div style="width: 100%; display: flex; justify-content: space-around; margin-top: 10px; flex-wrap: wrap;">
+        <div id="cardsDisplay1" class="cards-display"></div>
+        <div id="cardsDisplay2" class="cards-display"></div>
+      </div>
+    </div>
+
+    <div class="painel">
+      <div>
+        <div class="section-title">Configurações Gerais</div>
+        <button class="btn purple" onclick="togglePlacarTheme()">Alternar Cor do Placar</button>
+        <button class="btn dark-gray" onclick="toggleOverlayVisibility()">Ocultar Overlay</button>
+        <button class="btn green" onclick="showGoalAnimation()">GOL!</button>
+      </div>
+
+      <div>
+        <div class="section-title">Upload de Escudos</div>
+        <input type="file" accept="image/*" onchange="loadEscudo(event, '1')" style="margin-bottom: 10px; display: block;">
+        <input type="file" accept="image/*" onchange="loadEscudo(event, '2')" style="display: block;">
+      </div>
+
+      <div>
+        <div class="section-title">Controle do Cronômetro</div>
+        <button class="btn green" onclick="startTimer()">Iniciar</button>
+        <button class="btn yellow" onclick="pauseTimer()">Pausar</button>
+        <button class="btn red" onclick="resetTimer()">Resetar</button>
+        <div id="cronometro">00:00</div>
+      </div>
+
+      <div>
+        <div class="section-title">Cartões</div>
+        <button class="btn yellow" onclick="addCartao('1', 'amarelo')">Amarelo T1</button>
+        <button class="btn red" onclick="addCartao('1', 'vermelho')">Vermelho T1</button>
+        <button class="btn yellow" onclick="addCartao('2', 'amarelo')">Amarelo T2</button>
+        <button class="btn red" onclick="addCartao('2', 'vermelho')">Vermelho T2</button>
+      </div>
+
+      <div style="flex-basis: 100%;"> <div class="section-title">Disputa de Pênaltis</div>
+        <div class="penalty-shootout">
+          <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
+            <button class="btn green" onclick="addPenalty('1', 'convertido')">Pênalti Convertido T1</button>
+            <button class="btn red" onclick="addPenalty('1', 'perdido')">Pênalti Perdido T1</button>
+          </div>
+          <div class="team-penalties" id="penalties1">
+            <div class="penalty-ball"></div>
+            <div class="penalty-ball"></div>
+            <div class="penalty-ball"></div>
+            <div class="penalty-ball"></div>
+            <div class="penalty-ball"></div>
+          </div>
+          <div class="team-penalties" id="penalties2">
+            <div class="penalty-ball"></div>
+            <div class="penalty-ball"></div>
+            <div class="penalty-ball"></div>
+            <div class="penalty-ball"></div>
+            <div class="penalty-ball"></div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+            <button class="btn green" onclick="addPenalty('2', 'convertido')">Pênalti Convertido T2</button>
+            <button class="btn red" onclick="addPenalty('2', 'perdido')">Pênalti Perdido T2</button>
+          </div>
+        </div>
+        <button class="btn dark-gray" onclick="resetPenalties()" style="margin-top: 15px; display: block; margin-left: auto; margin-right: auto;">Resetar Pênaltis</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="goal-animation" id="goalAnimation">GOL!</div>
+
+  <script>
+    let placar = { '1': 0, '2': 0 };
+    let cards = { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
+    let penalties = { '1': [], '2': [] };
+    let timerInterval;
+    let seconds = 0;
+    let placarThemeIndex = 0; // Índice para alternar temas do placar
+
+    // Definição dos temas do placar
+    const placarThemes = [
+      { bg: '#222', text: 'white', border: '#555' }, // Tema padrão
+      { bg: '#007bff', text: 'white', border: '#0056b3' }, // Tema Azul
+      { bg: '#28a745', text: 'white', border: '#218838' }, // Tema Verde
+      { bg: '#dc3545', text: 'white', border: '#c82333' }, // Tema Vermelho
+      { bg: '#ffc107', text: 'black', border: '#e0a800' }  // Tema Amarelo
+    ];
+
+    // Funções de inicialização
+    document.addEventListener('DOMContentLoaded', loadData);
+
+    function loadData() {
+      // Carregar placar
+      if (localStorage.getItem('placar')) {
+        placar = JSON.parse(localStorage.getItem('placar'));
+        document.getElementById('placar1').innerText = placar['1'];
+        document.getElementById('placar2').innerText = placar['2'];
+      }
+      // Carregar nomes
+      if (localStorage.getItem('nome1')) {
+        document.getElementById('nome1').value = localStorage.getItem('nome1');
+      }
+      if (localStorage.getItem('nome2')) {
+        document.getElementById('nome2').value = localStorage.getItem('nome2');
+      }
+      // Carregar escudos
+      if (localStorage.getItem('escudo1')) {
+        document.getElementById('escudo1').src = localStorage.getItem('escudo1');
+      }
+      if (localStorage.getItem('escudo2')) {
+        document.getElementById('escudo2').src = localStorage.getItem('escudo2');
+      }
+      // Carregar cartões
+      if (localStorage.getItem('cards')) {
+        cards = JSON.parse(localStorage.getItem('cards'));
+        renderCards('1');
+        renderCards('2');
+      }
+      // Carregar cronômetro
+      if (localStorage.getItem('timerSeconds')) {
+        seconds = parseInt(localStorage.getItem('timerSeconds'));
+        document.getElementById('cronometro').innerText = formatTime(seconds);
+      }
+      // Carregar pênaltis
+      if (localStorage.getItem('penalties')) {
+        penalties = JSON.parse(localStorage.getItem('penalties'));
+        renderPenalties('1');
+        renderPenalties('2');
+      }
+      // Carregar tema do placar
+      if (localStorage.getItem('placarThemeIndex')) {
+        placarThemeIndex = parseInt(localStorage.getItem('placarThemeIndex'));
+        applyPlacarTheme();
+      }
+
+      // Adicionar listeners para salvar nomes ao digitar
+      document.getElementById('nome1').addEventListener('input', () => {
+        localStorage.setItem('nome1', document.getElementById('nome1').value);
+      });
+      document.getElementById('nome2').addEventListener('input', () => {
+        localStorage.setItem('nome2', document.getElementById('nome2').value);
+      });
+    }
+
+    // Funções do Placar
+    function alterarPlacar(time, valor) {
+      placar[time] += valor;
+      if (placar[time] < 0) placar[time] = 0;
+      document.getElementById('placar' + time).innerText = placar[time];
+      localStorage.setItem('placar', JSON.stringify(placar));
+    }
+
+    // Função para alternar o tema do placar
+    function togglePlacarTheme() {
+      placarThemeIndex = (placarThemeIndex + 1) % placarThemes.length;
+      applyPlacarTheme();
+      localStorage.setItem('placarThemeIndex', placarThemeIndex);
+    }
+
+    function applyPlacarTheme() {
+      const theme = placarThemes[placarThemeIndex];
+      document.documentElement.style.setProperty('--placar-bg', theme.bg);
+      document.documentElement.style.setProperty('--placar-text', theme.text);
+      document.documentElement.style.setProperty('--placar-border', theme.border);
+    }
+
+    // Funções de Escudo
+    function loadEscudo(event, time) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('escudo' + time).src = e.target.result;
+          localStorage.setItem('escudo' + time, e.target.result); // Salva como Base64
+        }
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Funções do Cronômetro
+    function startTimer() {
+      if (!timerInterval) { // Previne múltiplos intervalos
+        timerInterval = setInterval(() => {
+          seconds++;
+          document.getElementById('cronometro').innerText = formatTime(seconds);
+          localStorage.setItem('timerSeconds', seconds);
+        }, 1000);
+      }
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null; // Reseta o identificador do intervalo
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      seconds = 0;
+      document.getElementById('cronometro').innerText = '00:00';
+      localStorage.removeItem('timerSeconds');
+    }
+
+    function formatTime(s) {
+      const min = String(Math.floor(s / 60)).padStart(2, '0');
+      const sec = String(s % 60).padStart(2, '0');
+      return `${min}:${sec}`;
+    }
+
+    // Funções de Cartões
+    function addCartao(time, cor) {
+      cards[time][cor]++;
+      renderCards(time);
+      localStorage.setItem('cards', JSON.stringify(cards));
+    }
+
+    function renderCards(time) {
+      const displayElement = document.getElementById('cardsDisplay' + time);
+      displayElement.innerHTML = ''; // Limpa os cartões existentes
+
+      for (let i = 0; i < cards[time]['amarelo']; i++) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-indicator yellow-card';
+        displayElement.appendChild(cardDiv);
+      }
+      for (let i = 0; i < cards[time]['vermelho']; i++) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-indicator red-card';
+        displayElement.appendChild(cardDiv);
+      }
+    }
+
+    // Funções de Pênaltis
+    function addPenalty(time, resultado) {
+      if (penalties[time].length < 5) { // Limita a 5 pênaltis
+        penalties[time].push(resultado === 'convertido' ? 'green' : 'red');
+        renderPenalties(time);
+        localStorage.setItem('penalties', JSON.stringify(penalties));
+      }
+    }
+
+    function renderPenalties(time) {
+      const penaltyBalls = document.querySelectorAll(`#penalties${time} .penalty-ball`);
+      penaltyBalls.forEach((ball, index) => {
+        ball.className = 'penalty-ball'; // Reseta as classes
+        if (penalties[time][index]) {
+          ball.classList.add(penalties[time][index]);
+        }
+      });
+    }
+
+    function resetPenalties() {
+      penalties = { '1': [], '2': [] };
+      renderPenalties('1');
+      renderPenalties('2');
+      localStorage.removeItem('penalties');
+    }
+
+    // Funções de Animação de Gol
+    function showGoalAnimation() {
+      const goalElement = document.getElementById('goalAnimation');
+      goalElement.classList.remove('active'); // Garante que a animação possa ser re-triggered
+      void goalElement.offsetWidth; // Trigger reflow to restart animation
+      goalElement.classList.add('active');
+
+      // A animação CSS tem 2s de duração, então o display pode ser ajustado depois
+      setTimeout(() => {
+        // A classe 'active' da animação já lida com o fade out e visibility hidden
+      }, 2000); // tempo total da animação
+    }
+
+    // Função para ocultar/mostrar o overlay (simula interação com OBS/Prism)
+    function toggleOverlayVisibility() {
+      const mainContainer = document.getElementById('mainOverlayContainer');
+      const button = document.querySelector('.btn.dark-gray[onclick="toggleOverlayVisibility()"]');
+
+      if (mainContainer.classList.contains('hidden-overlay')) {
+        mainContainer.classList.remove('hidden-overlay');
+        button.innerText = 'Ocultar Overlay';
+      } else {
+        mainContainer.classList.add('hidden-overlay');
+        button.innerText = 'Mostrar Overlay';
+      }
+    }
+  </script>
+</body>
+                                                        </html>
