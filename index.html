@@ -555,16 +555,18 @@
       applyPlacarTheme();
 
       const normalContent = document.getElementById('normalPlacarContent');
+      const timePeriodRow = document.querySelector('.placar-time-period-row');
+      const cardsRow = document.querySelector('.placar-cards-row');
       const penaltyContent = document.getElementById('penaltyPlacarContent');
       if (overlayState.penaltyModeActive) {
         normalContent.style.display = 'none'; // Esconde a linha principal
-        document.querySelector('.placar-time-period-row').style.display = 'none'; // Esconde tempo/periodo
-        document.querySelector('.placar-cards-row').style.display = 'none'; // Esconde cartoes
+        timePeriodRow.style.display = 'none'; // Esconde tempo/periodo
+        cardsRow.style.display = 'none'; // Esconde cartoes
         penaltyContent.classList.add('active');
       } else {
         normalContent.style.display = 'flex'; // Mostra a linha principal
-        document.querySelector('.placar-time-period-row').style.display = 'flex';
-        document.querySelector('.placar-cards-row').style.display = 'flex';
+        timePeriodRow.style.display = 'flex';
+        cardsRow.style.display = 'flex';
         penaltyContent.classList.remove('active');
       }
 
@@ -598,26 +600,78 @@
       document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
     }
 
+    // FUNÇÃO ATUALIZADA PARA REDIMENSIONAR IMAGEM
     function loadEscudo(event, time) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-          overlayState['escudo' + time] = e.target.result;
-          saveState();
-        }
+          const img = new Image();
+          img.onload = function() {
+            const MAX_DIMENSION = 150; // Dimensão máxima (largura ou altura) para redimensionamento
+            let width = img.width;
+            let height = img.height;
+
+            // Redimensiona apenas se a imagem for maior que a dimensão máxima
+            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+              if (width > height) {
+                height = Math.round(height * (MAX_DIMENSION / width));
+                width = MAX_DIMENSION;
+              } else {
+                width = Math.round(width * (MAX_DIMENSION / height));
+                height = MAX_DIMENSION;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Usa 'image/png' para preservar transparência, se houver
+            overlayState['escudo' + time] = canvas.toDataURL('image/png');
+            saveState();
+          };
+          img.src = e.target.result;
+        };
         reader.readAsDataURL(file);
       }
     }
 
+    // FUNÇÃO ATUALIZADA PARA REDIMENSIONAR IMAGEM
     function loadLogo(event) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-          overlayState.logoOverlay = e.target.result;
-          saveState();
-        }
+          const img = new Image();
+          img.onload = function() {
+            const MAX_DIMENSION = 150; // Dimensão máxima para a logo central
+            let width = img.width;
+            let height = img.height;
+
+            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+              if (width > height) {
+                height = Math.round(height * (MAX_DIMENSION / width));
+                width = MAX_DIMENSION;
+              } else {
+                width = Math.round(width * (MAX_DIMENSION / height));
+                height = MAX_DIMENSION;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+
+            overlayState.logoOverlay = canvas.toDataURL('image/png');
+            saveState();
+          };
+          img.src = e.target.result;
+        };
         reader.readAsDataURL(file);
       }
     }
@@ -712,11 +766,6 @@
       }
     }
 
-    function resetPenalties() {
-      overlayState.penalties = { '1': [], '2': [] };
-      saveState();
-    }
-
     function togglePenaltyMode(activate) {
       overlayState.penaltyModeActive = activate;
       saveState();
@@ -736,4 +785,4 @@
     }
   </script>
 </body>
-</html>
+          </html>
