@@ -15,12 +15,12 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background-color: #0d1117; /* Fundo escuro para o controlador */
+      background-color: #0d1117;
       color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      padding: 15px; /* Reduzindo o padding do body */
       box-sizing: border-box;
       overflow-x: hidden;
       min-height: 100vh;
@@ -28,7 +28,7 @@
 
     .visual-overlay-container {
       width: 100%;
-      max-width: 900px; /* Largura máxima para o placar */
+      max-width: 900px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -38,7 +38,6 @@
       background-color: transparent;
       position: relative;
       z-index: 2;
-      /* padding-bottom: 110px; Removido para a animação ficar em linha separada */
     }
 
     .visual-overlay-container.hidden-display {
@@ -52,7 +51,7 @@
       flex-direction: column;
       align-items: center;
       background: var(--placar-bg);
-      padding: 10px 15px; /* Reduzindo padding */
+      padding: 8px 12px; /* Padding interno do placar */
       border-radius: 10px;
       margin-top: 10px;
       width: 100%;
@@ -63,21 +62,23 @@
       overflow: hidden;
     }
 
-    /* Placar principal: Tudo em uma linha */
+    /* Linha principal: Escudos, Nomes, Placar, Logo Central, Cronômetro, Período */
     .placar-main-line {
       display: flex;
       align-items: center;
-      justify-content: space-between; /* Distribui o espaço entre os blocos */
+      justify-content: space-between; /* Distribui o espaço entre os elementos principais */
       width: 100%;
-      gap: 5px; /* Espaço menor entre os blocos principais */
-      flex-wrap: nowrap; /* Tenta manter tudo em uma linha */
+      gap: 5px; /* Espaço entre os blocos */
+      flex-wrap: nowrap; /* TENTA manter tudo em uma linha, mesmo espremendo */
     }
 
     .team-block {
       display: flex;
       align-items: center;
-      gap: 5px; /* Espaço entre logo, nome e placar de cada time */
-      flex-shrink: 0; /* Evita que o time-block encolha */
+      gap: 3px; /* Espaço menor entre escudo, nome, placar */
+      flex-shrink: 1; /* Permite que este bloco encolha */
+      min-width: 120px; /* Largura mínima para o bloco do time */
+      justify-content: center; /* Centraliza conteúdo dentro do bloco */
     }
 
     .logo-central {
@@ -86,40 +87,41 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0; /* Não encolhe */
-      padding: 0 5px;
+      padding: 0 3px; /* Padding mínimo */
+      min-width: 60px; /* Largura mínima para a logo central */
     }
     .logo-central img {
-      width: 50px; /* Tamanho da logo central */
-      height: 50px;
+      width: 40px; /* Tamanho da logo central */
+      height: 40px;
       object-fit: contain;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
     .separador-x {
-      font-size: 24px; /* Tamanho menor do 'X' */
+      font-size: 20px; /* 'X' menor */
       font-weight: bold;
       color: var(--placar-text);
     }
 
     .escudo {
-      width: 30px; /* Tamanho dos escudos dos times */
-      height: 30px;
+      width: 25px; /* Escudos menores */
+      height: 25px;
       object-fit: contain;
       flex-shrink: 0;
     }
     .placar-numero {
-      font-size: 32px; /* Placar um pouco menor */
+      font-size: 28px; /* Placar menor */
       font-weight: bold;
       margin: 0 3px;
-      min-width: 35px; /* Garante que o placar não encolha demais */
+      min-width: 30px; /* Garante espaço para o número */
       text-align: center;
       flex-shrink: 0;
     }
 
     .team-name-input,
     .team-name-display {
-      width: 90px; /* Largura padrão para o nome, um pouco menor */
-      padding: 4px 6px;
-      font-size: 16px; /* Fonte menor para caber */
+      width: 80px; /* Largura padrão para o nome, mais compacta */
+      padding: 3px 5px;
+      font-size: 14px; /* Fonte menor para caber */
       text-align: center;
       background: #333;
       color: white;
@@ -129,7 +131,8 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      flex-grow: 1; /* Permite que o nome cresça se houver espaço */
+      flex-grow: 1; /* Permite crescer se houver espaço, mas tem limites */
+      min-width: 50px; /* Mínimo para o nome */
     }
     .team-name-display {
         background: transparent;
@@ -140,68 +143,81 @@
     .score-controls {
       display: flex;
       align-items: center;
-      margin: 0 2px; /* Espaço menor */
+      margin: 0 1px; /* Espaço mínimo */
       flex-shrink: 0;
     }
     .score-controls button {
-      padding: 4px 7px; /* Botões menores */
-      font-size: 13px; /* Fonte menor */
+      padding: 3px 6px; /* Botões bem pequenos */
+      font-size: 12px; /* Fonte pequena */
       margin: 0 1px;
     }
 
-    /* Linha de tempo, período e cartões */
-    .placar-info-line {
+    /* Bloco de tempo e período */
+    .time-period-block {
       display: flex;
+      flex-direction: column; /* Tempo e período um em cima do outro */
       align-items: center;
-      justify-content: space-around;
-      width: 100%;
-      margin-top: 8px; /* Espaço do placar principal */
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      flex-wrap: wrap; /* Permite quebra de linha em telas pequenas */
+      justify-content: center;
+      gap: 2px; /* Espaço mínimo entre eles */
+      flex-shrink: 0;
+      padding: 0 5px; /* Espaçamento lateral */
     }
 
     #cronometro,
     #periodoDisplay {
-      font-size: 24px; /* Cronômetro menor */
+      font-size: 20px; /* Cronômetro bem menor */
       font-weight: bold;
       color: var(--placar-timer-color);
       background: rgba(0, 0, 0, 0.5);
-      padding: 4px 12px;
+      padding: 3px 10px;
       border-radius: 4px;
-      flex-shrink: 0;
+      white-space: nowrap; /* Não quebra a linha do tempo */
     }
     #periodoDisplay {
-        font-size: 20px; /* Período menor */
+        font-size: 16px; /* Período bem menor */
         background: rgba(0, 0, 0, 0.3);
         color: var(--placar-text);
     }
 
+    /* Linha de cartões */
+    .placar-cards-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%;
+      margin-top: 5px; /* Espaço do placar principal */
+      padding-top: 5px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      flex-wrap: nowrap; /* Tenta manter os cartões na mesma linha */
+    }
+
     .cards-display {
       display: flex;
-      margin-top: 0;
-      min-height: 22px; /* Altura menor */
+      min-height: 20px; /* Altura menor */
       align-items: center;
       justify-content: center;
-      width: 120px; /* Largura menor para os cartões */
+      width: 100px; /* Largura menor para os cartões */
       flex-shrink: 0;
+      gap: 1px; /* Espaço mínimo entre os cartões */
     }
     .card-indicator {
-      width: 18px; /* Cartões menores */
-      height: 18px;
+      width: 16px; /* Cartões ainda menores */
+      height: 16px;
       border-radius: 3px;
       margin: 0 1px;
       border: 1px solid #555;
     }
+    .card-indicator.yellow-card { background-color: #ffc107; }
+    .card-indicator.red-card { background-color: #dc3545; }
 
-    /* Estilos de Pênaltis */
+    /* Estilos de Pênaltis - Também mais compactos */
     .penalty-shootout-placar {
       display: none;
       flex-direction: column;
       align-items: center;
       width: 100%;
-      gap: 10px; /* Espaço menor */
-      padding: 10px 0;
+      gap: 8px; /* Espaço menor */
+      padding: 8px 0;
     }
     .penalty-shootout-placar.active {
       display: flex;
@@ -209,21 +225,21 @@
     .penalty-team-display {
       display: flex;
       align-items: center;
-      gap: 8px; /* Espaço menor */
-      min-width: 200px; /* Largura mínima menor */
+      gap: 6px; /* Espaço menor */
+      min-width: 180px; /* Largura mínima menor */
       justify-content: center;
     }
     .penalty-team-display .escudo {
-      width: 40px; /* Escudo menor nos pênaltis */
-      height: 40px;
+      width: 35px; /* Escudo menor nos pênaltis */
+      height: 35px;
     }
     .penalty-balls-container {
       display: flex;
-      gap: 6px; /* Bolinhas mais próximas */
+      gap: 5px; /* Bolinhas mais próximas */
     }
     .penalty-ball {
-      width: 22px; /* Bolinhas menores */
-      height: 22px;
+      width: 20px; /* Bolinhas menores */
+      height: 20px;
       border-radius: 50%;
       border: 2px solid white;
       background-color: transparent;
@@ -233,16 +249,16 @@
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 80px; /* Animação um pouco menor */
+      font-size: 70px; /* Animação menor */
       font-weight: bold;
       color: #0ff;
-      text-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 8px rgba(0, 255, 255, 0.5);
+      text-shadow: 0 0 12px rgba(0, 255, 255, 0.8), 0 0 6px rgba(0, 255, 255, 0.5);
       opacity: 0;
       visibility: hidden;
       animation-fill-mode: forwards;
       z-index: 1000;
       pointer-events: none;
-      bottom: -90px; /* Ajusta a posição para aparecer abaixo do placar */
+      bottom: -80px; /* Ajusta a posição para aparecer abaixo do placar */
       white-space: nowrap;
     }
 
@@ -352,11 +368,14 @@
             <input type="text" id="nome2" placeholder="Time 2" class="team-name-input">
             <img id="escudo2" class="escudo" src="" alt="Escudo Time 2">
         </div>
+
+        <div class="time-period-block">
+          <div id="cronometro">00:00</div>
+          <div id="periodoDisplay" class="periodo">1º Tempo</div>
+        </div>
       </div>
 
-      <div class="placar-info-line" id="placarInfoLine">
-        <div id="cronometro">00:00</div>
-        <div id="periodoDisplay" class="periodo">1º Tempo</div>
+      <div class="placar-cards-line" id="placarCardsLine">
         <div id="cardsDisplay1" class="cards-display"></div>
         <div id="cardsDisplay2" class="cards-display"></div>
       </div>
@@ -561,18 +580,18 @@
       applyPlacarTheme();
 
       const normalContent = document.getElementById('normalPlacarContent');
-      const infoLine = document.getElementById('placarInfoLine');
+      const cardsLine = document.getElementById('placarCardsLine');
       const penaltyContent = document.getElementById('penaltyPlacarContent');
       const goalAnimation = document.getElementById('goalAnimation');
 
       if (overlayState.penaltyModeActive) {
         normalContent.style.display = 'none';
-        infoLine.style.display = 'none';
+        cardsLine.style.display = 'none';
         goalAnimation.style.display = 'none'; /* Esconde a animação de gol no modo pênalti */
         penaltyContent.classList.add('active');
       } else {
         normalContent.style.display = 'flex';
-        infoLine.style.display = 'flex';
+        cardsLine.style.display = 'flex';
         penaltyContent.classList.remove('active');
         goalAnimation.style.display = 'block'; /* Mostra a animação de gol no modo normal */
       }
@@ -797,4 +816,4 @@
     }
   </script>
 </body>
-  </html>
+</html>
