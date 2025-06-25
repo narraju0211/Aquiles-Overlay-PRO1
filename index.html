@@ -26,7 +26,6 @@
       min-height: 100vh;
     }
 
-    /* Contêiner APENAS para os elementos visíveis (para pré-visualização no controlador) */
     .visual-overlay-container {
       width: 100%;
       max-width: 900px;
@@ -39,7 +38,7 @@
       background-color: transparent;
       position: relative;
       z-index: 2;
-      padding-bottom: 110px;
+      padding-bottom: 110px; /* Espaço para a animação de gol */
     }
 
     .visual-overlay-container.hidden-display {
@@ -50,81 +49,150 @@
 
     .placar {
       display: flex;
+      flex-direction: column; /* Placar agora é uma coluna para suas linhas internas */
       align-items: center;
-      justify-content: center;
       background: var(--placar-bg);
       padding: 10px 20px;
       border-radius: 10px;
       margin-top: 10px;
       width: 100%;
       box-sizing: border-box;
-      flex-wrap: wrap;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
       position: relative;
       overflow: hidden;
     }
 
-    .placar-content {
+    /* Novas linhas para o layout */
+    .placar-top-row,
+    .placar-time-period-row,
+    .placar-cards-row {
       display: flex;
       align-items: center;
-      justify-content: space-around;
       width: 100%;
-      gap: 10px;
+      padding: 5px 0; /* Espaçamento interno das linhas */
     }
 
-    .team-section {
+    .placar-top-row {
+      justify-content: space-around; /* Distribui os elementos principais */
+      gap: 10px; /* Espaço entre os elementos */
+      flex-wrap: wrap; /* Permite quebra de linha em telas pequenas */
+    }
+
+    .placar-time-period-row {
+      justify-content: center;
+      gap: 30px; /* Espaço entre cronômetro e período */
+      margin-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 10px;
+    }
+
+    .placar-cards-row {
+      justify-content: space-around;
+      margin-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 10px;
+    }
+
+    .team-block {
+        display: flex;
+        align-items: center;
+        gap: 5px; /* Espaço entre logo, nome e placar de cada time */
+    }
+    .team-block.team1 { order: 1; } /* Força a ordem para T1 */
+    .team-block.team2 { order: 3; } /* Força a ordem para T2 */
+
+    .logo-central {
       display: flex;
       flex-direction: column;
       align-items: center;
-      flex: 1;
-      min-width: 200px;
+      justify-content: center;
+      margin: 0 10px; /* Espaço dos lados da logo central */
+      position: relative;
+      flex-shrink: 0;
+      order: 2; /* Força a ordem para a logo central */
     }
-
-    .team-info {
-      display: flex;
-      align-items: center;
+    .logo-central img {
+      width: 60px; /* Tamanho da logo central */
+      height: 60px;
+      object-fit: contain;
       margin-bottom: 5px;
+    }
+    .separador-x {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--placar-text);
     }
 
     .escudo {
-      width: 40px;
-      height: 40px;
+      width: 35px; /* Tamanho dos escudos dos times */
+      height: 35px;
       object-fit: contain;
-      margin: 0 5px;
-    }
-    .placar input[type="text"] {
-      width: 120px;
-      padding: 5px 10px;
-      font-size: 20px;
-      text-align: center;
-      background: #333;
-      color: white;
-      border: 1px solid #555;
-      border-radius: 5px;
-    }
-    .score-controls {
-      display: flex;
-      align-items: center;
-      margin-top: 5px;
-    }
-    .score-controls button {
-      padding: 5px 10px;
-      font-size: 16px;
-      margin: 0 5px;
     }
     .placar-numero {
       font-size: 36px;
       font-weight: bold;
       margin: 0 5px;
+      min-width: 40px; /* Garante que o placar não encolha demais */
+      text-align: center;
     }
+
+    /* Estilos para os nomes dos times */
+    .team-name-input,
+    .team-name-display {
+      width: 100px; /* Largura padrão para o nome */
+      padding: 5px 8px;
+      font-size: 18px;
+      text-align: center;
+      background: #333;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 5px;
+      box-sizing: border-box; /* Inclui padding e border na largura */
+      white-space: nowrap; /* Evita quebra de linha do nome */
+      overflow: hidden; /* Esconde texto extra se muito longo */
+      text-overflow: ellipsis; /* Adiciona "..." se o texto for cortado */
+    }
+    .team-name-display {
+        background: transparent; /* Apenas para o overlay */
+        border: none;
+    }
+
+    /* Botões de controle de placar no CONTROLADOR */
+    .score-controls {
+      display: flex;
+      align-items: center;
+      margin: 0 5px;
+    }
+    .score-controls button {
+      padding: 5px 8px;
+      font-size: 14px;
+      margin: 0 2px;
+    }
+
+    #cronometro,
+    #periodoDisplay {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--placar-timer-color);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 15px;
+      border-radius: 5px;
+    }
+    #periodoDisplay {
+        font-size: 24px;
+        background: rgba(0, 0, 0, 0.3);
+        color: var(--placar-text);
+    }
+
+
     .cards-display {
       display: flex;
       margin-top: 5px;
       min-height: 25px;
       align-items: center;
       justify-content: center;
-      width: 100%;
+      width: 150px; /* Largura para os cartões */
     }
     .card-indicator {
       width: 20px;
@@ -136,48 +204,13 @@
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
 
-    .logo-central {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin: 0 20px;
-      position: relative;
-      flex-shrink: 0;
-    }
-    .logo-central img {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-      margin-bottom: 5px;
-    }
-    .separador-x {
-      font-size: 32px;
-      font-weight: bold;
-      color: var(--placar-text);
-    }
-
-    #cronometro {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--placar-timer-color);
-      position: absolute;
-      top: 5px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 5px 10px;
-      border-radius: 5px;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1;
-    }
-
+    /* Estilos de Pênaltis */
     .penalty-shootout-placar {
       display: none;
-      width: 100%;
-      justify-content: center;
+      flex-direction: column; /* Muda para coluna para melhor organização */
       align-items: center;
-      flex-wrap: wrap;
-      gap: 20px;
+      width: 100%;
+      gap: 15px;
       padding: 10px 0;
     }
     .penalty-shootout-placar.active {
@@ -185,18 +218,17 @@
     }
     .penalty-team-display {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 150px;
+      align-items: center; /* Alinha horizontalmente escudo e bolinhas */
+      gap: 10px;
+      min-width: 250px;
+      justify-content: center;
     }
     .penalty-team-display .escudo {
-      width: 60px;
-      height: 60px;
-      margin-bottom: 10px;
+      width: 50px; /* Escudo maior nos pênaltis */
+      height: 50px;
     }
     .penalty-balls-container {
       display: flex;
-      margin-top: 10px;
       gap: 8px;
     }
     .penalty-ball {
@@ -209,6 +241,8 @@
     .penalty-ball.green { background-color: #28a745; border-color: #28a745; }
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
+
+    /* Painel de Controle (visível APENAS no navegador do streamer) */
     .control-panel-container {
         width: 100%;
         max-width: 900px;
@@ -251,9 +285,7 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-    .btn:hover {
-      background: #0056b3;
-    }
+    .btn:hover { background: #0056b3; }
     .btn.red { background: #dc3545; }
     .btn.red:hover { background: #c82333; }
     .btn.yellow { background: #ffc107; color: black; }
@@ -308,19 +340,15 @@
 <body>
   <div class="visual-overlay-container" id="visualOverlayContainer">
     <div class="placar" id="placarPrincipal">
-      <div id="cronometro">00:00</div>
-      <div class="placar-content" id="normalPlacarContent">
-        <div class="team-section">
-          <div class="team-info">
+      <div class="placar-top-row" id="normalPlacarContent">
+        <div class="team-block team1">
             <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
-            <input type="text" id="nome1" placeholder="Time 1">
-          </div>
-          <div class="score-controls">
-            <button class="btn" onclick="alterarPlacar('1', -1)">-</button>
-            <span id="placar1" class="placar-numero">0</span>
-            <button class="btn" onclick="alterarPlacar('1', 1)">+</button>
-          </div>
-          <div id="cardsDisplay1" class="cards-display"></div>
+            <input type="text" id="nome1" placeholder="Time 1" class="team-name-input">
+            <div class="score-controls">
+                <button class="btn" onclick="alterarPlacar('1', -1)">-</button>
+                <span id="placar1" class="placar-numero">0</span>
+                <button class="btn" onclick="alterarPlacar('1', 1)">+</button>
+            </div>
         </div>
 
         <div class="logo-central">
@@ -328,18 +356,25 @@
           <span class="separador-x">X</span>
         </div>
 
-        <div class="team-section">
-          <div class="team-info">
-            <input type="text" id="nome2" placeholder="Time 2">
+        <div class="team-block team2">
+            <div class="score-controls">
+                <button class="btn" onclick="alterarPlacar('2', -1)">-</button>
+                <span id="placar2" class="placar-numero">0</span>
+                <button class="btn" onclick="alterarPlacar('2', 1)">+</button>
+            </div>
+            <input type="text" id="nome2" placeholder="Time 2" class="team-name-input">
             <img id="escudo2" class="escudo" src="" alt="Escudo Time 2">
-          </div>
-          <div class="score-controls">
-            <button class="btn" onclick="alterarPlacar('2', -1)">-</button>
-            <span id="placar2" class="placar-numero">0</span>
-            <button class="btn" onclick="alterarPlacar('2', 1)">+</button>
-          </div>
-          <div id="cardsDisplay2" class="cards-display"></div>
         </div>
+      </div>
+
+      <div class="placar-time-period-row">
+        <div id="cronometro">00:00</div>
+        <div id="periodoDisplay" class="periodo">1º Tempo</div>
+      </div>
+
+      <div class="placar-cards-row">
+        <div id="cardsDisplay1" class="cards-display"></div>
+        <div id="cardsDisplay2" class="cards-display"></div>
       </div>
 
       <div class="penalty-shootout-placar" id="penaltyPlacarContent">
@@ -387,6 +422,15 @@
       </div>
 
       <div>
+        <div class="section-title">Controle de Período</div>
+        <button class="btn green" onclick="nextPeriod()">Próximo Período</button>
+        <button class="btn yellow" onclick="setPeriod(1)">1º Tempo</button>
+        <button class="btn yellow" onclick="setPeriod(2)">2º Tempo</button>
+        <button class="btn yellow" onclick="setPeriod(3)">Prorrogação</button>
+        <button class="btn red" onclick="setPeriod(0)">Resetar Período</button>
+      </div>
+
+      <div>
         <div class="section-title">Cartões</div>
         <button class="btn yellow" onclick="addCartao('1', 'amarelo')">Amarelo T1</button>
         <button class="btn red" onclick="addCartao('1', 'vermelho')">Vermelho T1</button>
@@ -421,21 +465,21 @@
   </div>
 
   <script>
-    // Objeto para armazenar todo o estado do overlay
     let overlayState = {
       placar: { '1': 0, '2': 0 },
       cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
       penalties: { '1': [], '2': [] },
       seconds: 0,
-      timerRunning: false, // Novo: indica se o timer está rodando
+      timerRunning: false,
       placarThemeIndex: 0,
       penaltyModeActive: false,
+      currentPeriod: 1, // Novo: Período atual (1, 2, 3, etc.)
       nome1: '',
       nome2: '',
       escudo1: '',
       escudo2: '',
       logoOverlay: '',
-      isVisible: true // Estado da visibilidade do overlay para o Prism
+      isVisible: true
     };
 
     let timerInterval;
@@ -447,32 +491,37 @@
       { bg: 'rgba(255, 193, 7, 0.8)', text: 'black', border: '#e0a800', timerColor: '#333' }
     ];
 
+    const periodNames = {
+        0: 'Parado',
+        1: '1º Tempo',
+        2: '2º Tempo',
+        3: 'Prorrogação',
+        4: 'Intervalo',
+        5: 'Tempo Extra' // Exemplo, adicione mais se precisar
+    };
+
+
     document.addEventListener('DOMContentLoaded', loadStateAndRender);
 
-    // Salva o estado completo no localStorage
     function saveState() {
       localStorage.setItem('overlayState', JSON.stringify(overlayState));
-      // Renderiza as mudanças na pré-visualização do controlador
-      renderUI();
+      renderUI(); // Renderiza as mudanças na pré-visualização do controlador
     }
 
-    // Carrega o estado do localStorage e renderiza a UI
     function loadStateAndRender() {
       const storedState = localStorage.getItem('overlayState');
       if (storedState) {
         overlayState = JSON.parse(storedState);
       }
-      // Garante que o timer pare se estiver rodando ao recarregar a página
       if (timerInterval) {
           clearInterval(timerInterval);
           timerInterval = null;
       }
       if (overlayState.timerRunning) {
-          startTimer(false); // Inicia sem salvar novamente para evitar loops
+          startTimer(false);
       }
-      renderUI(); // Renderiza a UI inicial com o estado carregado
+      renderUI();
 
-      // Adiciona listeners para salvar nomes ao digitar
       document.getElementById('nome1').addEventListener('input', (e) => {
         overlayState.nome1 = e.target.value;
         saveState();
@@ -483,25 +532,24 @@
       });
     }
 
-    // Renderiza todos os elementos da UI com base no overlayState
     function renderUI() {
       document.getElementById('placar1').innerText = overlayState.placar['1'];
       document.getElementById('placar2').innerText = overlayState.placar['2'];
       document.getElementById('nome1').value = overlayState.nome1;
       document.getElementById('nome2').value = overlayState.nome2;
 
-      // Escudos
       document.getElementById('escudo1').src = overlayState.escudo1;
       document.getElementById('escudoPenalty1').src = overlayState.escudo1;
       document.getElementById('escudo2').src = overlayState.escudo2;
       document.getElementById('escudoPenalty2').src = overlayState.escudo2;
-      // Logo
+
       document.getElementById('logoOverlay').src = overlayState.logoOverlay;
       document.getElementById('logoOverlayPenalty').src = overlayState.logoOverlay;
 
       renderCards('1');
       renderCards('2');
       document.getElementById('cronometro').innerText = formatTime(overlayState.seconds);
+      document.getElementById('periodoDisplay').innerText = periodNames[overlayState.currentPeriod] || 'N/A';
       renderPenalties('1');
       renderPenalties('2');
       applyPlacarTheme();
@@ -509,14 +557,17 @@
       const normalContent = document.getElementById('normalPlacarContent');
       const penaltyContent = document.getElementById('penaltyPlacarContent');
       if (overlayState.penaltyModeActive) {
-        normalContent.style.display = 'none';
+        normalContent.style.display = 'none'; // Esconde a linha principal
+        document.querySelector('.placar-time-period-row').style.display = 'none'; // Esconde tempo/periodo
+        document.querySelector('.placar-cards-row').style.display = 'none'; // Esconde cartoes
         penaltyContent.classList.add('active');
       } else {
-        normalContent.style.display = 'flex';
+        normalContent.style.display = 'flex'; // Mostra a linha principal
+        document.querySelector('.placar-time-period-row').style.display = 'flex';
+        document.querySelector('.placar-cards-row').style.display = 'flex';
         penaltyContent.classList.remove('active');
       }
 
-      // Atualiza a visibilidade da pré-visualização no controlador
       const visualContainer = document.getElementById('visualOverlayContainer');
       const button = document.querySelector('.btn.dark-gray[onclick="toggleOverlayVisibility()"]');
       if (overlayState.isVisible) {
@@ -576,8 +627,8 @@
         overlayState.timerRunning = true;
         timerInterval = setInterval(() => {
           overlayState.seconds++;
-          if (save) saveState(); // Salva o estado a cada segundo se for o controlador principal
-          else document.getElementById('cronometro').innerText = formatTime(overlayState.seconds); // Apenas atualiza o texto se for a página overlay
+          if (save) saveState();
+          else document.getElementById('cronometro').innerText = formatTime(overlayState.seconds);
         }, 1000);
       }
       if (save) saveState();
@@ -600,6 +651,20 @@
       const min = String(Math.floor(s / 60)).padStart(2, '0');
       const sec = String(s % 60).padStart(2, '0');
       return `${min}:${sec}`;
+    }
+
+    function nextPeriod() {
+        if (overlayState.currentPeriod < 5) { // Limite de períodos, ajuste se precisar
+            overlayState.currentPeriod++;
+        } else {
+            overlayState.currentPeriod = 1; // Volta ao primeiro se passar do limite
+        }
+        saveState();
+    }
+
+    function setPeriod(periodNumber) {
+        overlayState.currentPeriod = periodNumber;
+        saveState();
     }
 
     function addCartao(time, cor) {
@@ -658,8 +723,7 @@
     }
 
     function showGoalAnimation() {
-      // O controlador envia uma mensagem para o overlay ativar a animação
-      localStorage.setItem('goalAnimationTrigger', Date.now().toString()); // Usa timestamp para garantir que o evento dispare
+      localStorage.setItem('goalAnimationTrigger', Date.now().toString());
       const goalElement = document.getElementById('goalAnimation');
       goalElement.classList.remove('active');
       void goalElement.offsetWidth;
