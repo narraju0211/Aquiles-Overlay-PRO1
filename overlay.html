@@ -50,7 +50,7 @@
       flex-direction: column;
       align-items: center;
       background: var(--placar-bg);
-      padding: 8px 12px; /* Padding interno do placar */
+      padding: 8px 12px;
       border-radius: 10px;
       margin-top: 10px;
       width: 100%;
@@ -61,62 +61,58 @@
       overflow: hidden;
     }
 
-    /* Linha principal: Escudos, Nomes, Placar, Logo Central, Cronômetro, Período */
     .placar-main-line {
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      gap: 5px;
+      gap: 10px;
       flex-wrap: nowrap;
     }
 
     .team-block {
       display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 5px;
       flex-shrink: 1;
-      min-width: 120px;
+      min-width: 130px;
       justify-content: center;
     }
 
     .logo-central {
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      padding: 0 3px;
-      min-width: 60px;
+      padding: 0 10px;
+      /* Ajuste a margem para aproximar placares da logo */
+      margin: 0 5px; 
     }
     .logo-central img {
-      width: 40px;
-      height: 40px;
+      width: 60px;
+      height: 60px;
       object-fit: contain;
-      margin-bottom: 2px;
     }
     .separador-x {
-      font-size: 20px;
-      font-weight: bold;
-      color: var(--placar-text);
+      display: none; /* Oculta o 'X' */
     }
 
     .escudo {
-      width: 25px;
-      height: 25px;
+      width: 35px;
+      height: 35px;
       object-fit: contain;
       flex-shrink: 0;
     }
     .placar-numero {
-      font-size: 28px;
+      font-size: 30px;
       font-weight: bold;
-      margin: 0 3px;
-      min-width: 30px;
+      margin: 0 5px;
+      min-width: 35px;
       text-align: center;
       flex-shrink: 0;
     }
     .team-name-display {
-      width: 80px;
+      width: 90px;
       padding: 3px 5px;
       font-size: 14px;
       text-align: center;
@@ -128,10 +124,9 @@
       overflow: hidden;
       text-overflow: ellipsis;
       flex-grow: 1;
-      min-width: 50px;
+      min-width: 60px;
     }
 
-    /* Bloco de tempo e período */
     .time-period-block {
       display: flex;
       flex-direction: column;
@@ -158,7 +153,6 @@
         color: var(--placar-text);
     }
 
-    /* Linha de cartões */
     .placar-cards-line {
       display: flex;
       align-items: center;
@@ -208,8 +202,8 @@
       justify-content: center;
     }
     .penalty-team-display .escudo {
-      width: 35px;
-      height: 35px;
+      width: 40px;
+      height: 40px;
     }
     .penalty-balls-container {
       display: flex;
@@ -266,7 +260,6 @@
 
         <div class="logo-central">
           <img id="logoOverlay_display" src="" alt="Sua Logo">
-          <span class="separador-x">X</span>
         </div>
 
         <div class="team-block team2">
@@ -367,11 +360,15 @@
       overlayStateRef.on('value', (snapshot) => {
         if (snapshot.exists()) {
           const newState = snapshot.val();
+          
+          // Verificação para parar/iniciar o timer localmente
           if (newState.timerRunning && !overlayState.timerRunning) {
               startLocalTimer(newState.seconds);
           } else if (!newState.timerRunning && overlayState.timerRunning) {
               stopLocalTimer();
           }
+          
+          // Atualiza o estado completo
           overlayState = newState;
           renderUI();
         }
@@ -390,7 +387,7 @@
 
     function startLocalTimer(initialSeconds) {
         if (timerInterval) clearInterval(timerInterval);
-        overlayState.seconds = initialSeconds;
+        overlayState.seconds = initialSeconds; // Garante que o timer comece do ponto correto
         timerInterval = setInterval(() => {
             overlayState.seconds++;
             document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds);
@@ -435,13 +432,13 @@
       if (overlayState.penaltyModeActive) {
         normalContent.style.display = 'none';
         cardsLine.style.display = 'none';
-        goalAnimation.style.display = 'none'; /* Esconde a animação de gol no modo pênalti */
+        goalAnimation.style.display = 'none';
         penaltyContent.classList.add('active');
       } else {
         normalContent.style.display = 'flex';
         cardsLine.style.display = 'flex';
         penaltyContent.classList.remove('active');
-        goalAnimation.style.display = 'block'; /* Mostra a animação de gol no modo normal */
+        goalAnimation.style.display = 'block';
       }
 
       const visualContainer = document.getElementById('visualOverlayContainer');
@@ -469,12 +466,15 @@
     function renderCards(time) {
       const displayElement = document.getElementById(`cardsDisplay${time}_display`);
       displayElement.innerHTML = '';
-      for (let i = 0; i < overlayState.cards[time]['amarelo']; i++) {
+      const amarelos = (overlayState.cards[time] && overlayState.cards[time].amarelo) ? overlayState.cards[time].amarelo : 0;
+      const vermelhos = (overlayState.cards[time] && overlayState.cards[time].vermelho) ? overlayState.cards[time].vermelho : 0;
+
+      for (let i = 0; i < amarelos; i++) {
         const cardDiv = document.createElement('div');
         cardDiv.className = 'card-indicator yellow-card';
         displayElement.appendChild(cardDiv);
       }
-      for (let i = 0; i < overlayState.cards[time]['vermelho']; i++) {
+      for (let i = 0; i < vermelhos; i++) {
         const cardDiv = document.createElement('div');
         cardDiv.className = 'card-indicator red-card';
         displayElement.appendChild(cardDiv);
@@ -484,11 +484,12 @@
     function renderPenalties(time) {
       const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
       penaltyBallsContainer.innerHTML = '';
-      for (let i = 0; i < 5; i++) {
+      const penalties = overlayState.penalties[time] || []; 
+      for (let i = 0; i < 5; i++) { // Renderiza até 5 bolinhas
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
-        if (overlayState.penalties[time][i]) {
-          ballDiv.classList.add(overlayState.penalties[time][i]);
+        if (penalties[i]) {
+          ballDiv.classList.add(penalties[i]); // Adiciona 'green' ou 'red'
         }
         penaltyBallsContainer.appendChild(ballDiv);
       }
@@ -497,7 +498,7 @@
     function showGoalAnimation() {
       const goalElement = document.getElementById('goalAnimation_display');
       goalElement.classList.remove('active');
-      void goalElement.offsetWidth;
+      void goalElement.offsetWidth; // Força reflow para reiniciar a animação
       goalElement.classList.add('active');
     }
   </script>
