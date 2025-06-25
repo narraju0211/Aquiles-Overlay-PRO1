@@ -19,31 +19,35 @@
       background-color: transparent; /* Fundo transparente para OBS/Prism */
       color: white;
       display: flex;
-      justify-content: center;
+      flex-direction: column; /* Para organizar o placar e o painel em coluna */
+      align-items: center;
       padding: 20px;
       box-sizing: border-box;
       overflow-x: hidden; /* Evita scroll horizontal */
-    }
-    /* Contêiner principal para ocultar/mostrar */
-    .main-overlay-container {
-      width: 100%;
-      max-width: 900px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      transition: opacity 0.5s ease, visibility 0.5s ease;
-      background-color: transparent; /* Fundo transparente */
-    }
-    .main-overlay-container.hidden-overlay {
-      opacity: 0;
-      visibility: hidden;
+      min-height: 100vh; /* Garante que o body ocupe a altura total da tela */
     }
 
-    .overlay {
+    /* Contêiner APENAS para os elementos visíveis na transmissão (Placar, Gol) */
+    .visual-overlay-container {
       width: 100%;
+      max-width: 900px; /* Ajuste conforme o tamanho desejado para o placar na transmissão */
       display: flex;
       flex-direction: column;
       align-items: center;
+      /* Animação de Fade In/Out */
+      transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+      opacity: 1; /* Inicia visível */
+      visibility: visible;
+      background-color: transparent; /* Fundo transparente */
+      position: relative; /* Para garantir que o placar fique no topo da página visível */
+      z-index: 2; /* Garante que esteja acima do painel de controle se sobrepostos */
+      padding-bottom: 110px; /* Espaço para a animação de gol */
+    }
+
+    .visual-overlay-container.hidden-display {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none; /* Impede que cliques "atravessem" quando invisível */
     }
 
     /* Placar Principal */
@@ -54,11 +58,10 @@
       background: var(--placar-bg);
       padding: 10px 20px;
       border-radius: 10px;
-      margin-top: 10px;
+      margin-top: 10px; /* Margem da parte superior da tela */
       width: 100%;
       box-sizing: border-box;
       flex-wrap: wrap; /* Permite quebras em telas menores */
-      transition: background 0.3s ease, color 0.3s ease;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
       position: relative; /* Para posicionar cronômetro e gol */
@@ -212,12 +215,17 @@
     .penalty-ball.green { background-color: #28a745; border-color: #28a745; }
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
-    /* Painel de Controle (geralmente abaixo do placar, visível para o streamer) */
+    /* Painel de Controle (separado, visível apenas para o streamer) */
+    .control-panel-container {
+        width: 100%;
+        max-width: 900px; /* Mesma largura do placar para alinhamento */
+        margin-top: 20px; /* Espaço entre o placar e o painel */
+        z-index: 1; /* Garante que o painel fique abaixo do placar se sobrepostos */
+    }
+
     .painel {
-      margin-top: 20px;
       padding: 15px;
       background: #1c1c1c;
-      width: 100%;
       border-radius: 10px;
       box-sizing: border-box;
       display: flex;
@@ -307,69 +315,69 @@
   </style>
 </head>
 <body>
-  <div class="main-overlay-container" id="mainOverlayContainer">
-    <div class="overlay">
-      <div class="placar" id="placarPrincipal">
-        <div id="cronometro">00:00</div>
+  <div class="visual-overlay-container" id="visualOverlayContainer">
+    <div class="placar" id="placarPrincipal">
+      <div id="cronometro">00:00</div>
 
-        <div class="placar-content" id="normalPlacarContent">
-          <div class="team-section">
-            <div class="team-info">
-              <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
-              <input type="text" id="nome1" placeholder="Time 1">
-            </div>
-            <div class="score-controls">
-              <button class="btn" onclick="alterarPlacar('1', -1)">-</button>
-              <span id="placar1" class="placar-numero">0</span>
-              <button class="btn" onclick="alterarPlacar('1', 1)">+</button>
-            </div>
-            <div id="cardsDisplay1" class="cards-display"></div>
+      <div class="placar-content" id="normalPlacarContent">
+        <div class="team-section">
+          <div class="team-info">
+            <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
+            <input type="text" id="nome1" placeholder="Time 1">
           </div>
-
-          <div class="logo-central">
-            <img id="logoOverlay" src="" alt="Sua Logo">
-            <span class="separador-x">X</span>
+          <div class="score-controls">
+            <button class="btn" onclick="alterarPlacar('1', -1)">-</button>
+            <span id="placar1" class="placar-numero">0</span>
+            <button class="btn" onclick="alterarPlacar('1', 1)">+</button>
           </div>
-
-          <div class="team-section">
-            <div class="team-info">
-              <input type="text" id="nome2" placeholder="Time 2">
-              <img id="escudo2" class="escudo" src="" alt="Escudo Time 2">
-            </div>
-            <div class="score-controls">
-              <button class="btn" onclick="alterarPlacar('2', -1)">-</button>
-              <span id="placar2" class="placar-numero">0</span>
-              <button class="btn" onclick="alterarPlacar('2', 1)">+</button>
-            </div>
-            <div id="cardsDisplay2" class="cards-display"></div>
-          </div>
+          <div id="cardsDisplay1" class="cards-display"></div>
         </div>
 
-        <div class="penalty-shootout-placar" id="penaltyPlacarContent">
-          <div class="penalty-team-display">
-            <img id="escudoPenalty1" class="escudo" src="" alt="Escudo Time 1">
-            <div class="penalty-balls-container" id="penaltiesDisplay1">
-              </div>
-          </div>
-          <div class="logo-central">
-            <img id="logoOverlayPenalty" src="" alt="Sua Logo">
-          </div>
-          <div class="penalty-team-display">
-            <img id="escudoPenalty2" class="escudo" src="" alt="Escudo Time 2">
-            <div class="penalty-balls-container" id="penaltiesDisplay2">
-              </div>
-          </div>
+        <div class="logo-central">
+          <img id="logoOverlay" src="" alt="Sua Logo">
+          <span class="separador-x">X</span>
         </div>
 
-        <div class="goal-animation" id="goalAnimation">GOL!</div>
+        <div class="team-section">
+          <div class="team-info">
+            <input type="text" id="nome2" placeholder="Time 2">
+            <img id="escudo2" class="escudo" src="" alt="Escudo Time 2">
+          </div>
+          <div class="score-controls">
+            <button class="btn" onclick="alterarPlacar('2', -1)">-</button>
+            <span id="placar2" class="placar-numero">0</span>
+            <button class="btn" onclick="alterarPlacar('2', 1)">+</button>
+          </div>
+          <div id="cardsDisplay2" class="cards-display"></div>
+        </div>
       </div>
-    </div>
 
+      <div class="penalty-shootout-placar" id="penaltyPlacarContent">
+        <div class="penalty-team-display">
+          <img id="escudoPenalty1" class="escudo" src="" alt="Escudo Time 1">
+          <div class="penalty-balls-container" id="penaltiesDisplay1">
+            </div>
+        </div>
+        <div class="logo-central">
+          <img id="logoOverlayPenalty" src="" alt="Sua Logo">
+        </div>
+        <div class="penalty-team-display">
+          <img id="escudoPenalty2" class="escudo" src="" alt="Escudo Time 2">
+          <div class="penalty-balls-container" id="penaltiesDisplay2">
+            </div>
+        </div>
+      </div>
+
+      <div class="goal-animation" id="goalAnimation">GOL!</div>
+    </div>
+  </div>
+
+  <div class="control-panel-container" id="controlPanelContainer">
     <div class="painel">
       <div>
         <div class="section-title">Configurações Gerais</div>
         <button class="btn purple" onclick="togglePlacarTheme()">Alternar Cor do Placar</button>
-        <button class="btn dark-gray" onclick="toggleOverlayVisibility()">Ocultar Overlay</button>
+        <button class="btn dark-gray" onclick="toggleOverlayVisibility()">Ocultar Placar</button>
         <button class="btn green" onclick="showGoalAnimation()">GOL!</button>
       </div>
 
@@ -430,10 +438,9 @@
     let penalties = { '1': [], '2': [] };
     let timerInterval;
     let seconds = 0;
-    let placarThemeIndex = 0; // Índice para alternar temas do placar
-    let penaltyModeActive = false; // Estado do modo de pênalti
+    let placarThemeIndex = 0;
+    let penaltyModeActive = false;
 
-    // Definição dos temas do placar
     const placarThemes = [
       { bg: 'rgba(34, 34, 34, 0.8)', text: 'white', border: '#555', timerColor: '#0ff' },
       { bg: 'rgba(0, 123, 255, 0.8)', text: 'white', border: '#0056b3', timerColor: '#fff' },
@@ -442,24 +449,20 @@
       { bg: 'rgba(255, 193, 7, 0.8)', text: 'black', border: '#e0a800', timerColor: '#333' }
     ];
 
-    // Funções de inicialização
     document.addEventListener('DOMContentLoaded', loadData);
 
     function loadData() {
-      // Carregar placar
       if (localStorage.getItem('placar')) {
         placar = JSON.parse(localStorage.getItem('placar'));
         document.getElementById('placar1').innerText = placar['1'];
         document.getElementById('placar2').innerText = placar['2'];
       }
-      // Carregar nomes
       if (localStorage.getItem('nome1')) {
         document.getElementById('nome1').value = localStorage.getItem('nome1');
       }
       if (localStorage.getItem('nome2')) {
         document.getElementById('nome2').value = localStorage.getItem('nome2');
       }
-      // Carregar escudos
       if (localStorage.getItem('escudo1')) {
         document.getElementById('escudo1').src = localStorage.getItem('escudo1');
         document.getElementById('escudoPenalty1').src = localStorage.getItem('escudo1');
@@ -468,39 +471,32 @@
         document.getElementById('escudo2').src = localStorage.getItem('escudo2');
         document.getElementById('escudoPenalty2').src = localStorage.getItem('escudo2');
       }
-      // Carregar logo
       if (localStorage.getItem('logoOverlay')) {
         document.getElementById('logoOverlay').src = localStorage.getItem('logoOverlay');
         document.getElementById('logoOverlayPenalty').src = localStorage.getItem('logoOverlay');
       }
-      // Carregar cartões
       if (localStorage.getItem('cards')) {
         cards = JSON.parse(localStorage.getItem('cards'));
         renderCards('1');
         renderCards('2');
       }
-      // Carregar cronômetro
       if (localStorage.getItem('timerSeconds')) {
         seconds = parseInt(localStorage.getItem('timerSeconds'));
         document.getElementById('cronometro').innerText = formatTime(seconds);
       }
-      // Carregar pênaltis
       if (localStorage.getItem('penalties')) {
         penalties = JSON.parse(localStorage.getItem('penalties'));
         renderPenalties('1');
         renderPenalties('2');
       }
-      // Carregar tema do placar
       if (localStorage.getItem('placarThemeIndex')) {
         placarThemeIndex = parseInt(localStorage.getItem('placarThemeIndex'));
         applyPlacarTheme();
       }
-      // Carregar modo de pênalti
       if (localStorage.getItem('penaltyModeActive') === 'true') {
-        togglePenaltyMode(true, false); // Ativa o modo de pênalti sem salvar novamente
+        togglePenaltyMode(true, false);
       }
 
-      // Adicionar listeners para salvar nomes ao digitar
       document.getElementById('nome1').addEventListener('input', () => {
         localStorage.setItem('nome1', document.getElementById('nome1').value);
       });
@@ -509,7 +505,6 @@
       });
     }
 
-    // Funções do Placar
     function alterarPlacar(time, valor) {
       placar[time] += valor;
       if (placar[time] < 0) placar[time] = 0;
@@ -517,7 +512,6 @@
       localStorage.setItem('placar', JSON.stringify(placar));
     }
 
-    // Função para alternar o tema do placar
     function togglePlacarTheme() {
       placarThemeIndex = (placarThemeIndex + 1) % placarThemes.length;
       applyPlacarTheme();
@@ -532,16 +526,14 @@
       document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
     }
 
-    // Funções de Escudo e Logo
     function loadEscudo(event, time) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
           document.getElementById('escudo' + time).src = e.target.result;
-          // Atualiza também o escudo do modo pênalti
           document.getElementById('escudoPenalty' + time).src = e.target.result;
-          localStorage.setItem('escudo' + time, e.target.result); // Salva como Base64
+          localStorage.setItem('escudo' + time, e.target.result);
         }
         reader.readAsDataURL(file);
       }
@@ -560,9 +552,8 @@
       }
     }
 
-    // Funções do Cronômetro
     function startTimer() {
-      if (!timerInterval) { // Previne múltiplos intervalos
+      if (!timerInterval) {
         timerInterval = setInterval(() => {
           seconds++;
           document.getElementById('cronometro').innerText = formatTime(seconds);
@@ -573,7 +564,7 @@
 
     function pauseTimer() {
       clearInterval(timerInterval);
-      timerInterval = null; // Reseta o identificador do intervalo
+      timerInterval = null;
     }
 
     function resetTimer() {
@@ -589,7 +580,6 @@
       return `${min}:${sec}`;
     }
 
-    // Funções de Cartões
     function addCartao(time, cor) {
       cards[time][cor]++;
       renderCards(time);
@@ -598,7 +588,7 @@
 
     function renderCards(time) {
       const displayElement = document.getElementById('cardsDisplay' + time);
-      displayElement.innerHTML = ''; // Limpa os cartões existentes
+      displayElement.innerHTML = '';
 
       for (let i = 0; i < cards[time]['amarelo']; i++) {
         const cardDiv = document.createElement('div');
@@ -618,9 +608,8 @@
       localStorage.setItem('cards', JSON.stringify(cards));
     }
 
-    // Funções de Pênaltis
     function addPenalty(time, resultado) {
-      if (penalties[time].length < 5) { // Limita a 5 pênaltis
+      if (penalties[time].length < 5) {
         penalties[time].push(resultado === 'convertido' ? 'green' : 'red');
         renderPenalties(time);
         localStorage.setItem('penalties', JSON.stringify(penalties));
@@ -629,9 +618,9 @@
 
     function renderPenalties(time) {
       const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}`);
-      penaltyBallsContainer.innerHTML = ''; // Limpa as bolinhas existentes
+      penaltyBallsContainer.innerHTML = '';
 
-      for (let i = 0; i < 5; i++) { // Renderiza sempre 5 bolinhas
+      for (let i = 0; i < 5; i++) {
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
         if (penalties[time][i]) {
@@ -648,7 +637,6 @@
       localStorage.removeItem('penalties');
     }
 
-    // Função para alternar o modo de placar (normal vs pênaltis)
     function togglePenaltyMode(activate, save = true) {
       penaltyModeActive = activate;
       const normalContent = document.getElementById('normalPlacarContent');
@@ -656,7 +644,7 @@
 
       if (penaltyModeActive) {
         normalContent.style.display = 'none';
-        penaltyContent.classList.add('active'); // Usa classe para display: flex
+        penaltyContent.classList.add('active');
       } else {
         normalContent.style.display = 'flex';
         penaltyContent.classList.remove('active');
@@ -666,27 +654,26 @@
       }
     }
 
-    // Funções de Animação de Gol
     function showGoalAnimation() {
       const goalElement = document.getElementById('goalAnimation');
-      goalElement.classList.remove('active'); // Garante que a animação possa ser re-triggered
-      void goalElement.offsetWidth; // Trigger reflow to restart animation
+      goalElement.classList.remove('active');
+      void goalElement.offsetWidth;
       goalElement.classList.add('active');
     }
 
-    // Função para ocultar/mostrar o overlay (simula interação com OBS/Prism)
+    // NOVA FUNÇÃO: Ocultar/Mostrar APENAS o placar visível para a transmissão
     function toggleOverlayVisibility() {
-      const mainContainer = document.getElementById('mainOverlayContainer');
+      const visualContainer = document.getElementById('visualOverlayContainer');
       const button = document.querySelector('.btn.dark-gray[onclick="toggleOverlayVisibility()"]');
 
-      if (mainContainer.classList.contains('hidden-overlay')) {
-        mainContainer.classList.remove('hidden-overlay');
-        button.innerText = 'Ocultar Overlay';
+      if (visualContainer.classList.contains('hidden-display')) {
+        visualContainer.classList.remove('hidden-display');
+        button.innerText = 'Ocultar Placar'; // Texto do botão quando o placar está visível
       } else {
-        mainContainer.classList.add('hidden-overlay');
-        button.innerText = 'Mostrar Overlay';
+        visualContainer.classList.add('hidden-display');
+        button.innerText = 'Mostrar Placar'; // Texto do botão quando o placar está oculto
       }
     }
   </script>
 </body>
-  </html>
+</html>
