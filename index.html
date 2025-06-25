@@ -28,7 +28,7 @@
 
     .visual-overlay-container {
       width: 100%;
-      max-width: 900px;
+      max-width: 900px; /* Largura máxima para o placar */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -38,7 +38,7 @@
       background-color: transparent;
       position: relative;
       z-index: 2;
-      padding-bottom: 110px; /* Espaço para a animação de gol */
+      /* padding-bottom: 110px; Removido para a animação ficar em linha separada */
     }
 
     .visual-overlay-container.hidden-display {
@@ -49,10 +49,10 @@
 
     .placar {
       display: flex;
-      flex-direction: column; /* Placar agora é uma coluna para suas linhas internas */
+      flex-direction: column;
       align-items: center;
       background: var(--placar-bg);
-      padding: 10px 20px;
+      padding: 10px 15px; /* Reduzindo padding */
       border-radius: 10px;
       margin-top: 10px;
       width: 100%;
@@ -63,98 +63,76 @@
       overflow: hidden;
     }
 
-    /* Novas linhas para o layout */
-    .placar-top-row,
-    .placar-time-period-row,
-    .placar-cards-row {
+    /* Placar principal: Tudo em uma linha */
+    .placar-main-line {
       display: flex;
       align-items: center;
+      justify-content: space-between; /* Distribui o espaço entre os blocos */
       width: 100%;
-      padding: 5px 0; /* Espaçamento interno das linhas */
-    }
-
-    .placar-top-row {
-      justify-content: space-around; /* Distribui os elementos principais */
-      gap: 10px; /* Espaço entre os elementos */
-      flex-wrap: wrap; /* Permite quebra de linha em telas pequenas */
-    }
-
-    .placar-time-period-row {
-      justify-content: center;
-      gap: 30px; /* Espaço entre cronômetro e período */
-      margin-top: 10px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 10px;
-    }
-
-    .placar-cards-row {
-      justify-content: space-around;
-      margin-top: 10px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 10px;
+      gap: 5px; /* Espaço menor entre os blocos principais */
+      flex-wrap: nowrap; /* Tenta manter tudo em uma linha */
     }
 
     .team-block {
-        display: flex;
-        align-items: center;
-        gap: 5px; /* Espaço entre logo, nome e placar de cada time */
+      display: flex;
+      align-items: center;
+      gap: 5px; /* Espaço entre logo, nome e placar de cada time */
+      flex-shrink: 0; /* Evita que o time-block encolha */
     }
-    .team-block.team1 { order: 1; } /* Força a ordem para T1 */
-    .team-block.team2 { order: 3; } /* Força a ordem para T2 */
 
     .logo-central {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 0 10px; /* Espaço dos lados da logo central */
-      position: relative;
-      flex-shrink: 0;
-      order: 2; /* Força a ordem para a logo central */
+      flex-shrink: 0; /* Não encolhe */
+      padding: 0 5px;
     }
     .logo-central img {
-      width: 60px; /* Tamanho da logo central */
-      height: 60px;
+      width: 50px; /* Tamanho da logo central */
+      height: 50px;
       object-fit: contain;
-      margin-bottom: 5px;
+      margin-bottom: 3px;
     }
     .separador-x {
-      font-size: 28px;
+      font-size: 24px; /* Tamanho menor do 'X' */
       font-weight: bold;
       color: var(--placar-text);
     }
 
     .escudo {
-      width: 35px; /* Tamanho dos escudos dos times */
-      height: 35px;
+      width: 30px; /* Tamanho dos escudos dos times */
+      height: 30px;
       object-fit: contain;
+      flex-shrink: 0;
     }
     .placar-numero {
-      font-size: 36px;
+      font-size: 32px; /* Placar um pouco menor */
       font-weight: bold;
-      margin: 0 5px;
-      min-width: 40px; /* Garante que o placar não encolha demais */
+      margin: 0 3px;
+      min-width: 35px; /* Garante que o placar não encolha demais */
       text-align: center;
+      flex-shrink: 0;
     }
 
-    /* Estilos para os nomes dos times */
     .team-name-input,
     .team-name-display {
-      width: 100px; /* Largura padrão para o nome */
-      padding: 5px 8px;
-      font-size: 18px;
+      width: 90px; /* Largura padrão para o nome, um pouco menor */
+      padding: 4px 6px;
+      font-size: 16px; /* Fonte menor para caber */
       text-align: center;
       background: #333;
       color: white;
       border: 1px solid #555;
-      border-radius: 5px;
-      box-sizing: border-box; /* Inclui padding e border na largura */
-      white-space: nowrap; /* Evita quebra de linha do nome */
-      overflow: hidden; /* Esconde texto extra se muito longo */
-      text-overflow: ellipsis; /* Adiciona "..." se o texto for cortado */
+      border-radius: 4px;
+      box-sizing: border-box;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-grow: 1; /* Permite que o nome cresça se houver espaço */
     }
     .team-name-display {
-        background: transparent; /* Apenas para o overlay */
+        background: transparent;
         border: none;
     }
 
@@ -162,55 +140,67 @@
     .score-controls {
       display: flex;
       align-items: center;
-      margin: 0 5px;
+      margin: 0 2px; /* Espaço menor */
+      flex-shrink: 0;
     }
     .score-controls button {
-      padding: 5px 8px;
-      font-size: 14px;
-      margin: 0 2px;
+      padding: 4px 7px; /* Botões menores */
+      font-size: 13px; /* Fonte menor */
+      margin: 0 1px;
+    }
+
+    /* Linha de tempo, período e cartões */
+    .placar-info-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%;
+      margin-top: 8px; /* Espaço do placar principal */
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      flex-wrap: wrap; /* Permite quebra de linha em telas pequenas */
     }
 
     #cronometro,
     #periodoDisplay {
-      font-size: 28px;
+      font-size: 24px; /* Cronômetro menor */
       font-weight: bold;
       color: var(--placar-timer-color);
       background: rgba(0, 0, 0, 0.5);
-      padding: 5px 15px;
-      border-radius: 5px;
+      padding: 4px 12px;
+      border-radius: 4px;
+      flex-shrink: 0;
     }
     #periodoDisplay {
-        font-size: 24px;
+        font-size: 20px; /* Período menor */
         background: rgba(0, 0, 0, 0.3);
         color: var(--placar-text);
     }
 
-
     .cards-display {
       display: flex;
-      margin-top: 5px;
-      min-height: 25px;
+      margin-top: 0;
+      min-height: 22px; /* Altura menor */
       align-items: center;
       justify-content: center;
-      width: 150px; /* Largura para os cartões */
+      width: 120px; /* Largura menor para os cartões */
+      flex-shrink: 0;
     }
     .card-indicator {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-      margin: 0 2px;
+      width: 18px; /* Cartões menores */
+      height: 18px;
+      border-radius: 3px;
+      margin: 0 1px;
       border: 1px solid #555;
     }
-    .card-indicator.yellow-card { background-color: #ffc107; }
-    .card-indicator.red-card { background-color: #dc3545; }
 
     /* Estilos de Pênaltis */
     .penalty-shootout-placar {
       display: none;
-      flex-direction: column; /* Muda para coluna para melhor organização */
+      flex-direction: column;
       align-items: center;
       width: 100%;
-      gap: 15px;
+      gap: 10px; /* Espaço menor */
       padding: 10px 0;
     }
     .penalty-shootout-placar.active {
@@ -218,29 +208,54 @@
     }
     .penalty-team-display {
       display: flex;
-      align-items: center; /* Alinha horizontalmente escudo e bolinhas */
-      gap: 10px;
-      min-width: 250px;
+      align-items: center;
+      gap: 8px; /* Espaço menor */
+      min-width: 200px; /* Largura mínima menor */
       justify-content: center;
     }
     .penalty-team-display .escudo {
-      width: 50px; /* Escudo maior nos pênaltis */
-      height: 50px;
+      width: 40px; /* Escudo menor nos pênaltis */
+      height: 40px;
     }
     .penalty-balls-container {
       display: flex;
-      gap: 8px;
+      gap: 6px; /* Bolinhas mais próximas */
     }
     .penalty-ball {
-      width: 25px;
-      height: 25px;
+      width: 22px; /* Bolinhas menores */
+      height: 22px;
       border-radius: 50%;
       border: 2px solid white;
       background-color: transparent;
     }
-    .penalty-ball.green { background-color: #28a745; border-color: #28a745; }
-    .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
+    .goal-animation {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 80px; /* Animação um pouco menor */
+      font-weight: bold;
+      color: #0ff;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 8px rgba(0, 255, 255, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      animation-fill-mode: forwards;
+      z-index: 1000;
+      pointer-events: none;
+      bottom: -90px; /* Ajusta a posição para aparecer abaixo do placar */
+      white-space: nowrap;
+    }
+
+    @keyframes fadeInScaleOut {
+      0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+      20% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+      80% { opacity: 1; transform: translateX(-50%) scale(1); }
+      100% { opacity: 0; transform: translateX(-50%) scale(1.2); visibility: hidden;}
+    }
+
+    .goal-animation.active {
+      animation: fadeInScaleOut 2s ease-out;
+    }
 
     /* Painel de Controle (visível APENAS no navegador do streamer) */
     .control-panel-container {
@@ -307,43 +322,12 @@
       padding-bottom: 5px;
       text-align: center;
     }
-
-    .goal-animation {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 100px;
-      font-weight: bold;
-      color: #0ff;
-      text-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 10px rgba(0, 255, 255, 0.5);
-      opacity: 0;
-      visibility: hidden;
-      animation-fill-mode: forwards;
-      z-index: 1000;
-      pointer-events: none;
-      bottom: -110px;
-      white-space: nowrap;
-    }
-
-    @keyframes fadeInScaleOut {
-      0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
-      20% { opacity: 1; transform: translateX(-50%) scale(1.1); }
-      80% { opacity: 1; transform: translateX(-50%) scale(1); }
-      100% { opacity: 0; transform: translateX(-50%) scale(1.2); visibility: hidden;}
-    }
-
-    .goal-animation.active {
-      animation: fadeInScaleOut 2s ease-out;
-    }
   </style>
 </head>
 <body>
-  <!-- Pré-visualização do Placar no Controlador -->
   <div class="visual-overlay-container" id="visualOverlayContainer">
     <div class="placar" id="placarPrincipal">
-      <!-- LINHA SUPERIOR: Logo T1 - Nome T1 - Placar T1 - Minha Logo - Placar T2 - Nome T2 - Logo T2 -->
-      <div class="placar-top-row" id="normalPlacarContent">
-        <!-- Time 1 -->
+      <div class="placar-main-line" id="normalPlacarContent">
         <div class="team-block team1">
             <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
             <input type="text" id="nome1" placeholder="Time 1" class="team-name-input">
@@ -354,13 +338,11 @@
             </div>
         </div>
 
-        <!-- Centro: Minha Logo e 'X' -->
         <div class="logo-central">
           <img id="logoOverlay" src="" alt="Sua Logo">
           <span class="separador-x">X</span>
         </div>
 
-        <!-- Time 2 -->
         <div class="team-block team2">
             <div class="score-controls">
                 <button class="btn" onclick="alterarPlacar('2', -1)">-</button>
@@ -372,19 +354,13 @@
         </div>
       </div>
 
-      <!-- LINHA DO TEMPO/PERÍODO -->
-      <div class="placar-time-period-row">
+      <div class="placar-info-line" id="placarInfoLine">
         <div id="cronometro">00:00</div>
         <div id="periodoDisplay" class="periodo">1º Tempo</div>
-      </div>
-
-      <!-- LINHA DOS CARTÕES -->
-      <div class="placar-cards-row">
         <div id="cardsDisplay1" class="cards-display"></div>
         <div id="cardsDisplay2" class="cards-display"></div>
       </div>
 
-      <!-- Placar de Pênaltis (quando ativo) -->
       <div class="penalty-shootout-placar" id="penaltyPlacarContent">
         <div class="penalty-team-display">
           <img id="escudoPenalty1" class="escudo" src="" alt="Escudo Time 1">
@@ -403,7 +379,6 @@
     </div>
   </div>
 
-  <!-- Painel de Controle (visível APENAS no navegador do controlador) -->
   <div class="control-panel-container" id="controlPanelContainer">
     <div class="painel">
       <div>
@@ -473,7 +448,6 @@
     </div>
   </div>
 
-  <!-- Incluir o Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -492,7 +466,8 @@
     // Inicialize o Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const database = app.database();
-    const overlayStateRef = database.ref('overlayState'); // 'overlayState' será o nome do seu objeto no banco de dados
+    const overlayStateRef = database.ref('overlayState');
+    const goalAnimationTriggerRef = database.ref('goalAnimationTrigger');
 
     let overlayState = {
       placar: { '1': 0, '2': 0 },
@@ -556,7 +531,6 @@
     function saveState() {
       overlayStateRef.set(overlayState)
         .then(() => {
-          //console.log("Estado salvo no Firebase com sucesso!");
           renderUI();
         })
         .catch((error) => {
@@ -587,19 +561,20 @@
       applyPlacarTheme();
 
       const normalContent = document.getElementById('normalPlacarContent');
-      const timePeriodRow = document.querySelector('.placar-time-period-row');
-      const cardsRow = document.querySelector('.placar-cards-row');
+      const infoLine = document.getElementById('placarInfoLine');
       const penaltyContent = document.getElementById('penaltyPlacarContent');
+      const goalAnimation = document.getElementById('goalAnimation');
+
       if (overlayState.penaltyModeActive) {
         normalContent.style.display = 'none';
-        timePeriodRow.style.display = 'none';
-        cardsRow.style.display = 'none';
+        infoLine.style.display = 'none';
+        goalAnimation.style.display = 'none'; /* Esconde a animação de gol no modo pênalti */
         penaltyContent.classList.add('active');
       } else {
         normalContent.style.display = 'flex';
-        timePeriodRow.style.display = 'flex';
-        cardsRow.style.display = 'flex';
+        infoLine.style.display = 'flex';
         penaltyContent.classList.remove('active');
+        goalAnimation.style.display = 'block'; /* Mostra a animação de gol no modo normal */
       }
 
       const visualContainer = document.getElementById('visualOverlayContainer');
@@ -822,4 +797,4 @@
     }
   </script>
 </body>
-        </html>
+  </html>
