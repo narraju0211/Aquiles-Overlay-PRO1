@@ -338,9 +338,12 @@
   </style>
 </head>
 <body>
+  <!-- Pré-visualização do Placar no Controlador -->
   <div class="visual-overlay-container" id="visualOverlayContainer">
     <div class="placar" id="placarPrincipal">
+      <!-- LINHA SUPERIOR: Logo T1 - Nome T1 - Placar T1 - Minha Logo - Placar T2 - Nome T2 - Logo T2 -->
       <div class="placar-top-row" id="normalPlacarContent">
+        <!-- Time 1 -->
         <div class="team-block team1">
             <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
             <input type="text" id="nome1" placeholder="Time 1" class="team-name-input">
@@ -351,11 +354,13 @@
             </div>
         </div>
 
+        <!-- Centro: Minha Logo e 'X' -->
         <div class="logo-central">
           <img id="logoOverlay" src="" alt="Sua Logo">
           <span class="separador-x">X</span>
         </div>
 
+        <!-- Time 2 -->
         <div class="team-block team2">
             <div class="score-controls">
                 <button class="btn" onclick="alterarPlacar('2', -1)">-</button>
@@ -367,16 +372,19 @@
         </div>
       </div>
 
+      <!-- LINHA DO TEMPO/PERÍODO -->
       <div class="placar-time-period-row">
         <div id="cronometro">00:00</div>
         <div id="periodoDisplay" class="periodo">1º Tempo</div>
       </div>
 
+      <!-- LINHA DOS CARTÕES -->
       <div class="placar-cards-row">
         <div id="cardsDisplay1" class="cards-display"></div>
         <div id="cardsDisplay2" class="cards-display"></div>
       </div>
 
+      <!-- Placar de Pênaltis (quando ativo) -->
       <div class="penalty-shootout-placar" id="penaltyPlacarContent">
         <div class="penalty-team-display">
           <img id="escudoPenalty1" class="escudo" src="" alt="Escudo Time 1">
@@ -395,6 +403,7 @@
     </div>
   </div>
 
+  <!-- Painel de Controle (visível APENAS no navegador do controlador) -->
   <div class="control-panel-container" id="controlPanelContainer">
     <div class="painel">
       <div>
@@ -464,7 +473,27 @@
     </div>
   </div>
 
+  <!-- Incluir o Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <script>
+    // ** SEU FIREBASE CONFIG ESTÁ AQUI **
+    const firebaseConfig = {
+      apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
+      authDomain: "aquilesplacarpro.firebaseapp.com",
+      databaseURL: "https://aquilesplacarpro-default-rtdb.firebaseio.com",
+      projectId: "aquilesplacarpro",
+      storageBucket: "aquilesplacarpro.firebasestorage.app",
+      messagingSenderId: "922321609151",
+      appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
+    };
+
+    // Inicialize o Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = app.database();
+    const overlayStateRef = database.ref('overlayState'); // 'overlayState' será o nome do seu objeto no banco de dados
+
     let overlayState = {
       placar: { '1': 0, '2': 0 },
       cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
@@ -473,7 +502,7 @@
       timerRunning: false,
       placarThemeIndex: 0,
       penaltyModeActive: false,
-      currentPeriod: 1, // Novo: Período atual (1, 2, 3, etc.)
+      currentPeriod: 1,
       nome1: '',
       nome2: '',
       escudo1: '',
@@ -497,39 +526,42 @@
         2: '2º Tempo',
         3: 'Prorrogação',
         4: 'Intervalo',
-        5: 'Tempo Extra' // Exemplo, adicione mais se precisar
+        5: 'Tempo Extra'
     };
 
+    document.addEventListener('DOMContentLoaded', initializeFirebaseAndLoadState);
 
-    document.addEventListener('DOMContentLoaded', loadStateAndRender);
+    function initializeFirebaseAndLoadState() {
+        overlayStateRef.once('value', (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                overlayState = { ...overlayState, ...data };
+            }
+            renderUI();
+            if (overlayState.timerRunning && !timerInterval) {
+                startTimer(false);
+            }
+        });
 
-    function saveState() {
-      localStorage.setItem('overlayState', JSON.stringify(overlayState));
-      renderUI(); // Renderiza as mudanças na pré-visualização do controlador
+        document.getElementById('nome1').addEventListener('input', (e) => {
+            overlayState.nome1 = e.target.value;
+            saveState();
+        });
+        document.getElementById('nome2').addEventListener('input', (e) => {
+            overlayState.nome2 = e.target.value;
+            saveState();
+        });
     }
 
-    function loadStateAndRender() {
-      const storedState = localStorage.getItem('overlayState');
-      if (storedState) {
-        overlayState = JSON.parse(storedState);
-      }
-      if (timerInterval) {
-          clearInterval(timerInterval);
-          timerInterval = null;
-      }
-      if (overlayState.timerRunning) {
-          startTimer(false);
-      }
-      renderUI();
-
-      document.getElementById('nome1').addEventListener('input', (e) => {
-        overlayState.nome1 = e.target.value;
-        saveState();
-      });
-      document.getElementById('nome2').addEventListener('input', (e) => {
-        overlayState.nome2 = e.target.value;
-        saveState();
-      });
+    function saveState() {
+      overlayStateRef.set(overlayState)
+        .then(() => {
+          //console.log("Estado salvo no Firebase com sucesso!");
+          renderUI();
+        })
+        .catch((error) => {
+          console.error("Erro ao salvar no Firebase: ", error);
+        });
     }
 
     function renderUI() {
@@ -559,12 +591,12 @@
       const cardsRow = document.querySelector('.placar-cards-row');
       const penaltyContent = document.getElementById('penaltyPlacarContent');
       if (overlayState.penaltyModeActive) {
-        normalContent.style.display = 'none'; // Esconde a linha principal
-        timePeriodRow.style.display = 'none'; // Esconde tempo/periodo
-        cardsRow.style.display = 'none'; // Esconde cartoes
+        normalContent.style.display = 'none';
+        timePeriodRow.style.display = 'none';
+        cardsRow.style.display = 'none';
         penaltyContent.classList.add('active');
       } else {
-        normalContent.style.display = 'flex'; // Mostra a linha principal
+        normalContent.style.display = 'flex';
         timePeriodRow.style.display = 'flex';
         cardsRow.style.display = 'flex';
         penaltyContent.classList.remove('active');
@@ -600,7 +632,6 @@
       document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
     }
 
-    // FUNÇÃO ATUALIZADA PARA REDIMENSIONAR IMAGEM
     function loadEscudo(event, time) {
       const file = event.target.files[0];
       if (file) {
@@ -608,11 +639,10 @@
         reader.onload = function(e) {
           const img = new Image();
           img.onload = function() {
-            const MAX_DIMENSION = 150; // Dimensão máxima (largura ou altura) para redimensionamento
+            const MAX_DIMENSION = 150;
             let width = img.width;
             let height = img.height;
 
-            // Redimensiona apenas se a imagem for maior que a dimensão máxima
             if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
               if (width > height) {
                 height = Math.round(height * (MAX_DIMENSION / width));
@@ -629,7 +659,6 @@
             canvas.height = height;
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Usa 'image/png' para preservar transparência, se houver
             overlayState['escudo' + time] = canvas.toDataURL('image/png');
             saveState();
           };
@@ -639,7 +668,6 @@
       }
     }
 
-    // FUNÇÃO ATUALIZADA PARA REDIMENSIONAR IMAGEM
     function loadLogo(event) {
       const file = event.target.files[0];
       if (file) {
@@ -647,7 +675,7 @@
         reader.onload = function(e) {
           const img = new Image();
           img.onload = function() {
-            const MAX_DIMENSION = 150; // Dimensão máxima para a logo central
+            const MAX_DIMENSION = 150;
             let width = img.width;
             let height = img.height;
 
@@ -682,7 +710,9 @@
         timerInterval = setInterval(() => {
           overlayState.seconds++;
           if (save) saveState();
-          else document.getElementById('cronometro').innerText = formatTime(overlayState.seconds);
+          else {
+              document.getElementById('cronometro').innerText = formatTime(overlayState.seconds);
+          }
         }, 1000);
       }
       if (save) saveState();
@@ -708,10 +738,10 @@
     }
 
     function nextPeriod() {
-        if (overlayState.currentPeriod < 5) { // Limite de períodos, ajuste se precisar
+        if (overlayState.currentPeriod < 5) {
             overlayState.currentPeriod++;
         } else {
-            overlayState.currentPeriod = 1; // Volta ao primeiro se passar do limite
+            overlayState.currentPeriod = 1;
         }
         saveState();
     }
@@ -772,7 +802,14 @@
     }
 
     function showGoalAnimation() {
-      localStorage.setItem('goalAnimationTrigger', Date.now().toString());
+      database.ref('goalAnimationTrigger').set(Date.now())
+        .then(() => {
+          setTimeout(() => {
+            database.ref('goalAnimationTrigger').remove();
+          }, 2500);
+        })
+        .catch(error => console.error("Erro ao disparar animação de gol:", error));
+
       const goalElement = document.getElementById('goalAnimation');
       goalElement.classList.remove('active');
       void goalElement.offsetWidth;
@@ -785,4 +822,4 @@
     }
   </script>
 </body>
-          </html>
+        </html>
