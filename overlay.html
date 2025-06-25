@@ -61,6 +61,8 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Sombra mais evidente */
+      min-height: 150px; /* Garante que o placar tenha altura mesmo com a animação */
+      justify-content: center; /* Centraliza o conteúdo (seja placar ou gol) */
     }
 
     .placar-main-line {
@@ -190,7 +192,7 @@
     .card-indicator.red-card { background-color: #dc3545; }
 
     .penalty-shootout-placar {
-      display: none;
+      display: none; /* Inicia oculto */
       flex-direction: column;
       align-items: center;
       width: 100%;
@@ -227,9 +229,10 @@
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
     .goal-animation {
-      position: absolute;
+      position: absolute; /* Posição absoluta para sobrepor */
+      top: 50%; /* Centraliza verticalmente */
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%); /* Ajuste fino para centralização */
       font-size: 80px; /* GOL! maior */
       font-weight: 900; /* Mais negrito */
       color: #0ff;
@@ -239,19 +242,36 @@
       animation-fill-mode: forwards;
       z-index: 1000;
       pointer-events: none;
-      bottom: -90px; /* Mais para baixo */
       white-space: nowrap;
+      display: flex; /* Para centralizar o texto dentro do div */
+      align-items: center;
+      justify-content: center;
+      width: 100%; /* Garante que o div ocupa a largura para centralização */
+      height: 100%; /* Garante que o div ocupa a altura para centralização */
     }
 
     @keyframes fadeInScaleOut {
-      0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
-      20% { opacity: 1; transform: translateX(-50%) scale(1.1); }
-      80% { opacity: 1; transform: translateX(-50%) scale(1); }
-      100% { opacity: 0; transform: translateX(-50%) scale(1.2); visibility: hidden;}
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); visibility: hidden;}
     }
 
     .goal-animation.active {
       animation: fadeInScaleOut 2.5s ease-out forwards; /* Animação um pouco mais longa */
+    }
+
+    /* Classes para controlar a visibilidade dos modos */
+    .placar-main-line.hidden,
+    .placar-cards-line.hidden,
+    .penalty-shootout-placar.hidden {
+        display: none !important; /* Força a ocultação */
+    }
+    .goal-animation.hidden {
+        display: none !important;
+    }
+    .goal-animation.active-mode { /* Nova classe para ativar o display quando for o modo ativo */
+        display: flex; /* Exibe o elemento */
     }
   </style>
 </head>
@@ -323,7 +343,7 @@
     const app = firebase.initializeApp(firebaseConfig);
     const database = app.database();
     const overlayStateRef = database.ref('overlayState');
-    const goalAnimationTriggerRef = database.ref('goalAnimationTrigger');
+    // REMOVEMOS goalAnimationTriggerRef daqui
 
     let overlayState = {
       placar: { '1': 0, '2': 0 },
@@ -333,6 +353,7 @@
       timerRunning: false,
       placarThemeIndex: 0,
       penaltyModeActive: false,
+      isGoalAnimationActive: false, // NOVO: Estado da animação de gol
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -368,14 +389,12 @@
         if (snapshot.exists()) {
           const newState = snapshot.val();
           
-          // Verificação para parar/iniciar o timer localmente
           if (newState.timerRunning && !overlayState.timerRunning) {
               startLocalTimer(newState.seconds);
           } else if (!newState.timerRunning && overlayState.timerRunning) {
               stopLocalTimer();
           }
           
-          // Atualiza o estado completo
           overlayState = newState;
           renderUI();
         }
@@ -383,22 +402,12 @@
         console.error("Erro ao ler dados do Firebase:", error);
       });
 
-      // Listener para a animação do gol. 
-      // Usamos 'child_added' ou 'value' se o valor é atualizado para algo diferente a cada trigger.
-      // O controlador envia um timestamp, então 'value' deve funcionar bem.
-      goalAnimationTriggerRef.on('value', (snapshot) => {
-        // Verifica se há um valor e se ele é diferente de null (removido)
-        if (snapshot.exists() && snapshot.val() !== null) {
-          showGoalAnimation();
-        }
-      }, (error) => {
-        console.error("Erro ao ler trigger de gol do Firebase:", error);
-      });
+      // REMOVEMOS O LISTENER PARA goalAnimationTriggerRef AQUI
     }
 
     function startLocalTimer(initialSeconds) {
         if (timerInterval) clearInterval(timerInterval);
-        overlayState.seconds = initialSeconds; // Garante que o timer comece do ponto correto
+        overlayState.seconds = initialSeconds; 
         timerInterval = setInterval(() => {
             overlayState.seconds++;
             document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds);
@@ -418,7 +427,6 @@
       document.getElementById('nome1_display').innerText = overlayState.nome1 || 'Time 1';
       document.getElementById('nome2_display').innerText = overlayState.nome2 || 'Time 2';
 
-      // Garantir que as imagens tenham um src padrão se estiverem vazias
       document.getElementById('escudo1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('escudoPenalty1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('escudo2_display').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -438,16 +446,38 @@
       const normalContent = document.getElementById('normalPlacarContent_display');
       const cardsLine = document.getElementById('placarCardsLine_display');
       const penaltyContent = document.getElementById('penaltyPlacarContent_display');
-      // Não precisamos esconder goalAnimation aqui, ela se controla pela animação CSS
+      const goalAnimation = document.getElementById('goalAnimation_display');
 
-      if (overlayState.penaltyModeActive) {
-        normalContent.style.display = 'none';
-        cardsLine.style.display = 'none';
+      // Lógica de visibilidade dos modos
+      if (overlayState.isGoalAnimationActive) {
+        normalContent.classList.add('hidden');
+        cardsLine.classList.add('hidden');
+        penaltyContent.classList.add('hidden');
+        
+        goalAnimation.classList.add('active-mode'); 
+        goalAnimation.classList.remove('hidden');
+        // Reinicia a animação se já estiver ativa ou foi recém-ativada
+        goalAnimation.classList.remove('active'); 
+        void goalAnimation.offsetWidth; // Força reflow
+        goalAnimation.classList.add('active'); 
+      } else if (overlayState.penaltyModeActive) {
+        normalContent.classList.add('hidden');
+        cardsLine.classList.add('hidden');
+        penaltyContent.classList.remove('hidden');
         penaltyContent.classList.add('active');
+
+        goalAnimation.classList.add('hidden');
+        goalAnimation.classList.remove('active-mode');
+        goalAnimation.classList.remove('active'); 
       } else {
-        normalContent.style.display = 'flex';
-        cardsLine.style.display = 'flex';
+        normalContent.classList.remove('hidden');
+        cardsLine.classList.remove('hidden');
+        penaltyContent.classList.add('hidden');
         penaltyContent.classList.remove('active');
+
+        goalAnimation.classList.add('hidden');
+        goalAnimation.classList.remove('active-mode');
+        goalAnimation.classList.remove('active');
       }
 
       const visualContainer = document.getElementById('visualOverlayContainer');
@@ -503,13 +533,6 @@
         }
         penaltyBallsContainer.appendChild(ballDiv);
       }
-    }
-
-    function showGoalAnimation() {
-      const goalElement = document.getElementById('goalAnimation_display');
-      goalElement.classList.remove('active');
-      void goalElement.offsetWidth; // Força reflow para reiniciar a animação
-      goalElement.classList.add('active');
     }
   </script>
 </body>
