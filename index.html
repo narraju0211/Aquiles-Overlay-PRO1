@@ -6,15 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --placar-bg: rgba(34, 34, 34, 0.8);
+      --placar-bg: rgba(34, 34, 34, 0.9); /* Um pouco mais opaco */
       --placar-text: white;
       --placar-border: #555;
       --placar-timer-color: #0ff;
+      --highlight-color: #0ff; /* Cor de destaque para títulos */
     }
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fonte mais moderna */
       background-color: #0d1117;
       color: white;
       display: flex;
@@ -51,15 +52,16 @@
       flex-direction: column;
       align-items: center;
       background: var(--placar-bg);
-      padding: 8px 12px;
-      border-radius: 10px;
-      margin-top: 10px;
+      padding: 10px 15px; /* Mais padding */
+      border-radius: 12px; /* Cantos mais arredondados */
+      margin-top: 15px; /* Mais margem do topo */
       width: 100%;
       box-sizing: border-box;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
       position: relative;
       overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Sombra mais evidente */
     }
 
     .placar-main-line {
@@ -67,16 +69,16 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      gap: 10px; /* Aumentando um pouco o gap entre os blocos principais */
+      gap: 15px; /* Aumentando um pouco mais o gap */
       flex-wrap: nowrap;
     }
 
     .team-block {
       display: flex;
       align-items: center;
-      gap: 5px; /* Espaço entre escudo, nome e placar */
+      gap: 8px; /* Espaço entre escudo, nome e placar */
       flex-shrink: 1;
-      min-width: 130px; /* Largura mínima ligeiramente maior */
+      min-width: 150px; /* Largura mínima ligeiramente maior */
       justify-content: center;
     }
 
@@ -85,13 +87,12 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      padding: 0 10px; /* Mais padding lateral para centralizar melhor */
-      /* Ajuste a margem para aproximar placares da logo */
-      margin: 0 5px; 
+      padding: 0 15px; /* Mais padding lateral para centralizar melhor */
+      min-width: 80px; /* Largura mínima para a logo */
     }
     .logo-central img {
-      width: 60px; /* Tamanho maior da logo central */
-      height: 60px;
+      width: 70px; /* Tamanho maior da logo central */
+      height: 70px;
       object-fit: contain;
     }
     .separador-x {
@@ -99,52 +100,56 @@
     }
 
     .escudo {
-      width: 35px; /* Escudos maiores */
-      height: 35px;
+      width: 45px; /* Escudos ainda maiores */
+      height: 45px;
       object-fit: contain;
       flex-shrink: 0;
+      filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5)); /* Pequena sombra no escudo */
     }
     .placar-numero {
-      font-size: 30px; /* Placar ligeiramente menor */
+      font-size: 38px; /* Placar maior */
       font-weight: bold;
-      margin: 0 5px;
-      min-width: 35px;
+      margin: 0 8px;
+      min-width: 45px;
       text-align: center;
       flex-shrink: 0;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.6); /* Sombra no número */
     }
 
     .team-name-input,
     .team-name-display {
-      width: 90px;
-      padding: 3px 5px;
-      font-size: 14px;
+      width: 100px; /* Largura um pouco maior para o nome */
+      padding: 4px 6px;
+      font-size: 15px;
       text-align: center;
       background: #333;
       color: white;
       border: 1px solid #555;
-      border-radius: 4px;
+      border-radius: 6px;
       box-sizing: border-box;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       flex-grow: 1;
-      min-width: 60px;
+      min-width: 70px;
     }
     .team-name-display {
         background: transparent;
         border: none;
+        font-weight: 500; /* Levemente mais negrito */
     }
 
     .score-controls {
       display: flex;
       align-items: center;
-      margin: 0 2px;
+      margin: 0 4px; /* Mais espaçamento */
       flex-shrink: 0;
     }
     .score-controls button {
-      padding: 3px 6px;
-      font-size: 12px;
-      margin: 0 1px;
+      padding: 4px 8px; /* Botões um pouco maiores */
+      font-size: 13px;
+      margin: 0 2px;
+      border-radius: 6px;
     }
 
     .time-period-block {
@@ -152,24 +157,25 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
+      gap: 4px; /* Mais espaço entre timer e período */
       flex-shrink: 0;
-      padding: 0 5px;
+      padding: 0 8px;
     }
 
     #cronometro,
     #periodoDisplay {
-      font-size: 20px;
+      font-size: 22px; /* Cronômetro maior */
       font-weight: bold;
       color: var(--placar-timer-color);
-      background: rgba(0, 0, 0, 0.5);
-      padding: 3px 10px;
-      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.6); /* Fundo mais escuro */
+      padding: 4px 12px;
+      border-radius: 6px;
       white-space: nowrap;
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
     #periodoDisplay {
-        font-size: 16px;
-        background: rgba(0, 0, 0, 0.3);
+        font-size: 17px; /* Período maior */
+        background: rgba(0, 0, 0, 0.4);
         color: var(--placar-text);
     }
 
@@ -178,27 +184,28 @@
       align-items: center;
       justify-content: space-around;
       width: 100%;
-      margin-top: 5px;
-      padding-top: 5px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 8px; /* Mais margem superior */
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15); /* Borda mais visível */
       flex-wrap: nowrap;
     }
 
     .cards-display {
       display: flex;
-      min-height: 20px;
+      min-height: 25px; /* Altura mínima maior */
       align-items: center;
       justify-content: center;
-      width: 100px;
+      width: 120px; /* Largura um pouco maior */
       flex-shrink: 0;
-      gap: 1px;
+      gap: 2px;
     }
     .card-indicator {
-      width: 16px;
-      height: 16px;
-      border-radius: 3px;
-      margin: 0 1px;
-      border: 1px solid #555;
+      width: 20px; /* Cartões maiores */
+      height: 20px;
+      border-radius: 4px;
+      margin: 0 2px;
+      border: 1px solid #777; /* Borda mais escura */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Sombra nos cartões */
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
@@ -208,8 +215,8 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
-      gap: 8px;
-      padding: 8px 0;
+      gap: 10px; /* Mais espaço entre elementos dos pênaltis */
+      padding: 10px 0;
     }
     .penalty-shootout-placar.active {
       display: flex;
@@ -217,40 +224,41 @@
     .penalty-team-display {
       display: flex;
       align-items: center;
-      gap: 6px;
-      min-width: 180px;
+      gap: 8px;
+      min-width: 200px; /* Largura mínima maior */
       justify-content: center;
     }
     .penalty-team-display .escudo {
-      width: 40px; /* Ligeiramente maior nos pênaltis também */
-      height: 40px;
+      width: 50px; /* Escudos maiores nos pênaltis */
+      height: 50px;
     }
     .penalty-balls-container {
       display: flex;
-      gap: 5px;
+      gap: 8px; /* Mais espaço entre as bolinhas */
     }
     .penalty-ball {
-      width: 20px;
-      height: 20px;
+      width: 25px; /* Bolinhas maiores */
+      height: 25px;
       border-radius: 50%;
       border: 2px solid white;
       background-color: transparent;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
 
     .goal-animation {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 70px;
-      font-weight: bold;
+      font-size: 80px; /* GOL! maior */
+      font-weight: 900; /* Mais negrito */
       color: #0ff;
-      text-shadow: 0 0 12px rgba(0, 255, 255, 0.8), 0 0 6px rgba(0, 255, 255, 0.5);
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 8px rgba(0, 255, 255, 0.6); /* Brilho mais intenso */
       opacity: 0;
       visibility: hidden;
       animation-fill-mode: forwards;
       z-index: 1000;
       pointer-events: none;
-      bottom: -80px;
+      bottom: -90px; /* Mais para baixo */
       white-space: nowrap;
     }
 
@@ -262,33 +270,35 @@
     }
 
     .goal-animation.active {
-      animation: fadeInScaleOut 2s ease-out;
+      animation: fadeInScaleOut 2.5s ease-out forwards; /* Animação um pouco mais longa */
     }
 
     .control-panel-container {
         width: 100%;
         max-width: 900px;
-        margin-top: 20px;
+        margin-top: 30px; /* Mais espaço do placar */
         z-index: 1;
     }
 
     .painel {
-      padding: 15px;
+      padding: 20px; /* Mais padding no painel */
       background: #1c1c1c;
-      border-radius: 10px;
+      border-radius: 12px;
       box-sizing: border-box;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-around;
-      gap: 20px;
+      gap: 25px; /* Mais espaço entre as seções */
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); /* Sombra mais forte */
     }
     .painel > div {
-      flex: 1 1 calc(50% - 20px);
-      min-width: 300px;
+      flex: 1 1 calc(50% - 25px);
+      min-width: 320px; /* Largura mínima dos blocos do painel */
       background: #282828;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      padding: 18px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      border: 1px solid #3a3a3a; /* Borda sutil */
     }
     @media (max-width: 768px) {
       .painel > div {
@@ -297,17 +307,23 @@
     }
 
     .btn {
-      padding: 8px 15px;
-      margin: 5px;
+      padding: 10px 18px; /* Botões maiores e mais clicáveis */
+      margin: 6px;
       font-size: 18px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       background: #007bff;
       color: white;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.3s ease, transform 0.1s ease;
     }
-    .btn:hover { background: #0056b3; }
+    .btn:hover { 
+      background: #0056b3; 
+      transform: translateY(-1px); /* Pequeno efeito hover */
+    }
+    .btn:active {
+      transform: translateY(1px); /* Efeito de clique */
+    }
     .btn.red { background: #dc3545; }
     .btn.red:hover { background: #c82333; }
     .btn.yellow { background: #ffc107; color: black; }
@@ -321,13 +337,14 @@
 
     .section-title {
       margin-top: 10px;
-      margin-bottom: 15px;
+      margin-bottom: 18px; /* Mais espaço após o título */
       font-weight: bold;
-      color: #0ff;
-      font-size: 20px;
-      border-bottom: 1px solid #0ff;
-      padding-bottom: 5px;
+      color: var(--highlight-color); /* Usando a cor de destaque */
+      font-size: 22px; /* Título maior */
+      border-bottom: 2px solid var(--highlight-color); /* Borda mais grossa */
+      padding-bottom: 8px;
       text-align: center;
+      text-shadow: 0 0 8px rgba(0, 255, 255, 0.3); /* Sombra no título */
     }
   </style>
 </head>
@@ -497,11 +514,11 @@
 
     let timerInterval;
     const placarThemes = [
-      { bg: 'rgba(34, 34, 34, 0.8)', text: 'white', border: '#555', timerColor: '#0ff' },
-      { bg: 'rgba(0, 123, 255, 0.8)', text: 'white', border: '#0056b3', timerColor: '#fff' },
-      { bg: 'rgba(40, 167, 69, 0.8)', text: 'white', border: '#218838', timerColor: '#fff' },
-      { bg: 'rgba(220, 53, 69, 0.8)', text: 'white', border: '#c82333', timerColor: '#fff' },
-      { bg: 'rgba(255, 193, 7, 0.8)', text: 'black', border: '#e0a800', timerColor: '#333' }
+      { bg: 'rgba(34, 34, 34, 0.9)', text: 'white', border: '#555', timerColor: '#0ff' }, // Tema padrão
+      { bg: 'rgba(0, 123, 255, 0.9)', text: 'white', border: '#0056b3', timerColor: '#fff' }, // Azul
+      { bg: 'rgba(40, 167, 69, 0.9)', text: 'white', border: '#218838', timerColor: '#fff' }, // Verde
+      { bg: 'rgba(220, 53, 69, 0.9)', text: 'white', border: '#c82333', timerColor: '#fff' }, // Vermelho
+      { bg: 'rgba(255, 193, 7, 0.9)', text: 'black', border: '#e0a800', timerColor: '#333' } // Amarelo
     ];
 
     const periodNames = {
@@ -523,7 +540,8 @@
             }
             renderUI();
             if (overlayState.timerRunning && !timerInterval) {
-                startTimer(false);
+                // Inicia o timer sem salvar novamente o estado inicial no Firebase
+                startTimer(false); 
             }
         });
 
@@ -553,13 +571,14 @@
       document.getElementById('nome1').value = overlayState.nome1;
       document.getElementById('nome2').value = overlayState.nome2;
 
-      document.getElementById('escudo1').src = overlayState.escudo1;
-      document.getElementById('escudoPenalty1').src = overlayState.escudo1;
-      document.getElementById('escudo2').src = overlayState.escudo2;
-      document.getElementById('escudoPenalty2').src = overlayState.escudo2;
+      // Garantir que as imagens tenham um src padrão se estiverem vazias
+      document.getElementById('escudo1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // Imagem transparente 1x1
+      document.getElementById('escudoPenalty1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      document.getElementById('escudo2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      document.getElementById('escudoPenalty2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
-      document.getElementById('logoOverlay').src = overlayState.logoOverlay;
-      document.getElementById('logoOverlayPenalty').src = overlayState.logoOverlay;
+      document.getElementById('logoOverlay').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      document.getElementById('logoOverlayPenalty').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
       renderCards('1');
       renderCards('2');
@@ -577,13 +596,15 @@
       if (overlayState.penaltyModeActive) {
         normalContent.style.display = 'none';
         cardsLine.style.display = 'none';
-        goalAnimation.style.display = 'none';
+        // A animação de gol pode aparecer mesmo em modo pênalti se for disparada
+        // goalAnimation.style.display = 'none'; 
         penaltyContent.classList.add('active');
       } else {
         normalContent.style.display = 'flex';
         cardsLine.style.display = 'flex';
         penaltyContent.classList.remove('active');
-        goalAnimation.style.display = 'block';
+        // A animação de gol pode aparecer sempre, então não forçamos display block aqui
+        // goalAnimation.style.display = 'block'; 
       }
 
       const visualContainer = document.getElementById('visualOverlayContainer');
@@ -614,6 +635,7 @@
       document.documentElement.style.setProperty('--placar-text', theme.text);
       document.documentElement.style.setProperty('--placar-border', theme.border);
       document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
+      document.documentElement.style.setProperty('--highlight-color', theme.timerColor); // O título também usa a cor do timer
     }
 
     function loadEscudo(event, time) {
@@ -623,10 +645,11 @@
         reader.onload = function(e) {
           const img = new Image();
           img.onload = function() {
-            const MAX_DIMENSION = 150;
+            const MAX_DIMENSION = 200; // Aumentado para melhor qualidade para escudos maiores
             let width = img.width;
             let height = img.height;
 
+            // Redimensiona se for maior que a dimensão máxima
             if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
               if (width > height) {
                 height = Math.round(height * (MAX_DIMENSION / width));
@@ -659,7 +682,7 @@
         reader.onload = function(e) {
           const img = new Image();
           img.onload = function() {
-            const MAX_DIMENSION = 150;
+            const MAX_DIMENSION = 200; // Aumentado para melhor qualidade
             let width = img.width;
             let height = img.height;
 
@@ -693,8 +716,11 @@
         overlayState.timerRunning = true;
         timerInterval = setInterval(() => {
           overlayState.seconds++;
-          if (save) saveState();
-          else {
+          // Apenas atualiza o display no controlador se não for o primeiro carregamento
+          // e o save for true, para evitar múltiplos saves e loops
+          if (save) {
+              saveState();
+          } else { 
               document.getElementById('cronometro').innerText = formatTime(overlayState.seconds);
           }
         }, 1000);
@@ -725,7 +751,7 @@
         if (overlayState.currentPeriod < 5) {
             overlayState.currentPeriod++;
         } else {
-            overlayState.currentPeriod = 1;
+            overlayState.currentPeriod = 1; // Volta para o primeiro período se já estiver no último
         }
         saveState();
     }
@@ -738,7 +764,7 @@
     function addCartao(time, cor) {
       // Garante que o objeto cards e a cor existam antes de incrementar
       if (!overlayState.cards[time]) {
-          overlayState.cards[time] = {};
+          overlayState.cards[time] = { 'amarelo': 0, 'vermelho': 0 };
       }
       if (!overlayState.cards[time][cor]) {
           overlayState.cards[time][cor] = 0;
@@ -750,8 +776,9 @@
     function renderCards(time) {
       const displayElement = document.getElementById('cardsDisplay' + time);
       displayElement.innerHTML = '';
-      const amarelos = (overlayState.cards[time] && overlayState.cards[time].amarelo) ? overlayState.cards[time].amarelo : 0;
-      const vermelhos = (overlayState.cards[time] && overlayState.cards[time].vermelho) ? overlayState.cards[time].vermelho : 0;
+      // Garante que os valores sejam numéricos e não undefined
+      const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
+      const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
 
       for (let i = 0; i < amarelos; i++) {
         const cardDiv = document.createElement('div');
@@ -766,7 +793,7 @@
     }
 
     function resetCards(time, cor) {
-      if (overlayState.cards[time]) {
+      if (overlayState.cards[time] && overlayState.cards[time].hasOwnProperty(cor)) {
         overlayState.cards[time][cor] = 0;
         saveState();
       }
@@ -786,11 +813,12 @@
       const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}`);
       penaltyBallsContainer.innerHTML = '';
       const penalties = overlayState.penalties[time] || []; // Garante que é um array
-      for (let i = 0; i < 5; i++) {
+
+      for (let i = 0; i < 5; i++) { // Renderiza até 5 bolinhas sempre
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
         if (penalties[i]) {
-          ballDiv.classList.add(penalties[i]);
+          ballDiv.classList.add(penalties[i]); // Adiciona 'green' ou 'red'
         }
         penaltyBallsContainer.appendChild(ballDiv);
       }
@@ -808,12 +836,14 @@
 
     function showGoalAnimation() {
       // Dispara um timestamp único para o overlay detectar a animação
-      database.ref('goalAnimationTrigger').set(Date.now())
+      // Usamos uma string única ou timestamp para garantir que o 'on' listener detecte a mudança
+      database.ref('goalAnimationTrigger').set(Date.now().toString())
         .then(() => {
           // Remove o trigger após um pequeno atraso para a animação não ficar reativando
+          // Um tempo suficiente para o overlay capturar e iniciar a animação
           setTimeout(() => {
             database.ref('goalAnimationTrigger').remove();
-          }, 2500); // tempo um pouco maior que a duração da animação
+          }, 3000); // Tempo um pouco maior que a duração da animação (2.5s)
         })
         .catch(error => console.error("Erro ao disparar animação de gol:", error));
 
