@@ -21,7 +21,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-start; /* Alinha o placar no topo */
-      padding-top: 20px; /* Espaço do topo */
+      padding-top: 15px; /* Espaço do topo */
       box-sizing: border-box;
     }
 
@@ -37,7 +37,6 @@
       background-color: transparent;
       position: relative;
       z-index: 2;
-      /* padding-bottom: 110px; Removido para a animação ficar em linha separada */
     }
 
     .visual-overlay-container.hidden-display {
@@ -51,7 +50,7 @@
       flex-direction: column;
       align-items: center;
       background: var(--placar-bg);
-      padding: 10px 15px; /* Reduzindo padding */
+      padding: 8px 12px; /* Padding interno do placar */
       border-radius: 10px;
       margin-top: 10px;
       width: 100%;
@@ -62,7 +61,7 @@
       overflow: hidden;
     }
 
-    /* Placar principal: Tudo em uma linha */
+    /* Linha principal: Escudos, Nomes, Placar, Logo Central, Cronômetro, Período */
     .placar-main-line {
       display: flex;
       align-items: center;
@@ -75,8 +74,10 @@
     .team-block {
       display: flex;
       align-items: center;
-      gap: 5px;
-      flex-shrink: 0;
+      gap: 3px;
+      flex-shrink: 1;
+      min-width: 120px;
+      justify-content: center;
     }
 
     .logo-central {
@@ -85,38 +86,39 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      padding: 0 5px;
+      padding: 0 3px;
+      min-width: 60px;
     }
     .logo-central img {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
       object-fit: contain;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
     .separador-x {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: bold;
       color: var(--placar-text);
     }
 
     .escudo {
-      width: 30px;
-      height: 30px;
+      width: 25px;
+      height: 25px;
       object-fit: contain;
       flex-shrink: 0;
     }
     .placar-numero {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: bold;
       margin: 0 3px;
-      min-width: 35px;
+      min-width: 30px;
       text-align: center;
       flex-shrink: 0;
     }
     .team-name-display {
-      width: 90px;
-      padding: 4px 6px;
-      font-size: 16px;
+      width: 80px;
+      padding: 3px 5px;
+      font-size: 14px;
       text-align: center;
       background: transparent;
       color: white;
@@ -126,48 +128,60 @@
       overflow: hidden;
       text-overflow: ellipsis;
       flex-grow: 1;
+      min-width: 50px;
     }
 
-    /* Linha de tempo, período e cartões */
-    .placar-info-line {
+    /* Bloco de tempo e período */
+    .time-period-block {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-around;
-      width: 100%;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2px;
+      flex-shrink: 0;
+      padding: 0 5px;
     }
 
     #cronometro_display,
     #periodoDisplay_display {
-      font-size: 24px;
+      font-size: 20px;
       font-weight: bold;
       color: var(--placar-timer-color);
       background: rgba(0, 0, 0, 0.5);
-      padding: 4px 12px;
+      padding: 3px 10px;
       border-radius: 4px;
-      flex-shrink: 0;
+      white-space: nowrap;
     }
     #periodoDisplay_display {
-        font-size: 20px;
+        font-size: 16px;
         background: rgba(0, 0, 0, 0.3);
         color: var(--placar-text);
     }
 
+    /* Linha de cartões */
+    .placar-cards-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      width: 100%;
+      margin-top: 5px;
+      padding-top: 5px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      flex-wrap: nowrap;
+    }
+
     .cards-display {
       display: flex;
-      margin-top: 0;
-      min-height: 22px;
+      min-height: 20px;
       align-items: center;
       justify-content: center;
-      width: 120px;
+      width: 100px;
       flex-shrink: 0;
+      gap: 1px;
     }
     .card-indicator {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       border-radius: 3px;
       margin: 0 1px;
       border: 1px solid #555;
@@ -180,8 +194,8 @@
       flex-direction: column;
       align-items: center;
       width: 100%;
-      gap: 10px;
-      padding: 10px 0;
+      gap: 8px;
+      padding: 8px 0;
     }
     .penalty-shootout-placar.active {
       display: flex;
@@ -189,21 +203,21 @@
     .penalty-team-display {
       display: flex;
       align-items: center;
-      gap: 8px;
-      min-width: 200px;
+      gap: 6px;
+      min-width: 180px;
       justify-content: center;
     }
     .penalty-team-display .escudo {
-      width: 40px;
-      height: 40px;
+      width: 35px;
+      height: 35px;
     }
     .penalty-balls-container {
       display: flex;
-      gap: 6px;
+      gap: 5px;
     }
     .penalty-ball {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       border: 2px solid white;
       background-color: transparent;
@@ -215,16 +229,16 @@
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 80px;
+      font-size: 70px;
       font-weight: bold;
       color: #0ff;
-      text-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 8px rgba(0, 255, 255, 0.5);
+      text-shadow: 0 0 12px rgba(0, 255, 255, 0.8), 0 0 6px rgba(0, 255, 255, 0.5);
       opacity: 0;
       visibility: hidden;
       animation-fill-mode: forwards;
       z-index: 1000;
       pointer-events: none;
-      bottom: -90px;
+      bottom: -80px;
       white-space: nowrap;
     }
 
@@ -260,11 +274,14 @@
             <span id="nome2_display" class="team-name-display">Time 2</span>
             <img id="escudo2_display" class="escudo" src="" alt="Escudo Time 2">
         </div>
+
+        <div class="time-period-block">
+          <div id="cronometro_display">00:00</div>
+          <div id="periodoDisplay_display" class="periodo">1º Tempo</div>
+        </div>
       </div>
 
-      <div class="placar-info-line" id="placarInfoLine_display">
-        <div id="cronometro_display">00:00</div>
-        <div id="periodoDisplay_display" class="periodo">1º Tempo</div>
+      <div class="placar-cards-line" id="placarCardsLine_display">
         <div id="cardsDisplay1_display" class="cards-display"></div>
         <div id="cardsDisplay2_display" class="cards-display"></div>
       </div>
@@ -410,19 +427,19 @@
       applyPlacarTheme();
 
       const normalContent = document.getElementById('normalPlacarContent_display');
-      const infoLine = document.getElementById('placarInfoLine_display');
+      const cardsLine = document.getElementById('placarCardsLine_display');
       const penaltyContent = document.getElementById('penaltyPlacarContent_display');
       const goalAnimation = document.getElementById('goalAnimation_display');
 
 
       if (overlayState.penaltyModeActive) {
         normalContent.style.display = 'none';
-        infoLine.style.display = 'none';
+        cardsLine.style.display = 'none';
         goalAnimation.style.display = 'none'; /* Esconde a animação de gol no modo pênalti */
         penaltyContent.classList.add('active');
       } else {
         normalContent.style.display = 'flex';
-        infoLine.style.display = 'flex';
+        cardsLine.style.display = 'flex';
         penaltyContent.classList.remove('active');
         goalAnimation.style.display = 'block'; /* Mostra a animação de gol no modo normal */
       }
