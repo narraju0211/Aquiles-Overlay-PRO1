@@ -62,6 +62,8 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Sombra mais evidente */
+      min-height: 150px; /* Garante que o placar tenha altura mesmo com a animação */
+      justify-content: center;
     }
 
     .placar-main-line {
@@ -211,7 +213,7 @@
     .card-indicator.red-card { background-color: #dc3545; }
 
     .penalty-shootout-placar {
-      display: none;
+      display: none; /* Inicia oculto */
       flex-direction: column;
       align-items: center;
       width: 100%;
@@ -246,9 +248,10 @@
     }
 
     .goal-animation {
-      position: absolute;
+      position: absolute; /* Posição absoluta para sobrepor */
+      top: 50%; /* Centraliza verticalmente */
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, -50%); /* Ajuste fino para centralização */
       font-size: 80px; /* GOL! maior */
       font-weight: 900; /* Mais negrito */
       color: #0ff;
@@ -258,19 +261,36 @@
       animation-fill-mode: forwards;
       z-index: 1000;
       pointer-events: none;
-      bottom: -90px; /* Mais para baixo */
       white-space: nowrap;
+      display: flex; /* Para centralizar o texto dentro do div */
+      align-items: center;
+      justify-content: center;
+      width: 100%; /* Garante que o div ocupa a largura para centralização */
+      height: 100%; /* Garante que o div ocupa a altura para centralização */
     }
 
     @keyframes fadeInScaleOut {
-      0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
-      20% { opacity: 1; transform: translateX(-50%) scale(1.1); }
-      80% { opacity: 1; transform: translateX(-50%) scale(1); }
-      100% { opacity: 0; transform: translateX(-50%) scale(1.2); visibility: hidden;}
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); visibility: hidden;}
     }
 
     .goal-animation.active {
       animation: fadeInScaleOut 2.5s ease-out forwards; /* Animação um pouco mais longa */
+    }
+
+    /* Classes para controlar a visibilidade dos modos */
+    .placar-main-line.hidden,
+    .placar-cards-line.hidden,
+    .penalty-shootout-placar.hidden {
+        display: none !important; /* Força a ocultação */
+    }
+    .goal-animation.hidden {
+        display: none !important;
+    }
+    .goal-animation.active-mode { /* Nova classe para ativar o display quando for o modo ativo */
+        display: flex; /* Exibe o elemento */
     }
 
     .control-panel-container {
@@ -337,9 +357,9 @@
 
     .section-title {
       margin-top: 10px;
-      margin-bottom: 18px; /* Mais espaço após o título */
+      margin-bottom: 18px; /* Más espacio después del título */
       font-weight: bold;
-      color: var(--highlight-color); /* Usando a cor de destaque */
+      color: var(--highlight-color); /* Usando la cor de destaque */
       font-size: 22px; /* Título maior */
       border-bottom: 2px solid var(--highlight-color); /* Borda mais grossa */
       padding-bottom: 8px;
@@ -411,7 +431,7 @@
         <div class="section-title">Configurações Gerais</div>
         <button class="btn purple" onclick="togglePlacarTheme()">Alternar Cor do Placar</button>
         <button class="btn dark-gray" onclick="toggleOverlayVisibility()">Ocultar Placar na Transmissão</button>
-        <button class="btn green" onclick="showGoalAnimation()">GOL!</button>
+        <button class="btn green" onclick="triggerGoalAnimation()">GOL!</button>
       </div>
 
       <div>
@@ -493,7 +513,7 @@
     const app = firebase.initializeApp(firebaseConfig);
     const database = app.database();
     const overlayStateRef = database.ref('overlayState');
-    const goalAnimationTriggerRef = database.ref('goalAnimationTrigger');
+    // REMOVEMOS goalAnimationTriggerRef daqui
 
     let overlayState = {
       placar: { '1': 0, '2': 0 },
@@ -503,6 +523,7 @@
       timerRunning: false,
       placarThemeIndex: 0,
       penaltyModeActive: false,
+      isGoalAnimationActive: false, // NOVO: Estado da animação de gol
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -513,6 +534,8 @@
     };
 
     let timerInterval;
+    let goalAnimationTimeout; // Para controlar o tempo da animação do gol
+
     const placarThemes = [
       { bg: 'rgba(34, 34, 34, 0.9)', text: 'white', border: '#555', timerColor: '#0ff' }, // Tema padrão
       { bg: 'rgba(0, 123, 255, 0.9)', text: 'white', border: '#0056b3', timerColor: '#fff' }, // Azul
@@ -536,11 +559,10 @@
         overlayStateRef.once('value', (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                Object.assign(overlayState, data); // Usar Object.assign para mesclar
+                Object.assign(overlayState, data); 
             }
             renderUI();
             if (overlayState.timerRunning && !timerInterval) {
-                // Inicia o timer sem salvar novamente o estado inicial no Firebase
                 startTimer(false); 
             }
         });
@@ -571,8 +593,7 @@
       document.getElementById('nome1').value = overlayState.nome1;
       document.getElementById('nome2').value = overlayState.nome2;
 
-      // Garantir que as imagens tenham um src padrão se estiverem vazias
-      document.getElementById('escudo1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // Imagem transparente 1x1
+      document.getElementById('escudo1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
       document.getElementById('escudoPenalty1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('escudo2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('escudoPenalty2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -593,18 +614,33 @@
       const penaltyContent = document.getElementById('penaltyPlacarContent');
       const goalAnimation = document.getElementById('goalAnimation');
 
-      if (overlayState.penaltyModeActive) {
-        normalContent.style.display = 'none';
-        cardsLine.style.display = 'none';
-        // A animação de gol pode aparecer mesmo em modo pênalti se for disparada
-        // goalAnimation.style.display = 'none'; 
-        penaltyContent.classList.add('active');
+      // Lógica de visibilidade dos modos
+      if (overlayState.isGoalAnimationActive) {
+        normalContent.classList.add('hidden');
+        cardsLine.classList.add('hidden');
+        penaltyContent.classList.add('hidden'); // Garante que pênaltis também sejam ocultados
+        
+        goalAnimation.classList.add('active-mode'); // Garante que o display esteja flex
+        goalAnimation.classList.remove('hidden'); // Garante que não esteja hidden via CSS
+        goalAnimation.classList.add('active'); // Inicia a animação CSS
+      } else if (overlayState.penaltyModeActive) {
+        normalContent.classList.add('hidden');
+        cardsLine.classList.add('hidden');
+        penaltyContent.classList.remove('hidden');
+        penaltyContent.classList.add('active'); // Se já não estiver
+
+        goalAnimation.classList.add('hidden'); // Garante que a animação de gol esteja oculta
+        goalAnimation.classList.remove('active-mode'); // Remove a classe que força display
+        goalAnimation.classList.remove('active'); // Garante que a animação pare
       } else {
-        normalContent.style.display = 'flex';
-        cardsLine.style.display = 'flex';
-        penaltyContent.classList.remove('active');
-        // A animação de gol pode aparecer sempre, então não forçamos display block aqui
-        // goalAnimation.style.display = 'block'; 
+        normalContent.classList.remove('hidden');
+        cardsLine.classList.remove('hidden');
+        penaltyContent.classList.add('hidden');
+        penaltyContent.classList.remove('active'); // Remove a classe active também
+
+        goalAnimation.classList.add('hidden'); // Garante que a animação de gol esteja oculta
+        goalAnimation.classList.remove('active-mode');
+        goalAnimation.classList.remove('active');
       }
 
       const visualContainer = document.getElementById('visualOverlayContainer');
@@ -635,7 +671,7 @@
       document.documentElement.style.setProperty('--placar-text', theme.text);
       document.documentElement.style.setProperty('--placar-border', theme.border);
       document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
-      document.documentElement.style.setProperty('--highlight-color', theme.timerColor); // O título também usa a cor do timer
+      document.documentElement.style.setProperty('--highlight-color', theme.timerColor); 
     }
 
     function loadEscudo(event, time) {
@@ -645,11 +681,10 @@
         reader.onload = function(e) {
           const img = new Image();
           img.onload = function() {
-            const MAX_DIMENSION = 200; // Aumentado para melhor qualidade para escudos maiores
+            const MAX_DIMENSION = 200; 
             let width = img.width;
             let height = img.height;
 
-            // Redimensiona se for maior que a dimensão máxima
             if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
               if (width > height) {
                 height = Math.round(height * (MAX_DIMENSION / width));
@@ -682,7 +717,7 @@
         reader.onload = function(e) {
           const img = new Image();
           img.onload = function() {
-            const MAX_DIMENSION = 200; // Aumentado para melhor qualidade
+            const MAX_DIMENSION = 200; 
             let width = img.width;
             let height = img.height;
 
@@ -716,8 +751,6 @@
         overlayState.timerRunning = true;
         timerInterval = setInterval(() => {
           overlayState.seconds++;
-          // Apenas atualiza o display no controlador se não for o primeiro carregamento
-          // e o save for true, para evitar múltiplos saves e loops
           if (save) {
               saveState();
           } else { 
@@ -751,7 +784,7 @@
         if (overlayState.currentPeriod < 5) {
             overlayState.currentPeriod++;
         } else {
-            overlayState.currentPeriod = 1; // Volta para o primeiro período se já estiver no último
+            overlayState.currentPeriod = 1; 
         }
         saveState();
     }
@@ -762,7 +795,6 @@
     }
 
     function addCartao(time, cor) {
-      // Garante que o objeto cards e a cor existam antes de incrementar
       if (!overlayState.cards[time]) {
           overlayState.cards[time] = { 'amarelo': 0, 'vermelho': 0 };
       }
@@ -776,7 +808,6 @@
     function renderCards(time) {
       const displayElement = document.getElementById('cardsDisplay' + time);
       displayElement.innerHTML = '';
-      // Garante que os valores sejam numéricos e não undefined
       const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
       const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
 
@@ -803,7 +834,7 @@
       if (!overlayState.penalties[time]) {
         overlayState.penalties[time] = [];
       }
-      if (overlayState.penalties[time].length < 5) { // Limita a 5 pênaltis
+      if (overlayState.penalties[time].length < 5) { 
         overlayState.penalties[time].push(resultado === 'convertido' ? 'green' : 'red');
         saveState();
       }
@@ -812,13 +843,13 @@
     function renderPenalties(time) {
       const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}`);
       penaltyBallsContainer.innerHTML = '';
-      const penalties = overlayState.penalties[time] || []; // Garante que é um array
+      const penalties = overlayState.penalties[time] || []; 
 
-      for (let i = 0; i < 5; i++) { // Renderiza até 5 bolinhas sempre
+      for (let i = 0; i < 5; i++) { 
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
         if (penalties[i]) {
-          ballDiv.classList.add(penalties[i]); // Adiciona 'green' ou 'red'
+          ballDiv.classList.add(penalties[i]); 
         }
         penaltyBallsContainer.appendChild(ballDiv);
       }
@@ -826,6 +857,7 @@
 
     function togglePenaltyMode(activate) {
       overlayState.penaltyModeActive = activate;
+      overlayState.isGoalAnimationActive = false; // Desativa animação de gol se ativar pênaltis
       saveState();
     }
 
@@ -834,24 +866,20 @@
         saveState();
     }
 
-    function showGoalAnimation() {
-      // Dispara um timestamp único para o overlay detectar a animação
-      // Usamos uma string única ou timestamp para garantir que o 'on' listener detecte a mudança
-      database.ref('goalAnimationTrigger').set(Date.now().toString())
-        .then(() => {
-          // Remove o trigger após um pequeno atraso para a animação não ficar reativando
-          // Um tempo suficiente para o overlay capturar e iniciar a animação
-          setTimeout(() => {
-            database.ref('goalAnimationTrigger').remove();
-          }, 3000); // Tempo um pouco maior que a duração da animação (2.5s)
-        })
-        .catch(error => console.error("Erro ao disparar animação de gol:", error));
+    function triggerGoalAnimation() {
+      // Limpa qualquer timeout anterior para evitar conflitos
+      if (goalAnimationTimeout) {
+        clearTimeout(goalAnimationTimeout);
+      }
 
-      // Ativa a animação localmente também para pré-visualização no controlador
-      const goalElement = document.getElementById('goalAnimation');
-      goalElement.classList.remove('active');
-      void goalElement.offsetWidth; // Força reflow para reiniciar a animação
-      goalElement.classList.add('active');
+      overlayState.isGoalAnimationActive = true;
+      saveState(); // Salva para ativar a animação no overlay
+
+      // Inicia o timeout para desativar a animação após 3 segundos
+      goalAnimationTimeout = setTimeout(() => {
+        overlayState.isGoalAnimationActive = false;
+        saveState(); // Salva para desativar a animação no overlay
+      }, 3000); // 3 segundos
     }
 
     function toggleOverlayVisibility() {
@@ -860,4 +888,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
