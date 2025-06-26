@@ -43,6 +43,9 @@
       background-color: transparent;
       position: relative;
       z-index: 2;
+      /* AJUSTE AQUI: Para garantir que o container do overlay tenha altura suficiente */
+      min-height: 200px; /* Um valor razoável para o placar e animações */
+      justify-content: flex-start; /* Alinha o placar ao topo dentro dele */
     }
 
     .visual-overlay-container.hidden-display {
@@ -121,9 +124,9 @@
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
 
-    /* Estilos para abreviações dos nomes */
+    /* CORREÇÃO: Aumenta o tamanho da fonte da abreviação */
     .team-name-abbr {
-      font-size: 18px; /* Tamanho da abreviação */
+      font-size: 24px; /* Aumentado de 18px para 24px */
       font-weight: bold;
       color: var(--placar-text);
       background: rgba(0, 0, 0, 0.4);
@@ -238,40 +241,10 @@
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
 
-    /* Animações de Texto */
+    /* Animações de Texto - POSICIONAMENTO PARA O CONTROLADOR */
+    /* Elas não precisam ser visíveis aqui, só no overlay. Apenas a estrutura. */
     .animated-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 80px;
-      font-weight: 900;
-      color: var(--highlight-color); /* Usa a cor de destaque */
-      text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 8px rgba(0, 255, 255, 0.6);
-      opacity: 0;
-      visibility: hidden;
-      animation-fill-mode: forwards;
-      z-index: 1000;
-      pointer-events: none;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: 100%;
-    }
-
-    @keyframes fadeInScaleOut {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); visibility: hidden; }
-      1% { visibility: visible; }
-      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); visibility: visible; }
-      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); visibility: visible; }
-      99% { opacity: 0; visibility: visible; }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); visibility: hidden;}
-    }
-
-    .animated-text.active {
-      animation: fadeInScaleOut 2.5s ease-out forwards;
+      display: none; /* Esconde no controlador */
     }
 
     /* Classes para controlar a visibilidade dos modos */
@@ -500,11 +473,10 @@
           <div class="penalty-balls-container" id="penaltiesDisplay2"></div>
         </div>
       </div>
-
-      <div class="animated-text" id="goalAnimation">GOOOOL!</div>
-      <div class="animated-text" id="incredulousAnimation">INACREDITÁVEL!!!</div>
-      <div class="animated-text" id="beautifulAnimation">QUE BELEZA!!!</div>
-    </div>
+      </div>
+    <div class="animated-text" id="goalAnimation">GOOOOL!</div>
+    <div class="animated-text" id="incredulousAnimation">INACREDITÁVEL!!!</div>
+    <div class="animated-text" id="beautifulAnimation">QUE BELEZA!!!</div>
   </div>
 
   <div class="control-panel-container" id="controlPanelContainer">
@@ -783,9 +755,11 @@
       const beautifulAnimation = document.getElementById('beautifulAnimation');
 
       // Esconde todas as animações e conteúdos por padrão
-      goalAnimation.classList.add('hidden', 'active-mode'); // Adiciona active-mode para que o display:flex funcione corretamente
-      incredulousAnimation.classList.add('hidden', 'active-mode');
-      beautifulAnimation.classList.add('hidden', 'active-mode');
+      // NOTA: As animações no CONTROLADOR não precisam ter a classe 'active-mode'
+      // Elas são hidden por padrão no CSS deste arquivo.
+      goalAnimation.classList.add('hidden'); 
+      incredulousAnimation.classList.add('hidden');
+      beautifulAnimation.classList.add('hidden');
 
       normalContent.classList.remove('hidden'); // Começa mostrando o placar normal
       cardsLine.classList.remove('hidden');
@@ -798,9 +772,12 @@
           cardsLine.classList.add('hidden');
           penaltyContent.classList.add('hidden'); 
 
-          // Ativa apenas a animação correspondente
-          document.getElementById(overlayState.activeAnimation).classList.remove('hidden');
-          document.getElementById(overlayState.activeAnimation).classList.add('active');
+          // No controlador, a animação que está ativa deve ser oculta (display: none)
+          // Isso evita que ela ocupe espaço desnecessário ou cause problemas de layout no painel.
+          // A animação real é renderizada APENAS no overlay.html
+          // Então, não precisamos fazer nada aqui para 'exibir' a animação.
+          // A linha abaixo apenas mantém a lógica, mas na prática, display: none já a esconde.
+          // document.getElementById(overlayState.activeAnimation).classList.remove('hidden');
 
       } else if (overlayState.penaltyModeActive) {
           normalContent.classList.add('hidden');
@@ -1033,8 +1010,10 @@
       saveState();
     }
 
+    // CORREÇÃO: Função resetPenalties para resetar ambos os times
     function resetPenalties() {
-        overlayState.penalties = { '1': [], '2': [] };
+        overlayState.penalties['1'] = [];
+        overlayState.penalties['2'] = [];
         saveState();
     }
 
