@@ -6,16 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --placar-bg: rgba(34, 34, 34, 0.9); /* Um pouco mais opaco */
+      --placar-bg: rgba(34, 34, 34, 0.9);
       --placar-text: white;
       --placar-border: #555;
       --placar-timer-color: #0ff;
-      --highlight-color: #0ff; /* Cor de destaque para títulos */
+      --highlight-color: #0ff;
+      --panel-bg: #1c1c1c; /* Cor de fundo principal do painel */
+      --section-bg: #282828; /* Cor de fundo das seções */
+      --button-hover-brightness: 1.2; /* Brilho ao passar o mouse nos botões */
     }
 
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fonte mais moderna */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #0d1117;
       color: white;
       display: flex;
@@ -27,6 +30,7 @@
       min-height: 100vh;
     }
 
+    /* Estilos do Placar Visual (mantidos como antes, pois a exibição não muda) */
     .visual-overlay-container {
       width: 100%;
       max-width: 900px;
@@ -52,17 +56,17 @@
       flex-direction: column;
       align-items: center;
       background: var(--placar-bg);
-      padding: 10px 15px; /* Mais padding */
-      border-radius: 12px; /* Cantos mais arredondados */
-      margin-top: 15px; /* Mais margem do topo */
+      padding: 10px 15px;
+      border-radius: 12px;
+      margin-top: 15px;
       width: 100%;
       box-sizing: border-box;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
       position: relative;
       overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Sombra mais evidente */
-      min-height: 150px; /* Garante que o placar tenha altura mesmo com a animação */
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      min-height: 150px;
       justify-content: center;
     }
 
@@ -71,16 +75,16 @@
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      gap: 15px; /* Aumentando um pouco mais o gap */
+      gap: 15px;
       flex-wrap: nowrap;
     }
 
     .team-block {
       display: flex;
       align-items: center;
-      gap: 8px; /* Espaço entre escudo, nome e placar */
+      gap: 8px;
       flex-shrink: 1;
-      min-width: 150px; /* Largura mínima ligeiramente maior */
+      min-width: 150px;
       justify-content: center;
     }
 
@@ -89,38 +93,38 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      padding: 0 15px; /* Mais padding lateral para centralizar melhor */
-      min-width: 80px; /* Largura mínima para a logo */
+      padding: 0 15px;
+      min-width: 80px;
     }
     .logo-central img {
-      width: 70px; /* Tamanho maior da logo central */
+      width: 70px;
       height: 70px;
       object-fit: contain;
     }
     .separador-x {
-      display: none; /* Oculta o 'X' */
+      display: none;
     }
 
     .escudo {
-      width: 45px; /* Escudos ainda maiores */
+      width: 45px;
       height: 45px;
       object-fit: contain;
       flex-shrink: 0;
-      filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5)); /* Pequena sombra no escudo */
+      filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
     }
     .placar-numero {
-      font-size: 38px; /* Placar maior */
+      font-size: 38px;
       font-weight: bold;
       margin: 0 8px;
       min-width: 45px;
       text-align: center;
       flex-shrink: 0;
-      text-shadow: 0 0 5px rgba(0, 0, 0, 0.6); /* Sombra no número */
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
 
     .team-name-input,
     .team-name-display {
-      width: 100px; /* Largura um pouco maior para o nome */
+      width: 100px;
       padding: 4px 6px;
       font-size: 15px;
       text-align: center;
@@ -138,7 +142,7 @@
     .team-name-display {
         background: transparent;
         border: none;
-        font-weight: 500; /* Levemente mais negrito */
+        font-weight: 500;
     }
 
     .time-period-block {
@@ -146,24 +150,24 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px; /* Mais espaço entre timer e período */
+      gap: 4px;
       flex-shrink: 0;
       padding: 0 8px;
     }
 
     #cronometro,
     #periodoDisplay {
-      font-size: 22px; /* Cronômetro maior */
+      font-size: 22px;
       font-weight: bold;
       color: var(--placar-timer-color);
-      background: rgba(0, 0, 0, 0.6); /* Fundo mais escuro */
+      background: rgba(0, 0, 0, 0.6);
       padding: 4px 12px;
       border-radius: 6px;
       white-space: nowrap;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
     #periodoDisplay {
-        font-size: 17px; /* Período maior */
+        font-size: 17px;
         background: rgba(0, 0, 0, 0.4);
         color: var(--placar-text);
     }
@@ -173,39 +177,39 @@
       align-items: center;
       justify-content: space-around;
       width: 100%;
-      margin-top: 8px; /* Mais margem superior */
+      margin-top: 8px;
       padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.15); /* Borda mais visível */
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
       flex-wrap: nowrap;
     }
 
     .cards-display {
       display: flex;
-      min-height: 25px; /* Altura mínima maior */
+      min-height: 25px;
       align-items: center;
       justify-content: center;
-      width: 120px; /* Largura um pouco maior */
+      width: 120px;
       flex-shrink: 0;
       gap: 2px;
     }
     .card-indicator {
-      width: 20px; /* Cartões maiores */
+      width: 20px;
       height: 20px;
       border-radius: 4px;
       margin: 0 2px;
-      border: 1px solid #777; /* Borda mais escura */
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Sombra nos cartões */
+      border: 1px solid #777;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
 
-    /* Estilo para o placar de pênaltis - MUDANÇAS AQUI */
+    /* Estilo para o placar de pênaltis */
     .penalty-shootout-placar {
-        display: none; /* Inicia oculto */
-        flex-direction: row; /* Volta para linha como o placar principal */
+        display: none;
+        flex-direction: row;
         align-items: center;
         width: 100%;
-        gap: 15px; /* Espaço entre os times e a logo central */
+        gap: 15px;
         padding: 10px 0;
     }
     .penalty-shootout-placar.active {
@@ -213,29 +217,29 @@
     }
     .penalty-team-display {
         display: flex;
-        flex-direction: column; /* Agora as bolas ficam abaixo do nome/escudo */
+        flex-direction: column;
         align-items: center;
-        gap: 5px; /* Espaço entre escudo/nome e as bolinhas */
-        min-width: 150px; /* Largura mínima para o bloco do time */
+        gap: 5px;
+        min-width: 150px;
         justify-content: center;
-        flex-grow: 1; /* Permite que cresçam */
+        flex-grow: 1;
     }
     .penalty-team-display .team-name-display {
-        font-size: 16px; /* Nome do time nos pênaltis */
+        font-size: 16px;
         font-weight: bold;
         margin-top: 5px;
     }
     .penalty-team-display .escudo {
-        width: 50px; /* Escudos maiores nos pênaltis */
+        width: 50px;
         height: 50px;
     }
     .penalty-balls-container {
         display: flex;
-        gap: 8px; /* Mais espaço entre as bolinhas */
-        margin-top: 5px; /* Espaço das bolinhas para o nome */
+        gap: 8px;
+        margin-top: 5px;
     }
     .penalty-ball {
-        width: 25px; /* Bolinhas maiores */
+        width: 25px;
         height: 25px;
         border-radius: 50%;
         border: 2px solid white;
@@ -247,93 +251,118 @@
 
 
     .goal-animation {
-      position: absolute; /* Posição absoluta para sobrepor */
-      top: 50%; /* Centraliza verticalmente */
+      position: absolute;
+      top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%); /* Ajuste fino para centralização */
-      font-size: 80px; /* GOL! maior */
-      font-weight: 900; /* Mais negrito */
+      transform: translate(-50%, -50%);
+      font-size: 80px;
+      font-weight: 900;
       color: #0ff;
-      text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 8px rgba(0, 255, 255, 0.6); /* Brilho mais intenso */
-      opacity: 0; /* Inicia transparente */
-      visibility: hidden; /* Inicia escondido */
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 8px rgba(0, 255, 255, 0.6);
+      opacity: 0;
+      visibility: hidden;
       animation-fill-mode: forwards;
       z-index: 1000;
       pointer-events: none;
       white-space: nowrap;
-      display: flex; /* Para centralizar o texto dentro do div */
+      display: flex;
       align-items: center;
       justify-content: center;
-      width: 100%; /* Garante que o div ocupa a largura para centralização */
-      height: 100%; /* Garante que o div ocupa a altura para centralização */
+      width: 100%;
+      height: 100%;
     }
 
     @keyframes fadeInScaleOut {
       0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); visibility: hidden; }
-      1% { visibility: visible; } /* Torna visível bem no início da animação */
+      1% { visibility: visible; }
       20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); visibility: visible; }
       80% { opacity: 1; transform: translate(-50%, -50%) scale(1); visibility: visible; }
-      99% { opacity: 0; visibility: visible; } /* Permanece visível (mas transparente) até o fim */
+      99% { opacity: 0; visibility: visible; }
       100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); visibility: hidden;}
     }
 
     .goal-animation.active {
-      animation: fadeInScaleOut 2.5s ease-out forwards; /* Animação um pouco mais longa */
+      animation: fadeInScaleOut 2.5s ease-out forwards;
     }
 
     /* Classes para controlar a visibilidade dos modos */
     .placar-main-line.hidden,
     .placar-cards-line.hidden,
     .penalty-shootout-placar.hidden {
-        display: none !important; /* Força a ocultação */
+        display: none !important;
     }
     
-    /* Esta classe `hidden` no goal-animation agora será usada APENAS quando não estiver em modo de animação de gol */
     .goal-animation.hidden {
         display: none !important;
     }
 
-    /* Nova classe para ativar o display quando for o modo ativo */
     .goal-animation.active-mode { 
-        display: flex; /* Exibe o elemento. IMPORTANTE para que o CSS de animação possa agir */
+        display: flex;
     }
 
+    /* Estilos do Painel de Controle - NOVOS AJUSTES */
     .control-panel-container {
         width: 100%;
         max-width: 900px;
-        margin-top: 30px; /* Mais espaço do placar */
+        margin-top: 30px;
         z-index: 1;
     }
 
     .painel {
-      padding: 20px; /* Mais padding no painel */
-      background: #1c1c1c;
+      padding: 20px;
+      background: var(--panel-bg);
       border-radius: 12px;
       box-sizing: border-box;
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-around;
-      gap: 25px; /* Mais espaço entre as seções */
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); /* Sombra mais forte */
+      justify-content: center; /* Centraliza as seções */
+      gap: 25px; /* Espaço entre as seções */
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     }
     .painel > div {
-      flex: 1 1 calc(50% - 25px);
-      min-width: 320px; /* Largura mínima dos blocos do painel */
-      background: #282828;
+      flex: 1 1 calc(50% - 25px); /* Duas colunas em telas maiores */
+      min-width: 300px; /* Largura mínima para as colunas */
+      background: var(--section-bg);
       padding: 18px;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-      border: 1px solid #3a3a3a; /* Borda sutil */
+      border: 1px solid #3a3a3a;
+      display: flex; /* Para organizar o conteúdo interno */
+      flex-direction: column; /* Conteúdo em coluna */
+      align-items: center; /* Centraliza itens na seção */
     }
+    /* Estilo para a seção principal, ocupando a largura total */
+    .painel > div.main-section {
+        flex-basis: 100%; /* Ocupa a largura total */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px; /* Espaço entre os elementos da seção principal */
+    }
+    .painel > div.main-section .placar-controls,
+    .painel > div.main-section .timer-controls,
+    .painel > div.main-section .goal-trigger {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+        gap: 10px; /* Espaço entre os botões */
+        width: 100%;
+    }
+    .painel > div.main-section .team-score-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
     @media (max-width: 768px) {
       .painel > div {
-        flex: 1 1 100%;
+        flex: 1 1 100%; /* Uma coluna em telas menores */
       }
     }
 
     .btn {
-      padding: 10px 18px; /* Botões maiores e mais clicáveis */
-      margin: 6px;
+      padding: 10px 18px;
+      margin: 0; /* Removendo margens individuais */
       font-size: 18px;
       border: none;
       border-radius: 6px;
@@ -341,13 +370,14 @@
       color: white;
       cursor: pointer;
       transition: background 0.3s ease, transform 0.1s ease;
+      white-space: nowrap; /* Evita que o texto do botão quebre */
     }
     .btn:hover { 
-      background: #0056b3; 
-      transform: translateY(-1px); /* Pequeno efeito hover */
+      filter: brightness(var(--button-hover-brightness)); /* Efeito de brilho */
+      transform: translateY(-1px);
     }
     .btn:active {
-      transform: translateY(1px); /* Efeito de clique */
+      transform: translateY(1px);
     }
     .btn.red { background: #dc3545; }
     .btn.red:hover { background: #c82333; }
@@ -361,15 +391,72 @@
     .btn.dark-gray:hover { background: #23272b; }
 
     .section-title {
-      margin-top: 10px;
-      margin-bottom: 18px; /* Más espacio después del título */
+      margin-top: 5px; /* Menor margem superior */
+      margin-bottom: 18px;
       font-weight: bold;
-      color: var(--highlight-color); /* Usando la cor de destaque */
-      font-size: 22px; /* Título maior */
-      border-bottom: 2px solid var(--highlight-color); /* Borda mais grossa */
+      color: var(--highlight-color);
+      font-size: 22px;
+      border-bottom: 2px solid var(--highlight-color);
       padding-bottom: 8px;
       text-align: center;
-      text-shadow: 0 0 8px rgba(0, 255, 255, 0.3); /* Sombra no título */
+      text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+      width: 100%; /* Título ocupa a largura total da seção */
+    }
+    .control-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px; /* Espaço entre label/input e botões */
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    .control-group.inline-buttons {
+        flex-direction: row; /* Botões na mesma linha */
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .control-group label {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .control-group input[type="text"] {
+        width: calc(100% - 20px); /* Ajusta a largura do input */
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #555;
+        background-color: #3a3a3a;
+        color: white;
+        font-size: 16px;
+        text-align: center;
+    }
+    .control-group input[type="file"] {
+        width: calc(100% - 20px);
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #bbb;
+        background-color: #3a3a3a;
+        border-radius: 6px;
+        padding: 8px;
+    }
+    .control-group input[type="file"]::-webkit-file-upload-button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background-color 0.2s ease;
+    }
+    .control-group input[type="file"]::-webkit-file-upload-button:hover {
+      background-color: #0056b3;
+    }
+
+    hr {
+        border: none;
+        border-top: 1px solid #444;
+        width: 80%;
+        margin: 15px 0;
     }
   </style>
 </head>
@@ -407,107 +494,139 @@
       <div class="penalty-shootout-placar" id="penaltyPlacarContent">
         <div class="penalty-team-display">
           <img id="escudoPenalty1" class="escudo" src="" alt="Escudo Time 1">
-          <span id="nomePenalty1" class="team-name-display">Time 1</span> <div class="penalty-balls-container" id="penaltiesDisplay1"></div>
+          <span id="nomePenalty1" class="team-name-display">Time 1</span>
+          <div class="penalty-balls-container" id="penaltiesDisplay1"></div>
         </div>
         <div class="logo-central">
           <img id="logoOverlayPenalty" src="" alt="Sua Logo">
         </div>
         <div class="penalty-team-display">
           <img id="escudoPenalty2" class="escudo" src="" alt="Escudo Time 2">
-          <span id="nomePenalty2" class="team-name-display">Time 2</span> <div class="penalty-balls-container" id="penaltiesDisplay2"></div>
+          <span id="nomePenalty2" class="team-name-display">Time 2</span>
+          <div class="penalty-balls-container" id="penaltiesDisplay2"></div>
         </div>
       </div>
 
-      <div class="goal-animation" id="goalAnimation">GOL!</div>
+      <div class="goal-animation" id="goalAnimation">GOOOOL!</div>
     </div>
   </div>
 
   <div class="control-panel-container" id="controlPanelContainer">
     <div class="painel">
-      <div>
-        <div class="section-title">Placar Principal</div>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 10px;">
-            <label for="nome1" style="font-weight: bold; margin-right: 5px;">Time 1:</label>
-            <input type="text" id="nome1_input_panel" placeholder="Nome Time 1" class="team-name-input" style="flex-grow: 1;">
+      <div class="main-section">
+        <div class="section-title">Controle Principal</div>
+
+        <div class="control-group">
+            <label>Placar:</label>
+            <div class="placar-controls">
+                <button class="btn green" onclick="alterarPlacar('1', 1)">+ Time 1</button>
+                <button class="btn red" onclick="alterarPlacar('1', -1)">- Time 1</button>
+                <button class="btn green" onclick="alterarPlacar('2', 1)">+ Time 2</button>
+                <button class="btn red" onclick="alterarPlacar('2', -1)">- Time 2</button>
+            </div>
         </div>
-        <div style="display: flex; justify-content: center; gap: 10px;">
-            <button class="btn" onclick="alterarPlacar('1', -1)">- Placar T1</button>
-            <button class="btn" onclick="alterarPlacar('1', 1)">+ Placar T1</button>
+        
+        <div class="control-group">
+            <label>Cronômetro:</label>
+            <div class="timer-controls">
+                <button class="btn green" onclick="startTimer()">Iniciar</button>
+                <button class="btn yellow" onclick="pauseTimer()">Pausar</button>
+                <button class="btn red" onclick="resetTimer()">Resetar</button>
+            </div>
         </div>
-        <hr style="border-top: 1px solid #444; margin: 15px 0;">
-        <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 10px;">
-            <label for="nome2" style="font-weight: bold; margin-right: 5px;">Time 2:</label>
-            <input type="text" id="nome2_input_panel" placeholder="Nome Time 2" class="team-name-input" style="flex-grow: 1;">
-        </div>
-        <div style="display: flex; justify-content: center; gap: 10px;">
-            <button class="btn" onclick="alterarPlacar('2', -1)">- Placar T2</button>
-            <button class="btn" onclick="alterarPlacar('2', 1)">+ Placar T2</button>
+
+        <div class="control-group">
+            <label>Animações:</label>
+            <div class="goal-trigger">
+                <button class="btn purple" onclick="triggerGoalAnimation()" style="font-size: 24px; padding: 12px 25px;">GOL!</button>
+            </div>
         </div>
       </div>
 
       <div>
-        <div class="section-title">Upload de Imagens</div>
-        <label for="uploadEscudo1">Escudo Time 1:</label>
-        <input type="file" id="uploadEscudo1" accept="image/*" onchange="loadEscudo(event, '1')" style="margin-bottom: 10px; display: block;">
-        <label for="uploadEscudo2">Escudo Time 2:</label>
-        <input type="file" id="uploadEscudo2" accept="image/*" onchange="loadEscudo(event, '2')" style="display: block; margin-bottom: 10px;">
-        <label for="uploadLogoOverlay">Sua Logo:</label>
-        <input type="file" id="uploadLogoOverlay" accept="image/*" onchange="loadLogo(event)" style="display: block;">
-      </div>
-
-      <div>
-        <div class="section-title">Controle do Cronômetro</div>
-        <button class="btn green" onclick="startTimer()">Iniciar</button>
-        <button class="btn yellow" onclick="pauseTimer()">Pausar</button>
-        <button class="btn red" onclick="resetTimer()">Resetar</button>
+        <div class="section-title">Nomes e Imagens</div>
+        <div class="control-group">
+            <label for="nome1_input_panel">Nome Time 1:</label>
+            <input type="text" id="nome1_input_panel" placeholder="Time 1">
+        </div>
+        <div class="control-group">
+            <label for="uploadEscudo1">Escudo Time 1:</label>
+            <input type="file" id="uploadEscudo1" accept="image/*" onchange="loadEscudo(event, '1')">
+        </div>
+        <hr>
+        <div class="control-group">
+            <label for="nome2_input_panel">Nome Time 2:</label>
+            <input type="text" id="nome2_input_panel" placeholder="Time 2">
+        </div>
+        <div class="control-group">
+            <label for="uploadEscudo2">Escudo Time 2:</label>
+            <input type="file" id="uploadEscudo2" accept="image/*" onchange="loadEscudo(event, '2')">
+        </div>
+        <hr>
+        <div class="control-group">
+            <label for="uploadLogoOverlay">Sua Logo:</label>
+            <input type="file" id="uploadLogoOverlay" accept="image/*" onchange="loadLogo(event)">
+        </div>
       </div>
 
       <div>
         <div class="section-title">Controle de Período</div>
-        <button class="btn green" onclick="nextPeriod()">Próximo Período</button>
-        <button class="btn yellow" onclick="setPeriod(1)">1º Tempo</button>
-        <button class="btn yellow" onclick="setPeriod(2)">2º Tempo</button>
-        <button class="btn yellow" onclick="setPeriod(3)">Prorrogação</button>
-        <button class="btn yellow" onclick="setPeriod(4)">Intervalo</button> <button class="btn red" onclick="setPeriod(0)">Resetar Período</button>
+        <div class="control-group inline-buttons">
+            <button class="btn green" onclick="nextPeriod()">Próximo</button>
+            <button class="btn yellow" onclick="setPeriod(1)">1º Tempo</button>
+            <button class="btn yellow" onclick="setPeriod(2)">2º Tempo</button>
+            <button class="btn yellow" onclick="setPeriod(3)">Prorrogação</button>
+            <button class="btn yellow" onclick="setPeriod(4)">Intervalo</button>
+            <button class="btn red" onclick="setPeriod(0)">Resetar</button>
+        </div>
       </div>
 
       <div>
         <div class="section-title">Cartões</div>
-        <button class="btn yellow" onclick="addCartao('1', 'amarelo')">Amarelo T1</button>
-        <button class="btn red" onclick="addCartao('1', 'vermelho')">Vermelho T1</button>
-        <button class="btn yellow" onclick="addCartao('2', 'amarelo')">Amarelo T2</button>
-        <button class="btn red" onclick="addCartao('2', 'vermelho')">Vermelho T2</button>
-        <hr style="border-top: 1px solid #444; margin: 10px 0;">
-        <button class="btn dark-gray" onclick="resetCards('1', 'amarelo')">Resetar Amarelos T1</button>
-        <button class="btn dark-gray" onclick="resetCards('1', 'vermelho')">Resetar Vermelhos T1</button>
-        <button class="btn dark-gray" onclick="resetCards('2', 'amarelo')">Resetar Amarelos T2</button>
-        <button class="btn dark-gray" onclick="resetCards('2', 'vermelho')">Resetar Vermelhos T2</button>
+        <div class="control-group inline-buttons">
+            <button class="btn yellow" onclick="addCartao('1', 'amarelo')">Amarelo T1</button>
+            <button class="btn red" onclick="addCartao('1', 'vermelho')">Vermelho T1</button>
+        </div>
+        <div class="control-group inline-buttons">
+            <button class="btn yellow" onclick="addCartao('2', 'amarelo')">Amarelo T2</button>
+            <button class="btn red" onclick="addCartao('2', 'vermelho')">Vermelho T2</button>
+        </div>
+        <hr>
+        <div class="control-group inline-buttons">
+            <button class="btn dark-gray" onclick="resetCards('1', 'amarelo')">Limpar Amarelo T1</button>
+            <button class="btn dark-gray" onclick="resetCards('1', 'vermelho')">Limpar Vermelho T1</button>
+        </div>
+        <div class="control-group inline-buttons">
+            <button class="btn dark-gray" onclick="resetCards('2', 'amarelo')">Limpar Amarelo T2</button>
+            <button class="btn dark-gray" onclick="resetCards('2', 'vermelho')">Limpar Vermelho T2</button>
+        </div>
       </div>
 
-      <div style="flex-basis: 100%;">
-        <div class="section-title">Disputa de Pênaltis</div>
-        <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;">
-          <button class="btn purple" onclick="togglePenaltyMode(true)">Ativar Pênaltis</button>
-          <button class="btn dark-gray" onclick="togglePenaltyMode(false)">Desativar Pênaltis</button>
+      <div style="flex-basis: 100%;"> <div class="section-title">Disputa de Pênaltis</div>
+        <div class="control-group inline-buttons">
+          <button class="btn purple" onclick="togglePenaltyMode(true)">Ativar Modo Pênaltis</button>
+          <button class="btn dark-gray" onclick="togglePenaltyMode(false)">Desativar Modo Pênaltis</button>
         </div>
-        <div class="penalty-shootout-controls">
-          <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
-            <button class="btn green" onclick="addPenalty('1', 'convertido')">Pênalti Convertido T1</button>
-            <button class="btn red" onclick="addPenalty('1', 'perdido')">Pênalti Perdido T1</button>
-          </div>
-          <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
-            <button class="btn green" onclick="addPenalty('2', 'convertido')">Pênalti Convertido T2</button>
-            <button class="btn red" onclick="addPenalty('2', 'perdido')">Pênalti Perdido T2</button>
-          </div>
+        <hr>
+        <div class="control-group inline-buttons">
+            <button class="btn green" onclick="addPenalty('1', 'convertido')">Pênalti T1 GOL</button>
+            <button class="btn red" onclick="addPenalty('1', 'perdido')">Pênalti T1 PERD</button>
         </div>
-        <button class="btn dark-gray" onclick="resetPenalties()" style="margin-top: 15px; display: block; margin-left: auto; margin-right: auto;">Resetar Pênaltis</button>
+        <div class="control-group inline-buttons">
+            <button class="btn green" onclick="addPenalty('2', 'convertido')">Pênalti T2 GOL</button>
+            <button class="btn red" onclick="addPenalty('2', 'perdido')">Pênalti T2 PERD</button>
+        </div>
+        <div class="control-group inline-buttons" style="margin-top: 15px;">
+            <button class="btn dark-gray" onclick="resetPenalties()">Resetar Pênaltis</button>
+        </div>
       </div>
 
       <div>
         <div class="section-title">Controles Globais</div>
-        <button class="btn purple" onclick="togglePlacarTheme()">Alternar Cor do Placar</button>
-        <button class="btn dark-gray" onclick="toggleOverlayVisibility()">Ocultar Placar na Transmissão</button>
-        <button class="btn green" onclick="triggerGoalAnimation()">GOL!</button>
+        <div class="control-group inline-buttons">
+            <button class="btn purple" onclick="togglePlacarTheme()">Alternar Cor Placar</button>
+            <button class="btn dark-gray" onclick="toggleOverlayVisibility()">Ocultar/Mostrar Placar</button>
+        </div>
       </div>
 
     </div>
@@ -567,7 +686,7 @@
         1: '1º Tempo',
         2: '2º Tempo',
         3: 'Prorrogação',
-        4: 'Intervalo', // NOVO PERÍODO
+        4: 'Intervalo',
         5: 'Tempo Extra'
     };
 
@@ -577,7 +696,6 @@
         overlayStateRef.once('value', (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                // Merge para manter compatibilidade com estados antigos
                 Object.assign(overlayState, data); 
             }
             renderUI();
@@ -586,7 +704,6 @@
             }
         });
 
-        // Event listeners para os novos inputs de nome no painel
         document.getElementById('nome1_input_panel').addEventListener('input', (e) => {
             overlayState.nome1 = e.target.value;
             saveState();
@@ -611,11 +728,11 @@
       document.getElementById('placar1').innerText = overlayState.placar['1'];
       document.getElementById('placar2').innerText = overlayState.placar['2'];
       
-      // Sincroniza os inputs do painel com o estado
       document.getElementById('nome1_input_panel').value = overlayState.nome1;
       document.getElementById('nome2_input_panel').value = overlayState.nome2;
+      document.getElementById('nome1').value = overlayState.nome1; // Atualiza o input no placar
+      document.getElementById('nome2').value = overlayState.nome2; // Atualiza o input no placar
 
-      // Adicionado para os nomes na seção de pênaltis também
       document.getElementById('nomePenalty1').innerText = overlayState.nome1 || 'Time 1';
       document.getElementById('nomePenalty2').innerText = overlayState.nome2 || 'Time 2';
 
@@ -640,15 +757,14 @@
       const penaltyContent = document.getElementById('penaltyPlacarContent');
       const goalAnimation = document.getElementById('goalAnimation');
 
-      // Lógica de visibilidade dos modos
       if (overlayState.isGoalAnimationActive) {
         normalContent.classList.add('hidden');
         cardsLine.classList.add('hidden');
         penaltyContent.classList.add('hidden'); 
         
-        goalAnimation.classList.add('active-mode'); // Garante que o display esteja flex
-        goalAnimation.classList.remove('hidden'); // Garante que não esteja hidden via CSS
-        goalAnimation.classList.add('active'); // Inicia a animação CSS
+        goalAnimation.classList.add('active-mode'); 
+        goalAnimation.classList.remove('hidden'); 
+        goalAnimation.classList.add('active'); 
       } else if (overlayState.penaltyModeActive) {
         normalContent.classList.add('hidden');
         cardsLine.classList.add('hidden');
@@ -807,7 +923,7 @@
     }
 
     function nextPeriod() {
-        if (overlayState.currentPeriod < 5) { // Ajustado para incluir o "Intervalo"
+        if (overlayState.currentPeriod < 5) {
             overlayState.currentPeriod++;
         } else {
             overlayState.currentPeriod = 1; 
@@ -860,7 +976,6 @@
       if (!overlayState.penalties[time]) {
         overlayState.penalties[time] = [];
       }
-      // Limita a 5 bolas por time para não poluir
       if (overlayState.penalties[time].length < 5) { 
         overlayState.penalties[time].push(resultado === 'convertido' ? 'green' : 'red');
         saveState();
@@ -872,7 +987,6 @@
       penaltyBallsContainer.innerHTML = '';
       const penalties = overlayState.penalties[time] || []; 
 
-      // Renderiza até 5 bolinhas, preenchendo as que já foram e deixando as restantes em branco
       for (let i = 0; i < 5; i++) { 
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
@@ -885,7 +999,7 @@
 
     function togglePenaltyMode(activate) {
       overlayState.penaltyModeActive = activate;
-      overlayState.isGoalAnimationActive = false; // Garante que a animação de gol não esteja ativa
+      overlayState.isGoalAnimationActive = false;
       saveState();
     }
 
@@ -906,7 +1020,7 @@
       goalAnimationTimeout = setTimeout(() => {
         overlayState.isGoalAnimationActive = false;
         saveState(); 
-      }, 3000); // 3 segundos para a animação
+      }, 3000);
     }
 
     function toggleOverlayVisibility() {
@@ -915,4 +1029,4 @@
     }
   </script>
 </body>
-            </html>
+                                                                                                      </html>
