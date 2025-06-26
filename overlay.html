@@ -61,86 +61,87 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      min-height: 150px;
+      min-height: 120px; /* Altura ajustada para o layout */
       justify-content: center;
     }
 
+    /* NOVO: Layout do Placar Principal */
     .placar-main-line {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: space-between; /* Espaçamento entre os blocos principais */
       width: 100%;
-      gap: 15px;
+      gap: 5px; /* Reduzido para ser mais compacto */
       flex-wrap: nowrap;
     }
 
+    /* NOVO: Estilo para os blocos de time */
     .team-block {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-shrink: 1;
-      min-width: 150px;
+      gap: 5px; /* Menor gap para compactar */
+      flex-shrink: 1; /* Permite encolher um pouco se necessário */
+      min-width: unset; /* Remove min-width */
       justify-content: center;
     }
 
+    /* REINTRODUZIDO E AJUSTADO: Logo Central */
     .logo-central {
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      padding: 0 15px;
-      min-width: 80px;
+      flex-shrink: 0; /* Não encolher */
+      padding: 0 5px; /* Espaçamento ajustado */
+      min-width: 60px; /* Largura mínima para a logo */
     }
     .logo-central img {
-      width: 70px;
-      height: 70px;
+      width: 55px; /* Tamanho da logo */
+      height: 55px;
       object-fit: contain;
-    }
-    .separador-x {
-      display: none;
+      filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
     }
 
     .escudo {
-      width: 45px;
-      height: 45px;
+      width: 40px; /* Levemente menor para compactar */
+      height: 40px;
       object-fit: contain;
       flex-shrink: 0;
       filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
     }
     .placar-numero {
-      font-size: 38px;
+      font-size: 38px; /* Mantém o tamanho do placar */
       font-weight: bold;
-      margin: 0 8px;
+      margin: 0 5px; /* Menor margem */
       min-width: 45px;
       text-align: center;
       flex-shrink: 0;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
-    .team-name-display {
-      width: 100px;
-      padding: 4px 6px;
-      font-size: 15px;
-      text-align: center;
-      background: transparent;
-      color: white;
-      border: none;
-      box-sizing: border-box;
+
+    /* NOVO: Estilos para abreviações dos nomes */
+    .team-name-abbr {
+      font-size: 16px; /* Tamanho da abreviação */
+      font-weight: bold;
+      color: var(--placar-text);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase; /* Para garantir maiúsculas */
+      flex-shrink: 0;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      flex-grow: 1;
-      min-width: 70px;
-      font-weight: 500;
     }
 
-    .time-period-block {
+    .team-name-input,
+    .team-name-display { /* team-name-display é para o overlay.html */
+      display: none; /* Esconde os nomes completos no placar */
+    }
+
+    /* NOVO: Cronômetro e Período juntos */
+    .time-period-group {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
+      gap: 8px; /* Espaço entre cronômetro e período */
       flex-shrink: 0;
-      padding: 0 8px;
     }
 
     #cronometro_display,
@@ -153,6 +154,7 @@
       border-radius: 6px;
       white-space: nowrap;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+      flex-shrink: 0;
     }
     #periodoDisplay_display {
         font-size: 17px;
@@ -160,43 +162,45 @@
         color: var(--placar-text);
     }
 
+    /* NOVO: Posicionamento discreto dos cartões */
     .placar-cards-line {
       display: flex;
       align-items: center;
-      justify-content: space-around;
+      justify-content: center; /* Centraliza os cartões */
       width: 100%;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      margin-top: 5px; /* Reduz margem superior */
+      padding-top: 5px; /* Reduz padding superior */
+      border-top: 1px solid rgba(255, 255, 255, 0.1); /* Borda mais discreta */
       flex-wrap: nowrap;
+      gap: 30px; /* Espaço entre os displays de cartão */
     }
 
     .cards-display {
       display: flex;
-      min-height: 25px;
+      min-height: 20px; /* Menor altura */
       align-items: center;
       justify-content: center;
-      width: 120px;
+      width: unset; /* Remove largura fixa */
       flex-shrink: 0;
-      gap: 2px;
+      gap: 3px; /* Espaço entre os cartões individuais */
     }
     .card-indicator {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-      margin: 0 2px;
+      width: 16px; /* Menor tamanho do cartão */
+      height: 16px;
+      border-radius: 3px; /* Menor arredondamento */
+      margin: 0; /* Remove margem individual */
       border: 1px solid #777;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Sombra mais discreta */
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
 
-    /* Estilo para o placar de pênaltis */
+    /* Estilo para o placar de pênaltis (mantido como antes, ajustado ao novo contexto) */
     .penalty-shootout-placar {
         display: none;
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-between; /* Ajuste para espaçamento */
         width: 100%;
         gap: 15px;
         padding: 10px 0;
@@ -294,9 +298,14 @@
   <div class="visual-overlay-container" id="visualOverlayContainer">
     <div class="placar" id="placarPrincipal">
       <div class="placar-main-line" id="normalPlacarContent_display">
+        <div class="time-period-group">
+          <div id="cronometro_display">00:00</div>
+          <div id="periodoDisplay_display" class="periodo">1º T</div>
+        </div>
+
         <div class="team-block team1">
             <img id="escudo1_display" class="escudo" src="" alt="Escudo Time 1">
-            <span id="nome1_display" class="team-name-display">Time 1</span>
+            <span id="nomeAbbr1_display" class="team-name-abbr">T1</span>
             <span id="placar1_display" class="placar-numero">0</span>
         </div>
 
@@ -306,13 +315,8 @@
 
         <div class="team-block team2">
             <span id="placar2_display" class="placar-numero">0</span>
-            <span id="nome2_display" class="team-name-display">Time 2</span>
+            <span id="nomeAbbr2_display" class="team-name-abbr">T2</span>
             <img id="escudo2_display" class="escudo" src="" alt="Escudo Time 2">
-        </div>
-
-        <div class="time-period-block">
-          <div id="cronometro_display">00:00</div>
-          <div id="periodoDisplay_display" class="periodo">1º Tempo</div>
         </div>
       </div>
 
@@ -373,6 +377,8 @@
       currentPeriod: 1,
       nome1: '',
       nome2: '',
+      nomeAbbr1: 'T1',
+      nomeAbbr2: 'T2',
       escudo1: '',
       escudo2: '',
       logoOverlay: '',
@@ -392,11 +398,11 @@
 
     const periodNames = {
         0: 'Parado',
-        1: '1º Tempo',
-        2: '2º Tempo',
-        3: 'Prorrogação',
-        4: 'Intervalo',
-        5: 'Tempo Extra'
+        1: '1º T',
+        2: '2º T',
+        3: 'Prorrog',
+        4: 'Int',
+        5: 'T. Extra'
     };
 
     document.addEventListener('DOMContentLoaded', setupFirebaseListeners);
@@ -439,8 +445,8 @@
     function renderUI() {
       document.getElementById('placar1_display').innerText = overlayState.placar['1'];
       document.getElementById('placar2_display').innerText = overlayState.placar['2'];
-      document.getElementById('nome1_display').innerText = overlayState.nome1 || 'Time 1';
-      document.getElementById('nome2_display').innerText = overlayState.nome2 || 'Time 2';
+      document.getElementById('nomeAbbr1_display').innerText = overlayState.nomeAbbr1 || 'T1'; 
+      document.getElementById('nomeAbbr2_display').innerText = overlayState.nomeAbbr2 || 'T2'; 
 
       document.getElementById('nomePenalty1_display').innerText = overlayState.nome1 || 'Time 1';
       document.getElementById('nomePenalty2_display').innerText = overlayState.nome2 || 'Time 2';
@@ -489,7 +495,7 @@
         goalAnimation.classList.remove('active'); 
       } else {
         normalContent.classList.remove('hidden');
-        cardsLine.classList.remove('hidden');
+        cardsLine.classList.remove('hidden'); // Cartões sempre visíveis com placar normal
         penaltyContent.classList.add('hidden');
         penaltyContent.classList.remove('active');
 
