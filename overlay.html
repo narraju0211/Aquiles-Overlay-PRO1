@@ -30,13 +30,13 @@
       width: 100%;
       max-width: 900px;
       display: flex;
-      flex-direction: column;
+      flex-direction: column; /* Para empilhar placar e animação */
       align-items: center;
       transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
       opacity: 1;
       visibility: visible;
       background-color: transparent;
-      position: relative; 
+      position: relative; /* CRÍTICO: Container para posicionar o placar e a animação */
       z-index: 2;
       height: calc(100vh - 30px); 
       justify-content: flex-start; 
@@ -59,8 +59,8 @@
       box-sizing: border-box;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
-      position: relative; /* CRÍTICO: Para conter as animações */
-      overflow: hidden; /* CRÍTICO: Para esconder o que sai do placar */
+      position: relative; /* Continua relativo para layout interno */
+      overflow: hidden; 
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
       min-height: unset; 
       height: fit-content; 
@@ -119,7 +119,7 @@
 
     /* CORREÇÃO: Aumenta o tamanho da fonte da abreviação */
     .team-name-abbr {
-      font-size: 28px; /* Aumentado de 24px para 28px */
+      font-size: 28px; 
       font-weight: bold;
       color: var(--placar-text);
       background: rgba(0, 0, 0, 0.4);
@@ -180,7 +180,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
-    .card-indicator.red-card { background-color: #dc3545; }
+    .card-indicator.red-card { background-color: #dc3545; } /* Confirma que a cor está correta */
 
     /* Estilo para o placar de pênaltis */
     .penalty-shootout-placar {
@@ -234,13 +234,17 @@
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
 
-    /* Animações de Texto - CORREÇÃO DE POSICIONAMENTO E TAMANHO */
+    /* Animações de Texto - SOMENTE A DE GOOOOL! */
     .animated-text {
-      position: absolute; /* Posição absoluta em relação ao .placar */
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%); /* Centraliza o elemento */
-      font-size: 80px; /* Tamanho da fonte grande */
+      position: absolute; /* Posição absoluta em relação ao .visual-overlay-container */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px; 
       font-weight: 900;
       color: var(--highlight-color); 
       text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 8px rgba(0, 255, 255, 0.6);
@@ -250,24 +254,19 @@
       z-index: 1000;
       pointer-events: none;
       white-space: nowrap;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%; /* Ocupa a largura total do container */
-      height: 100%; /* Ocupa a altura total do container */
     }
 
     @keyframes fadeInScaleOut {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); visibility: hidden; }
+      0% { opacity: 0; transform: scale(0.5); visibility: hidden; }
       1% { visibility: visible; }
-      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); visibility: visible; } /* Escala um pouco mais */
-      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); visibility: visible; }
+      20% { opacity: 1; transform: scale(1.05); visibility: visible; } /* Escala um pouco mais */
+      80% { opacity: 1; transform: scale(1); visibility: visible; }
       99% { opacity: 0; visibility: visible; }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); visibility: hidden;} /* Encolhe levemente ao sair */
+      100% { opacity: 0; transform: scale(0.9); visibility: hidden;} /* Encolhe levemente ao sair */
     }
 
     .animated-text.active {
-      animation: fadeInScaleOut 2s ease-out forwards; /* Duração da animação 2 segundos */
+      animation: fadeInScaleOut 2s ease-out forwards; 
     }
 
     /* Classes para controlar a visibilidade dos modos */
@@ -275,16 +274,6 @@
     .placar-cards-line.hidden,
     .penalty-shootout-placar.hidden {
         display: none !important;
-    }
-    
-    /* Todas as animações de texto começam escondidas */
-    .animated-text.hidden {
-        display: none !important;
-    }
-
-    /* A animação ativa recebe display flex para aparecer */
-    .animated-text.active-mode { 
-        display: flex;
     }
   </style>
 </head>
@@ -337,10 +326,8 @@
           <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
         </div>
       </div>
-      <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
-      <div class="animated-text" id="incredulousAnimation_display">INACREDITÁVEL!!!</div>
-      <div class="animated-text" id="beautifulAnimation_display">QUE BELEZA!!!</div>
     </div>
+    <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -384,11 +371,6 @@
     };
 
     let timerInterval;
-    let currentAnimationState = { // Objeto para controlar o estado da animação no overlay
-        goalAnimation: false,
-        incredulousAnimation: false,
-        beautifulAnimation: false
-    };
 
     const placarThemes = [
       { bg: 'rgba(34, 34, 34, 0.9)', text: 'white', border: '#555', timerColor: '#0ff' }, 
@@ -420,19 +402,6 @@
               stopLocalTimer();
           }
           
-          // Detecta mudança na animação ativa para forçar o reinício
-          if (overlayState.activeAnimation !== newState.activeAnimation) {
-              // Limpa a animação anterior se houver
-              if (overlayState.activeAnimation) {
-                  const prevAnimElement = document.getElementById(`${overlayState.activeAnimation}_display`);
-                  if (prevAnimElement) {
-                      prevAnimElement.classList.remove('active');
-                      // prevAnimElement.style.animation = 'none'; // Reseta a animação CSS
-                      // void prevAnimElement.offsetWidth; // Força o reflow
-                  }
-              }
-          }
-
           overlayState = newState;
           renderUI();
         }
@@ -483,3 +452,91 @@
       applyPlacarTheme();
 
       const normalContent = document.getElementById('normalPlacarContent_display');
+      const cardsLine = document.getElementById('placarCardsLine_display');
+      const penaltyContent = document.getElementById('penaltyPlacarContent_display');
+      
+      const goalAnimation = document.getElementById('goalAnimation_display');
+
+      // Primeiro, esconde tudo
+      normalContent.classList.add('hidden');
+      cardsLine.classList.add('hidden');
+      penaltyContent.classList.add('hidden');
+      penaltyContent.classList.remove('active'); // Garante que a classe 'active' para display:flex seja removida
+
+      // Reseta e esconde a animação de gol
+      goalAnimation.classList.remove('active'); // Remove a classe 'active' para permitir re-animação
+      goalAnimation.style.opacity = '0'; // Garante que esteja invisível quando não ativo
+      goalAnimation.style.visibility = 'hidden'; // Garante que esteja hidden quando não ativo
+
+
+      // Lógica de visibilidade dos modos
+      if (overlayState.activeAnimation === 'goalAnimation') {
+          goalAnimation.style.visibility = 'visible';
+          goalAnimation.classList.add('active'); // Adiciona a classe para iniciar a animação
+      } else if (overlayState.penaltyModeActive) {
+          penaltyContent.classList.remove('hidden');
+          penaltyContent.classList.add('active'); // Adiciona a classe 'active' para display:flex
+      } else {
+          normalContent.classList.remove('hidden');
+          cardsLine.classList.remove('hidden'); 
+      }
+
+      const visualContainer = document.getElementById('visualOverlayContainer');
+      if (overlayState.isVisible) {
+        visualContainer.classList.remove('hidden-display');
+      } else {
+        visualContainer.classList.add('hidden-display');
+      }
+    }
+
+    function formatTime(s) {
+      const min = String(Math.floor(s / 60)).padStart(2, '0');
+      const sec = String(s % 60).padStart(2, '0');
+      return `${min}:${sec}`;
+    }
+
+    function applyPlacarTheme() {
+      const theme = placarThemes[overlayState.placarThemeIndex];
+      document.documentElement.style.setProperty('--placar-bg', theme.bg);
+      document.documentElement.style.setProperty('--placar-text', theme.text);
+      document.documentElement.style.setProperty('--placar-border', theme.border);
+      document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
+      document.documentElement.style.setProperty('--highlight-color', theme.timerColor);
+    }
+
+    function renderCards(time) {
+      const displayElement = document.getElementById(`cardsDisplay${time}_display`);
+      displayElement.innerHTML = '';
+      const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
+      const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
+
+      for (let i = 0; i < amarelos; i++) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-indicator yellow-card';
+        displayElement.appendChild(cardDiv);
+      }
+      for (let i = 0; i < vermelhos; i++) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-indicator red-card'; // Garante que a classe está correta
+        displayElement.appendChild(cardDiv);
+      }
+    }
+
+    function renderPenalties(time) {
+      const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
+      penaltyBallsContainer.innerHTML = '';
+      const penalties = overlayState.penalties[time] || []; 
+      
+      // Renderiza sempre 5 bolinhas. Se não houver resultado, a bola será vazia (transparente).
+      for (let i = 0; i < 5; i++) { 
+        const ballDiv = document.createElement('div');
+        ballDiv.className = 'penalty-ball';
+        if (penalties[i]) {
+          ballDiv.classList.add(penalties[i]); 
+        }
+        penaltyBallsContainer.appendChild(ballDiv);
+      }
+    }
+  </script>
+</body>
+</html>
