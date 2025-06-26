@@ -6,14 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --placar-bg: rgba(34, 34, 34, 0.9);
+      --placar-bg-rgb: 34, 34, 34; /* Usamos RGB para controlar a alfa separadamente */
+      --placar-opacity: 0.9; /* Valor padrão de opacidade (0 a 1) */
       --placar-text: white;
       --placar-border: #555;
       --placar-timer-color: #0ff;
       --highlight-color: #0ff;
-      --panel-bg: #1c1c1c; /* Cor de fundo principal do painel */
-      --section-bg: #282828; /* Cor de fundo das seções */
-      --button-hover-brightness: 1.2; /* Brilho ao passar o mouse nos botões */
+      --panel-bg: #1c1c1c; 
+      --section-bg: #282828; 
+      --button-hover-brightness: 1.2; 
     }
 
     body {
@@ -30,7 +31,6 @@
       min-height: 100vh;
     }
 
-    /* Estilos do Placar Visual (apenas para exibição no controlador) */
     .visual-overlay-container {
       width: 100%;
       max-width: 900px; 
@@ -41,9 +41,9 @@
       opacity: 1;
       visibility: visible;
       background-color: transparent;
-      position: relative; /* Mantido para centralizar o placar */
+      position: relative; 
       z-index: 2;
-      min-height: 200px; /* Garante altura mínima para o placar */
+      min-height: 200px; 
       justify-content: flex-start; 
     }
 
@@ -57,7 +57,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: var(--placar-bg);
+      /* Usa a variável RGBA para o background */
+      background: rgba(var(--placar-bg-rgb), var(--placar-opacity)); 
       padding: 5px 15px; 
       border-radius: 12px;
       margin-top: 15px;
@@ -73,7 +74,6 @@
       justify-content: center;
     }
 
-    /* NOVO: Layout do Placar Principal */
     .placar-main-line {
       display: flex;
       align-items: center;
@@ -81,6 +81,7 @@
       width: 100%;
       gap: 5px; 
       flex-wrap: nowrap;
+      padding: 5px 0; /* Ajuste aqui para controle de espaçamento */
     }
 
     .placar-group {
@@ -90,7 +91,6 @@
       flex-shrink: 0; 
     }
 
-    /* REINTRODUZIDO E AJUSTADO: Logo Central */
     .logo-central {
       display: flex;
       align-items: center;
@@ -123,7 +123,6 @@
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
 
-    /* CORREÇÃO: Aumenta o tamanho da fonte da abreviação */
     .team-name-abbr {
       font-size: 28px; 
       font-weight: bold;
@@ -136,7 +135,6 @@
       white-space: nowrap;
     }
 
-    /* Cronômetro e Período */
     #cronometro,
     #periodoDisplay {
       font-size: 24px; 
@@ -155,7 +153,6 @@
         color: var(--placar-text);
     }
 
-    /* NOVO: Posicionamento discreto dos cartões */
     .placar-cards-line {
       display: flex;
       align-items: center;
@@ -166,6 +163,7 @@
       border-top: 1px solid rgba(255, 255, 255, 0.15); 
       flex-wrap: nowrap;
       gap: 40px; 
+      padding-bottom: 5px; /* Ajuste aqui para controle de espaçamento */
     }
 
     .cards-display {
@@ -188,7 +186,6 @@
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
 
-    /* Estilo para o placar de pênaltis */
     .penalty-shootout-placar {
         display: none;
         flex-direction: row;
@@ -196,7 +193,7 @@
         justify-content: space-between;
         width: 100%;
         gap: 15px;
-        padding: 10px 0;
+        padding: 10px 0; /* Padding interno para o modo pênalti */
     }
     .penalty-shootout-placar.active {
         display: flex;
@@ -240,20 +237,16 @@
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
 
-    /* Animações de Texto - NO CONTROLADOR, ELAS SÃO SEMPRE ESCONDIDAS */
     .animated-text {
-      display: none; /* Esconde no controlador */
-      /* Se precisar de uma representação visual, ajuste aqui, mas geralmente é desnecessário. */
+      display: none; 
     }
 
-    /* Classes para controlar a visibilidade dos modos */
     .placar-main-line.hidden,
     .placar-cards-line.hidden,
     .penalty-shootout-placar.hidden {
         display: none !important;
     }
     
-    /* TODAS as animações de texto devem começar escondidas no controlador */
     .animated-text.hidden {
         display: none !important;
     }
@@ -273,37 +266,36 @@
       box-sizing: border-box;
       display: flex;
       flex-wrap: wrap;
-      justify-content: center; /* Centraliza as seções */
-      gap: 25px; /* Espaço entre as seções */
+      justify-content: center; 
+      gap: 25px; 
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     }
     .painel > div {
-      flex: 1 1 calc(50% - 25px); /* Duas colunas em telas maiores */
-      min-width: 300px; /* Largura mínima para as colunas */
+      flex: 1 1 calc(50% - 25px); 
+      min-width: 300px; 
       background: var(--section-bg);
       padding: 18px;
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
       border: 1px solid #3a3a3a;
-      display: flex; /* Para organizar o conteúdo interno */
-      flex-direction: column; /* Conteúdo em coluna */
-      align-items: center; /* Centraliza itens na seção */
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
     }
-    /* Estilo para a seção principal, ocupando a largura total */
     .painel > div.main-section {
-        flex-basis: 100%; /* Ocupa a largura total */
+        flex-basis: 100%; 
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 15px; /* Espaço entre os elementos da seção principal */
+        gap: 15px; 
     }
     .painel > div.main-section .placar-controls,
     .painel > div.main-section .timer-controls,
     .painel > div.main-section .goal-trigger {
         display: flex;
         justify-content: center;
-        flex-wrap: wrap; /* Permite quebrar linha em telas menores */
-        gap: 10px; /* Espaço entre os botões */
+        flex-wrap: wrap; 
+        gap: 10px; 
         width: 100%;
     }
     .painel > div.main-section .team-score-controls {
@@ -314,13 +306,13 @@
 
     @media (max-width: 768px) {
       .painel > div {
-        flex: 1 1 100%; /* Uma coluna em telas menores */
+        flex: 1 1 100%; 
       }
     }
 
     .btn {
       padding: 10px 18px;
-      margin: 0; /* Removendo margens individuais */
+      margin: 0; 
       font-size: 18px;
       border: none;
       border-radius: 6px;
@@ -328,10 +320,10 @@
       color: white;
       cursor: pointer;
       transition: background 0.3s ease, transform 0.1s ease;
-      white-space: nowrap; /* Evita que o texto do botão quebre */
+      white-space: nowrap; 
     }
     .btn:hover { 
-      filter: brightness(var(--button-hover-brightness)); /* Efeito de brilho */
+      filter: brightness(var(--button-hover-brightness)); 
       transform: translateY(-1px);
     }
     .btn:active {
@@ -408,6 +400,35 @@
     }
     .control-group input[type="file"]::-webkit-file-upload-button:hover {
       background-color: #0056b3;
+    }
+    .control-group input[type="range"] {
+        width: calc(100% - 20px);
+        -webkit-appearance: none;
+        height: 8px;
+        border-radius: 5px;
+        background: #555;
+        outline: none;
+        opacity: 0.7;
+        transition: opacity .2s;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--highlight-color);
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+    }
+    .control-group input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--highlight-color);
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
     }
 
     hr {
@@ -592,6 +613,11 @@
 
       <div>
         <div class="section-title">Controles Globais</div>
+        <div class="control-group">
+            <label for="placarOpacitySlider">Transparência do Placar:</label>
+            <input type="range" id="placarOpacitySlider" min="0" max="100" value="90" 
+                   oninput="updatePlacarOpacity(this.value)">
+        </div>
         <div class="control-group inline-buttons">
             <button class="btn purple" onclick="togglePlacarTheme()">Alternar Cor Placar</button>
             <button class="btn dark-gray" onclick="toggleOverlayVisibility()">Ocultar/Mostrar Placar</button>
@@ -628,8 +654,9 @@
       seconds: 0,
       timerRunning: false,
       placarThemeIndex: 0,
+      placarOpacity: 90, // NOVO: Opacidade do placar (0-100)
       penaltyModeActive: false,
-      activeAnimation: null, // APENAS 'goalAnimation' ou null
+      activeAnimation: null, 
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -644,12 +671,13 @@
     let timerInterval;
     let animationTimeout; 
 
+    // Atualizado para usar valores RGB e a opacidade separada
     const placarThemes = [
-      { bg: 'rgba(34, 34, 34, 0.9)', text: 'white', border: '#555', timerColor: '#0ff' }, 
-      { bg: 'rgba(0, 123, 255, 0.9)', text: 'white', border: '#0056b3', timerColor: '#fff' },
-      { bg: 'rgba(40, 167, 69, 0.9)', text: 'white', border: '#218838', timerColor: '#fff' },
-      { bg: 'rgba(220, 53, 69, 0.9)', text: 'white', border: '#c82333', timerColor: '#fff' },
-      { bg: 'rgba(255, 193, 7, 0.9)', text: 'black', border: '#e0a800', timerColor: '#333' }
+      { rgb: '34, 34, 34', text: 'white', border: '#555', timerColor: '#0ff' }, 
+      { rgb: '0, 123, 255', text: 'white', border: '#0056b3', timerColor: '#fff' },
+      { rgb: '40, 167, 69', text: 'white', border: '#218838', timerColor: '#fff' },
+      { rgb: '220, 53, 69', text: 'white', border: '#c82333', timerColor: '#fff' },
+      { rgb: '255, 193, 7', text: 'black', border: '#e0a800', timerColor: '#333' }
     ];
 
     const periodNames = {
@@ -667,7 +695,11 @@
         overlayStateRef.once('value', (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                Object.assign(overlayState, data); 
+                // Merge, mas com fallback para novas propriedades
+                Object.assign(overlayState, { 
+                    placarOpacity: 90, // Garante valor padrão se não existir no DB
+                    ...data 
+                });
             }
             renderUI();
             if (overlayState.timerRunning && !timerInterval) {
@@ -691,6 +723,10 @@
         document.getElementById('nomeAbbr2_input_panel').addEventListener('input', (e) => {
             overlayState.nomeAbbr2 = e.target.value.toUpperCase().substring(0, 3);
             saveState();
+        });
+
+        document.getElementById('placarOpacitySlider').addEventListener('input', (e) => {
+            updatePlacarOpacity(e.target.value);
         });
     }
 
@@ -736,16 +772,17 @@
       renderPenalties('2');
       applyPlacarTheme();
 
+      // Atualiza o slider de opacidade
+      document.getElementById('placarOpacitySlider').value = overlayState.placarOpacity;
+
       const normalContent = document.getElementById('normalPlacarContent');
       const cardsLine = document.getElementById('placarCardsLine');
       const penaltyContent = document.getElementById('penaltyPlacarContent');
       
       const goalAnimation = document.getElementById('goalAnimation');
 
-      // Esconde todas as animações (no controlador, elas são sempre hidden)
       goalAnimation.classList.add('hidden'); 
 
-      // Lógica de visibilidade dos modos
       if (overlayState.activeAnimation) {
           normalContent.classList.add('hidden');
           cardsLine.classList.add('hidden');
@@ -786,9 +823,16 @@
       saveState();
     }
 
+    function updatePlacarOpacity(value) {
+        overlayState.placarOpacity = parseInt(value, 10);
+        saveState();
+    }
+
     function applyPlacarTheme() {
       const theme = placarThemes[overlayState.placarThemeIndex];
-      document.documentElement.style.setProperty('--placar-bg', theme.bg);
+      // Define a cor RGB e a opacidade separadamente
+      document.documentElement.style.setProperty('--placar-bg-rgb', theme.rgb);
+      document.documentElement.style.setProperty('--placar-opacity', (overlayState.placarOpacity / 100).toFixed(2));
       document.documentElement.style.setProperty('--placar-text', theme.text);
       document.documentElement.style.setProperty('--placar-border', theme.border);
       document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
@@ -956,7 +1000,7 @@
         overlayState.penalties[time] = [];
       }
       // Limitar a 5 pênaltis, se necessário, ou aumentar o limite
-      if (overlayState.penalties[time].length < 5) { // Limite de 5 pênaltis
+      if (overlayState.penalties[time].length < 5) { 
         overlayState.penalties[time].push(resultado === 'convertido' ? 'green' : 'red');
         saveState();
       }
@@ -967,7 +1011,6 @@
       penaltyBallsContainer.innerHTML = '';
       const penalties = overlayState.penalties[time] || []; 
 
-      // Renderiza sempre 5 bolinhas. Se não houver resultado, a bola será vazia.
       for (let i = 0; i < 5; i++) { 
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
@@ -980,13 +1023,16 @@
 
     function togglePenaltyMode(activate) {
       overlayState.penaltyModeActive = activate;
-      overlayState.activeAnimation = null; // Garante que nenhuma animação de texto esteja ativa
+      overlayState.activeAnimation = null; 
       saveState();
     }
 
+    // CORREÇÃO: Resetar pênaltis agora também zera o placar de gols dos pênaltis
     function resetPenalties() {
         overlayState.penalties['1'] = [];
         overlayState.penalties['2'] = [];
+        // Se houver um placar de gols separado para pênaltis, zere-o aqui também
+        // Por exemplo: overlayState.placarPenalties = { '1': 0, '2': 0 };
         saveState();
     }
 
@@ -1002,7 +1048,7 @@
       animationTimeout = setTimeout(() => {
         overlayState.activeAnimation = null;
         saveState(); 
-      }, 2000); // Duração da animação (2 segundos)
+      }, 2000); 
     }
 
     function toggleOverlayVisibility() {
@@ -1011,4 +1057,4 @@
     }
   </script>
 </body>
-</html>
+            </html>
