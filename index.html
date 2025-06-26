@@ -30,10 +30,10 @@
       min-height: 100vh;
     }
 
-    /* Estilos do Placar Visual (mantidos como antes, pois a exibição não muda) */
+    /* Estilos do Placar Visual */
     .visual-overlay-container {
       width: 100%;
-      max-width: 900px;
+      max-width: 900px; /* Mantém a largura máxima */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -66,93 +66,87 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      min-height: 150px;
+      min-height: 120px; /* Altura ajustada para o layout */
       justify-content: center;
     }
 
+    /* NOVO: Layout do Placar Principal */
     .placar-main-line {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: space-between; /* Espaçamento entre os blocos principais */
       width: 100%;
-      gap: 15px;
+      gap: 5px; /* Reduzido para ser mais compacto */
       flex-wrap: nowrap;
     }
 
+    /* NOVO: Estilo para os blocos de time */
     .team-block {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-shrink: 1;
-      min-width: 150px;
+      gap: 5px; /* Menor gap para compactar */
+      flex-shrink: 1; /* Permite encolher um pouco se necessário */
+      min-width: unset; /* Remove min-width */
       justify-content: center;
     }
 
+    /* REINTRODUZIDO E AJUSTADO: Logo Central */
     .logo-central {
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
-      padding: 0 15px;
-      min-width: 80px;
+      flex-shrink: 0; /* Não encolher */
+      padding: 0 5px; /* Espaçamento ajustado */
+      min-width: 60px; /* Largura mínima para a logo */
     }
     .logo-central img {
-      width: 70px;
-      height: 70px;
+      width: 55px; /* Tamanho da logo */
+      height: 55px;
       object-fit: contain;
-    }
-    .separador-x {
-      display: none;
+      filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
     }
 
     .escudo {
-      width: 45px;
-      height: 45px;
+      width: 40px; /* Levemente menor para compactar */
+      height: 40px;
       object-fit: contain;
       flex-shrink: 0;
       filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
     }
     .placar-numero {
-      font-size: 38px;
+      font-size: 38px; /* Mantém o tamanho do placar */
       font-weight: bold;
-      margin: 0 8px;
+      margin: 0 5px; /* Menor margem */
       min-width: 45px;
       text-align: center;
       flex-shrink: 0;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
 
-    .team-name-input,
-    .team-name-display {
-      width: 100px;
-      padding: 4px 6px;
-      font-size: 15px;
-      text-align: center;
-      background: #333;
-      color: white;
-      border: 1px solid #555;
-      border-radius: 6px;
-      box-sizing: border-box;
+    /* NOVO: Estilos para abreviações dos nomes */
+    .team-name-abbr {
+      font-size: 16px; /* Tamanho da abreviação */
+      font-weight: bold;
+      color: var(--placar-text);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase; /* Para garantir maiúsculas */
+      flex-shrink: 0;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      flex-grow: 1;
-      min-width: 70px;
-    }
-    .team-name-display {
-        background: transparent;
-        border: none;
-        font-weight: 500;
     }
 
-    .time-period-block {
+    .team-name-input,
+    .team-name-display { /* team-name-display é para o overlay.html */
+      display: none; /* Esconde os nomes completos no placar */
+    }
+
+    /* NOVO: Cronômetro e Período juntos */
+    .time-period-group {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
+      gap: 8px; /* Espaço entre cronômetro e período */
       flex-shrink: 0;
-      padding: 0 8px;
     }
 
     #cronometro,
@@ -165,6 +159,7 @@
       border-radius: 6px;
       white-space: nowrap;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+      flex-shrink: 0;
     }
     #periodoDisplay {
         font-size: 17px;
@@ -172,42 +167,45 @@
         color: var(--placar-text);
     }
 
+    /* NOVO: Posicionamento discreto dos cartões */
     .placar-cards-line {
       display: flex;
       align-items: center;
-      justify-content: space-around;
+      justify-content: center; /* Centraliza os cartões */
       width: 100%;
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      margin-top: 5px; /* Reduz margem superior */
+      padding-top: 5px; /* Reduz padding superior */
+      border-top: 1px solid rgba(255, 255, 255, 0.1); /* Borda mais discreta */
       flex-wrap: nowrap;
+      gap: 30px; /* Espaço entre os displays de cartão */
     }
 
     .cards-display {
       display: flex;
-      min-height: 25px;
+      min-height: 20px; /* Menor altura */
       align-items: center;
       justify-content: center;
-      width: 120px;
+      width: unset; /* Remove largura fixa */
       flex-shrink: 0;
-      gap: 2px;
+      gap: 3px; /* Espaço entre os cartões individuais */
     }
     .card-indicator {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-      margin: 0 2px;
+      width: 16px; /* Menor tamanho do cartão */
+      height: 16px;
+      border-radius: 3px; /* Menor arredondamento */
+      margin: 0; /* Remove margem individual */
       border: 1px solid #777;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Sombra mais discreta */
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
 
-    /* Estilo para o placar de pênaltis */
+    /* Estilo para o placar de pênaltis (mantido como antes, ajustado ao novo contexto) */
     .penalty-shootout-placar {
         display: none;
         flex-direction: row;
         align-items: center;
+        justify-content: space-between; /* Ajuste para espaçamento */
         width: 100%;
         gap: 15px;
         padding: 10px 0;
@@ -300,7 +298,7 @@
         display: flex;
     }
 
-    /* Estilos do Painel de Controle - NOVOS AJUSTES */
+    /* Estilos do Painel de Controle - Mantidos */
     .control-panel-container {
         width: 100%;
         max-width: 900px;
@@ -464,9 +462,14 @@
   <div class="visual-overlay-container" id="visualOverlayContainer">
     <div class="placar" id="placarPrincipal">
       <div class="placar-main-line" id="normalPlacarContent">
+        <div class="time-period-group">
+          <div id="cronometro">00:00</div>
+          <div id="periodoDisplay" class="periodo">1º T</div>
+        </div>
+
         <div class="team-block team1">
             <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
-            <input type="text" id="nome1" placeholder="Time 1" class="team-name-input">
+            <span id="nomeAbbr1" class="team-name-abbr">T1</span>
             <span id="placar1" class="placar-numero">0</span>
         </div>
 
@@ -476,13 +479,8 @@
 
         <div class="team-block team2">
             <span id="placar2" class="placar-numero">0</span>
-            <input type="text" id="nome2" placeholder="Time 2" class="team-name-input">
+            <span id="nomeAbbr2" class="team-name-abbr">T2</span>
             <img id="escudo2" class="escudo" src="" alt="Escudo Time 2">
-        </div>
-
-        <div class="time-period-block">
-          <div id="cronometro">00:00</div>
-          <div id="periodoDisplay" class="periodo">1º Tempo</div>
         </div>
       </div>
 
@@ -547,7 +545,11 @@
         <div class="section-title">Nomes e Imagens</div>
         <div class="control-group">
             <label for="nome1_input_panel">Nome Time 1:</label>
-            <input type="text" id="nome1_input_panel" placeholder="Time 1">
+            <input type="text" id="nome1_input_panel" placeholder="Nome Completo Time 1">
+        </div>
+        <div class="control-group">
+            <label for="nomeAbbr1_input_panel">Abreviação Time 1 (3 letras):</label>
+            <input type="text" id="nomeAbbr1_input_panel" maxlength="3" placeholder="Ex: CAM">
         </div>
         <div class="control-group">
             <label for="uploadEscudo1">Escudo Time 1:</label>
@@ -556,7 +558,11 @@
         <hr>
         <div class="control-group">
             <label for="nome2_input_panel">Nome Time 2:</label>
-            <input type="text" id="nome2_input_panel" placeholder="Time 2">
+            <input type="text" id="nome2_input_panel" placeholder="Nome Completo Time 2">
+        </div>
+        <div class="control-group">
+            <label for="nomeAbbr2_input_panel">Abreviação Time 2 (3 letras):</label>
+            <input type="text" id="nomeAbbr2_input_panel" maxlength="3" placeholder="Ex: FLA">
         </div>
         <div class="control-group">
             <label for="uploadEscudo2">Escudo Time 2:</label>
@@ -564,7 +570,7 @@
         </div>
         <hr>
         <div class="control-group">
-            <label for="uploadLogoOverlay">Sua Logo:</label>
+            <label for="uploadLogoOverlay">Sua Logo (aparece no meio do placar):</label>
             <input type="file" id="uploadLogoOverlay" accept="image/*" onchange="loadLogo(event)">
         </div>
       </div>
@@ -602,7 +608,8 @@
         </div>
       </div>
 
-      <div style="flex-basis: 100%;"> <div class="section-title">Disputa de Pênaltis</div>
+      <div style="flex-basis: 100%;">
+        <div class="section-title">Disputa de Pênaltis</div>
         <div class="control-group inline-buttons">
           <button class="btn purple" onclick="togglePenaltyMode(true)">Ativar Modo Pênaltis</button>
           <button class="btn dark-gray" onclick="togglePenaltyMode(false)">Desativar Modo Pênaltis</button>
@@ -664,9 +671,11 @@
       currentPeriod: 1,
       nome1: '',
       nome2: '',
+      nomeAbbr1: 'T1', // Abreviação padrão
+      nomeAbbr2: 'T2', // Abreviação padrão
       escudo1: '',
       escudo2: '',
-      logoOverlay: '',
+      logoOverlay: '', // Agora aparecerá no placar principal
       isVisible: true
     };
 
@@ -683,11 +692,11 @@
 
     const periodNames = {
         0: 'Parado',
-        1: '1º Tempo',
-        2: '2º Tempo',
-        3: 'Prorrogação',
-        4: 'Intervalo',
-        5: 'Tempo Extra'
+        1: '1º T', 
+        2: '2º T',
+        3: 'Prorrog', 
+        4: 'Int', 
+        5: 'T. Extra' 
     };
 
     document.addEventListener('DOMContentLoaded', initializeFirebaseAndLoadState);
@@ -704,12 +713,23 @@
             }
         });
 
+        // Event listeners para nomes completos
         document.getElementById('nome1_input_panel').addEventListener('input', (e) => {
             overlayState.nome1 = e.target.value;
             saveState();
         });
         document.getElementById('nome2_input_panel').addEventListener('input', (e) => {
             overlayState.nome2 = e.target.value;
+            saveState();
+        });
+
+        // Event listeners para abreviações
+        document.getElementById('nomeAbbr1_input_panel').addEventListener('input', (e) => {
+            overlayState.nomeAbbr1 = e.target.value.toUpperCase().substring(0, 3); // Limita a 3 letras e maiúsculas
+            saveState();
+        });
+        document.getElementById('nomeAbbr2_input_panel').addEventListener('input', (e) => {
+            overlayState.nomeAbbr2 = e.target.value.toUpperCase().substring(0, 3); // Limita a 3 letras e maiúsculas
             saveState();
         });
     }
@@ -725,24 +745,34 @@
     }
 
     function renderUI() {
+      // Atualiza placar
       document.getElementById('placar1').innerText = overlayState.placar['1'];
       document.getElementById('placar2').innerText = overlayState.placar['2'];
       
+      // Atualiza inputs do painel de controle para nomes completos e abreviações
       document.getElementById('nome1_input_panel').value = overlayState.nome1;
       document.getElementById('nome2_input_panel').value = overlayState.nome2;
-      document.getElementById('nome1').value = overlayState.nome1; // Atualiza o input no placar
-      document.getElementById('nome2').value = overlayState.nome2; // Atualiza o input no placar
+      document.getElementById('nomeAbbr1_input_panel').value = overlayState.nomeAbbr1;
+      document.getElementById('nomeAbbr2_input_panel').value = overlayState.nomeAbbr2;
 
+      // Atualiza abreviações no placar principal
+      document.getElementById('nomeAbbr1').innerText = overlayState.nomeAbbr1;
+      document.getElementById('nomeAbbr2').innerText = overlayState.nomeAbbr2;
+
+      // Atualiza nomes no modo pênalti (usa nome completo aqui)
       document.getElementById('nomePenalty1').innerText = overlayState.nome1 || 'Time 1';
       document.getElementById('nomePenalty2').innerText = overlayState.nome2 || 'Time 2';
 
+      // Atualiza escudos
       document.getElementById('escudo1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
       document.getElementById('escudoPenalty1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('escudo2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('escudoPenalty2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
+      // Logo central (agora aparecerá no placar principal e no modo pênalti)
       document.getElementById('logoOverlay').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('logoOverlayPenalty').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
 
       renderCards('1');
       renderCards('2');
@@ -757,6 +787,7 @@
       const penaltyContent = document.getElementById('penaltyPlacarContent');
       const goalAnimation = document.getElementById('goalAnimation');
 
+      // Lógica de visibilidade dos modos
       if (overlayState.isGoalAnimationActive) {
         normalContent.classList.add('hidden');
         cardsLine.classList.add('hidden');
@@ -776,7 +807,7 @@
         goalAnimation.classList.remove('active'); 
       } else {
         normalContent.classList.remove('hidden');
-        cardsLine.classList.remove('hidden');
+        cardsLine.classList.remove('hidden'); // Cartões sempre visíveis com placar normal
         penaltyContent.classList.add('hidden');
         penaltyContent.classList.remove('active');
 
@@ -1029,4 +1060,4 @@
     }
   </script>
 </body>
-                                                                                                      </html>
+              </html>
