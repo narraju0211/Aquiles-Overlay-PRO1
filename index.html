@@ -141,19 +141,6 @@
         font-weight: 500; /* Levemente mais negrito */
     }
 
-    .score-controls {
-      display: flex;
-      align-items: center;
-      margin: 0 4px; /* Mais espaçamento */
-      flex-shrink: 0;
-    }
-    .score-controls button {
-      padding: 4px 8px; /* Botões um pouco maiores */
-      font-size: 13px;
-      margin: 0 2px;
-      border-radius: 6px;
-    }
-
     .time-period-block {
       display: flex;
       flex-direction: column;
@@ -212,40 +199,52 @@
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
 
+    /* Estilo para o placar de pênaltis - MUDANÇAS AQUI */
     .penalty-shootout-placar {
-      display: none; /* Inicia oculto */
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      gap: 10px; /* Mais espaço entre elementos dos pênaltis */
-      padding: 10px 0;
+        display: none; /* Inicia oculto */
+        flex-direction: row; /* Volta para linha como o placar principal */
+        align-items: center;
+        width: 100%;
+        gap: 15px; /* Espaço entre os times e a logo central */
+        padding: 10px 0;
     }
     .penalty-shootout-placar.active {
-      display: flex;
+        display: flex;
     }
     .penalty-team-display {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 200px; /* Largura mínima maior */
-      justify-content: center;
+        display: flex;
+        flex-direction: column; /* Agora as bolas ficam abaixo do nome/escudo */
+        align-items: center;
+        gap: 5px; /* Espaço entre escudo/nome e as bolinhas */
+        min-width: 150px; /* Largura mínima para o bloco do time */
+        justify-content: center;
+        flex-grow: 1; /* Permite que cresçam */
+    }
+    .penalty-team-display .team-name-display {
+        font-size: 16px; /* Nome do time nos pênaltis */
+        font-weight: bold;
+        margin-top: 5px;
     }
     .penalty-team-display .escudo {
-      width: 50px; /* Escudos maiores nos pênaltis */
-      height: 50px;
+        width: 50px; /* Escudos maiores nos pênaltis */
+        height: 50px;
     }
     .penalty-balls-container {
-      display: flex;
-      gap: 8px; /* Mais espaço entre as bolinhas */
+        display: flex;
+        gap: 8px; /* Mais espaço entre as bolinhas */
+        margin-top: 5px; /* Espaço das bolinhas para o nome */
     }
     .penalty-ball {
-      width: 25px; /* Bolinhas maiores */
-      height: 25px;
-      border-radius: 50%;
-      border: 2px solid white;
-      background-color: transparent;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        width: 25px; /* Bolinhas maiores */
+        height: 25px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background-color: transparent;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
+    .penalty-ball.green { background-color: #28a745; border-color: #28a745; }
+    .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
+
 
     .goal-animation {
       position: absolute; /* Posição absoluta para sobrepor */
@@ -381,11 +380,7 @@
         <div class="team-block team1">
             <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
             <input type="text" id="nome1" placeholder="Time 1" class="team-name-input">
-            <div class="score-controls">
-                <button class="btn" onclick="alterarPlacar('1', -1)">-</button>
-                <span id="placar1" class="placar-numero">0</span>
-                <button class="btn" onclick="alterarPlacar('1', 1)">+</button>
-            </div>
+            <span id="placar1" class="placar-numero">0</span>
         </div>
 
         <div class="logo-central">
@@ -393,11 +388,7 @@
         </div>
 
         <div class="team-block team2">
-            <div class="score-controls">
-                <button class="btn" onclick="alterarPlacar('2', -1)">-</button>
-                <span id="placar2" class="placar-numero">0</span>
-                <button class="btn" onclick="alterarPlacar('2', 1)">+</button>
-            </div>
+            <span id="placar2" class="placar-numero">0</span>
             <input type="text" id="nome2" placeholder="Time 2" class="team-name-input">
             <img id="escudo2" class="escudo" src="" alt="Escudo Time 2">
         </div>
@@ -416,14 +407,14 @@
       <div class="penalty-shootout-placar" id="penaltyPlacarContent">
         <div class="penalty-team-display">
           <img id="escudoPenalty1" class="escudo" src="" alt="Escudo Time 1">
-          <div class="penalty-balls-container" id="penaltiesDisplay1"></div>
+          <span id="nomePenalty1" class="team-name-display">Time 1</span> <div class="penalty-balls-container" id="penaltiesDisplay1"></div>
         </div>
         <div class="logo-central">
           <img id="logoOverlayPenalty" src="" alt="Sua Logo">
         </div>
         <div class="penalty-team-display">
           <img id="escudoPenalty2" class="escudo" src="" alt="Escudo Time 2">
-          <div class="penalty-balls-container" id="penaltiesDisplay2"></div>
+          <span id="nomePenalty2" class="team-name-display">Time 2</span> <div class="penalty-balls-container" id="penaltiesDisplay2"></div>
         </div>
       </div>
 
@@ -434,10 +425,24 @@
   <div class="control-panel-container" id="controlPanelContainer">
     <div class="painel">
       <div>
-        <div class="section-title">Configurações Gerais</div>
-        <button class="btn purple" onclick="togglePlacarTheme()">Alternar Cor do Placar</button>
-        <button class="btn dark-gray" onclick="toggleOverlayVisibility()">Ocultar Placar na Transmissão</button>
-        <button class="btn green" onclick="triggerGoalAnimation()">GOL!</button>
+        <div class="section-title">Placar Principal</div>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 10px;">
+            <label for="nome1" style="font-weight: bold; margin-right: 5px;">Time 1:</label>
+            <input type="text" id="nome1_input_panel" placeholder="Nome Time 1" class="team-name-input" style="flex-grow: 1;">
+        </div>
+        <div style="display: flex; justify-content: center; gap: 10px;">
+            <button class="btn" onclick="alterarPlacar('1', -1)">- Placar T1</button>
+            <button class="btn" onclick="alterarPlacar('1', 1)">+ Placar T1</button>
+        </div>
+        <hr style="border-top: 1px solid #444; margin: 15px 0;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 10px;">
+            <label for="nome2" style="font-weight: bold; margin-right: 5px;">Time 2:</label>
+            <input type="text" id="nome2_input_panel" placeholder="Nome Time 2" class="team-name-input" style="flex-grow: 1;">
+        </div>
+        <div style="display: flex; justify-content: center; gap: 10px;">
+            <button class="btn" onclick="alterarPlacar('2', -1)">- Placar T2</button>
+            <button class="btn" onclick="alterarPlacar('2', 1)">+ Placar T2</button>
+        </div>
       </div>
 
       <div>
@@ -463,7 +468,7 @@
         <button class="btn yellow" onclick="setPeriod(1)">1º Tempo</button>
         <button class="btn yellow" onclick="setPeriod(2)">2º Tempo</button>
         <button class="btn yellow" onclick="setPeriod(3)">Prorrogação</button>
-        <button class="btn red" onclick="setPeriod(0)">Resetar Período</button>
+        <button class="btn yellow" onclick="setPeriod(4)">Intervalo</button> <button class="btn red" onclick="setPeriod(0)">Resetar Período</button>
       </div>
 
       <div>
@@ -497,6 +502,14 @@
         </div>
         <button class="btn dark-gray" onclick="resetPenalties()" style="margin-top: 15px; display: block; margin-left: auto; margin-right: auto;">Resetar Pênaltis</button>
       </div>
+
+      <div>
+        <div class="section-title">Controles Globais</div>
+        <button class="btn purple" onclick="togglePlacarTheme()">Alternar Cor do Placar</button>
+        <button class="btn dark-gray" onclick="toggleOverlayVisibility()">Ocultar Placar na Transmissão</button>
+        <button class="btn green" onclick="triggerGoalAnimation()">GOL!</button>
+      </div>
+
     </div>
   </div>
 
@@ -522,4 +535,384 @@
 
     let overlayState = {
       placar: { '1': 0, '2': 0 },
-      cards: { '1': { 'amarelo': 0, 'vermel
+      cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
+      penalties: { '1': [], '2': [] },
+      seconds: 0,
+      timerRunning: false,
+      placarThemeIndex: 0,
+      penaltyModeActive: false,
+      isGoalAnimationActive: false, 
+      currentPeriod: 1,
+      nome1: '',
+      nome2: '',
+      escudo1: '',
+      escudo2: '',
+      logoOverlay: '',
+      isVisible: true
+    };
+
+    let timerInterval;
+    let goalAnimationTimeout; 
+
+    const placarThemes = [
+      { bg: 'rgba(34, 34, 34, 0.9)', text: 'white', border: '#555', timerColor: '#0ff' }, 
+      { bg: 'rgba(0, 123, 255, 0.9)', text: 'white', border: '#0056b3', timerColor: '#fff' },
+      { bg: 'rgba(40, 167, 69, 0.9)', text: 'white', border: '#218838', timerColor: '#fff' },
+      { bg: 'rgba(220, 53, 69, 0.9)', text: 'white', border: '#c82333', timerColor: '#fff' },
+      { bg: 'rgba(255, 193, 7, 0.9)', text: 'black', border: '#e0a800', timerColor: '#333' }
+    ];
+
+    const periodNames = {
+        0: 'Parado',
+        1: '1º Tempo',
+        2: '2º Tempo',
+        3: 'Prorrogação',
+        4: 'Intervalo', // NOVO PERÍODO
+        5: 'Tempo Extra'
+    };
+
+    document.addEventListener('DOMContentLoaded', initializeFirebaseAndLoadState);
+
+    function initializeFirebaseAndLoadState() {
+        overlayStateRef.once('value', (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                // Merge para manter compatibilidade com estados antigos
+                Object.assign(overlayState, data); 
+            }
+            renderUI();
+            if (overlayState.timerRunning && !timerInterval) {
+                startTimer(false); 
+            }
+        });
+
+        // Event listeners para os novos inputs de nome no painel
+        document.getElementById('nome1_input_panel').addEventListener('input', (e) => {
+            overlayState.nome1 = e.target.value;
+            saveState();
+        });
+        document.getElementById('nome2_input_panel').addEventListener('input', (e) => {
+            overlayState.nome2 = e.target.value;
+            saveState();
+        });
+    }
+
+    function saveState() {
+      overlayStateRef.set(overlayState)
+        .then(() => {
+          renderUI();
+        })
+        .catch((error) => {
+          console.error("Erro ao salvar no Firebase: ", error);
+        });
+    }
+
+    function renderUI() {
+      document.getElementById('placar1').innerText = overlayState.placar['1'];
+      document.getElementById('placar2').innerText = overlayState.placar['2'];
+      
+      // Sincroniza os inputs do painel com o estado
+      document.getElementById('nome1_input_panel').value = overlayState.nome1;
+      document.getElementById('nome2_input_panel').value = overlayState.nome2;
+
+      // Adicionado para os nomes na seção de pênaltis também
+      document.getElementById('nomePenalty1').innerText = overlayState.nome1 || 'Time 1';
+      document.getElementById('nomePenalty2').innerText = overlayState.nome2 || 'Time 2';
+
+      document.getElementById('escudo1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
+      document.getElementById('escudoPenalty1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      document.getElementById('escudo2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      document.getElementById('escudoPenalty2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+      document.getElementById('logoOverlay').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      document.getElementById('logoOverlayPenalty').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+      renderCards('1');
+      renderCards('2');
+      document.getElementById('cronometro').innerText = formatTime(overlayState.seconds);
+      document.getElementById('periodoDisplay').innerText = periodNames[overlayState.currentPeriod] || 'N/A';
+      renderPenalties('1');
+      renderPenalties('2');
+      applyPlacarTheme();
+
+      const normalContent = document.getElementById('normalPlacarContent');
+      const cardsLine = document.getElementById('placarCardsLine');
+      const penaltyContent = document.getElementById('penaltyPlacarContent');
+      const goalAnimation = document.getElementById('goalAnimation');
+
+      // Lógica de visibilidade dos modos
+      if (overlayState.isGoalAnimationActive) {
+        normalContent.classList.add('hidden');
+        cardsLine.classList.add('hidden');
+        penaltyContent.classList.add('hidden'); 
+        
+        goalAnimation.classList.add('active-mode'); // Garante que o display esteja flex
+        goalAnimation.classList.remove('hidden'); // Garante que não esteja hidden via CSS
+        goalAnimation.classList.add('active'); // Inicia a animação CSS
+      } else if (overlayState.penaltyModeActive) {
+        normalContent.classList.add('hidden');
+        cardsLine.classList.add('hidden');
+        penaltyContent.classList.remove('hidden');
+        penaltyContent.classList.add('active'); 
+
+        goalAnimation.classList.add('hidden'); 
+        goalAnimation.classList.remove('active-mode'); 
+        goalAnimation.classList.remove('active'); 
+      } else {
+        normalContent.classList.remove('hidden');
+        cardsLine.classList.remove('hidden');
+        penaltyContent.classList.add('hidden');
+        penaltyContent.classList.remove('active');
+
+        goalAnimation.classList.add('hidden'); 
+        goalAnimation.classList.remove('active-mode');
+        goalAnimation.classList.remove('active');
+      }
+
+      const visualContainer = document.getElementById('visualOverlayContainer');
+      const toggleButton = document.querySelector('.btn.dark-gray[onclick="toggleOverlayVisibility()"]');
+      if (overlayState.isVisible) {
+        visualContainer.classList.remove('hidden-display');
+        if (toggleButton) toggleButton.innerText = 'Ocultar Placar na Transmissão';
+      } else {
+        visualContainer.classList.add('hidden-display');
+        if (toggleButton) toggleButton.innerText = 'Mostrar Placar na Transmissão';
+      }
+    }
+
+    function alterarPlacar(time, valor) {
+      overlayState.placar[time] += valor;
+      if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
+      saveState();
+    }
+
+    function togglePlacarTheme() {
+      overlayState.placarThemeIndex = (overlayState.placarThemeIndex + 1) % placarThemes.length;
+      saveState();
+    }
+
+    function applyPlacarTheme() {
+      const theme = placarThemes[overlayState.placarThemeIndex];
+      document.documentElement.style.setProperty('--placar-bg', theme.bg);
+      document.documentElement.style.setProperty('--placar-text', theme.text);
+      document.documentElement.style.setProperty('--placar-border', theme.border);
+      document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
+      document.documentElement.style.setProperty('--highlight-color', theme.timerColor); 
+    }
+
+    function loadEscudo(event, time) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            const MAX_DIMENSION = 200; 
+            let width = img.width;
+            let height = img.height;
+
+            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+              if (width > height) {
+                height = Math.round(height * (MAX_DIMENSION / width));
+                width = MAX_DIMENSION;
+              } else {
+                width = Math.round(width * (MAX_DIMENSION / height));
+                height = MAX_DIMENSION;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+
+            overlayState['escudo' + time] = canvas.toDataURL('image/png');
+            saveState();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function loadLogo(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = new Image();
+          img.onload = function() {
+            const MAX_DIMENSION = 200; 
+            let width = img.width;
+            let height = img.height;
+
+            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+              if (width > height) {
+                height = Math.round(height * (MAX_DIMENSION / width));
+                width = MAX_DIMENSION;
+              } else {
+                width = Math.round(width * (MAX_DIMENSION / height));
+                height = MAX_DIMENSION;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+
+            overlayState.logoOverlay = canvas.toDataURL('image/png');
+            saveState();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function startTimer(save = true) {
+      if (!timerInterval) {
+        overlayState.timerRunning = true;
+        timerInterval = setInterval(() => {
+          overlayState.seconds++;
+          if (save) {
+              saveState();
+          } else { 
+              document.getElementById('cronometro').innerText = formatTime(overlayState.seconds);
+          }
+        }, 1000);
+      }
+      if (save) saveState();
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      overlayState.timerRunning = false;
+      saveState();
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      overlayState.seconds = 0;
+      saveState();
+    }
+
+    function formatTime(s) {
+      const min = String(Math.floor(s / 60)).padStart(2, '0');
+      const sec = String(s % 60).padStart(2, '0');
+      return `${min}:${sec}`;
+    }
+
+    function nextPeriod() {
+        if (overlayState.currentPeriod < 5) { // Ajustado para incluir o "Intervalo"
+            overlayState.currentPeriod++;
+        } else {
+            overlayState.currentPeriod = 1; 
+        }
+        saveState();
+    }
+
+    function setPeriod(periodNumber) {
+        overlayState.currentPeriod = periodNumber;
+        saveState();
+    }
+
+    function addCartao(time, cor) {
+      if (!overlayState.cards[time]) {
+          overlayState.cards[time] = { 'amarelo': 0, 'vermelho': 0 };
+      }
+      if (!overlayState.cards[time][cor]) {
+          overlayState.cards[time][cor] = 0;
+      }
+      overlayState.cards[time][cor]++;
+      saveState();
+    }
+
+    function renderCards(time) {
+      const displayElement = document.getElementById('cardsDisplay' + time);
+      displayElement.innerHTML = '';
+      const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
+      const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
+
+      for (let i = 0; i < amarelos; i++) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-indicator yellow-card';
+        displayElement.appendChild(cardDiv);
+      }
+      for (let i = 0; i < vermelhos; i++) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-indicator red-card';
+        displayElement.appendChild(cardDiv);
+      }
+    }
+
+    function resetCards(time, cor) {
+      if (overlayState.cards[time] && overlayState.cards[time].hasOwnProperty(cor)) {
+        overlayState.cards[time][cor] = 0;
+        saveState();
+      }
+    }
+
+    function addPenalty(time, resultado) {
+      if (!overlayState.penalties[time]) {
+        overlayState.penalties[time] = [];
+      }
+      // Limita a 5 bolas por time para não poluir
+      if (overlayState.penalties[time].length < 5) { 
+        overlayState.penalties[time].push(resultado === 'convertido' ? 'green' : 'red');
+        saveState();
+      }
+    }
+
+    function renderPenalties(time) {
+      const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}`);
+      penaltyBallsContainer.innerHTML = '';
+      const penalties = overlayState.penalties[time] || []; 
+
+      // Renderiza até 5 bolinhas, preenchendo as que já foram e deixando as restantes em branco
+      for (let i = 0; i < 5; i++) { 
+        const ballDiv = document.createElement('div');
+        ballDiv.className = 'penalty-ball';
+        if (penalties[i]) {
+          ballDiv.classList.add(penalties[i]); 
+        }
+        penaltyBallsContainer.appendChild(ballDiv);
+      }
+    }
+
+    function togglePenaltyMode(activate) {
+      overlayState.penaltyModeActive = activate;
+      overlayState.isGoalAnimationActive = false; // Garante que a animação de gol não esteja ativa
+      saveState();
+    }
+
+    function resetPenalties() {
+        overlayState.penalties = { '1': [], '2': [] };
+        saveState();
+    }
+
+    function triggerGoalAnimation() {
+      if (goalAnimationTimeout) {
+        clearTimeout(goalAnimationTimeout);
+      }
+
+      overlayState.isGoalAnimationActive = true;
+      overlayState.penaltyModeActive = false; 
+      saveState(); 
+
+      goalAnimationTimeout = setTimeout(() => {
+        overlayState.isGoalAnimationActive = false;
+        saveState(); 
+      }, 3000); // 3 segundos para a animação
+    }
+
+    function toggleOverlayVisibility() {
+      overlayState.isVisible = !overlayState.isVisible;
+      saveState();
+    }
+  </script>
+</body>
+            </html>
