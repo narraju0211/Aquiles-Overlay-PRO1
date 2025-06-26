@@ -30,7 +30,7 @@
       min-height: 100vh;
     }
 
-    /* Estilos do Placar Visual */
+    /* Estilos do Placar Visual (apenas para exibição no controlador) */
     .visual-overlay-container {
       width: 100%;
       max-width: 900px; 
@@ -43,7 +43,7 @@
       background-color: transparent;
       position: relative; /* Mantido para centralizar o placar */
       z-index: 2;
-      min-height: 200px; 
+      min-height: 200px; /* Garante altura mínima para o placar */
       justify-content: flex-start; 
     }
 
@@ -65,8 +65,8 @@
       box-sizing: border-box;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
-      position: relative; /* Necessário para posicionar as animações dentro */
-      overflow: hidden; /* NECESSÁRIO para conter as animações */
+      position: relative; 
+      overflow: hidden; 
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
       min-height: unset; 
       height: fit-content; 
@@ -125,7 +125,7 @@
 
     /* CORREÇÃO: Aumenta o tamanho da fonte da abreviação */
     .team-name-abbr {
-      font-size: 28px; /* Aumentado de 24px para 28px */
+      font-size: 28px; 
       font-weight: bold;
       color: var(--placar-text);
       background: rgba(0, 0, 0, 0.4);
@@ -240,10 +240,10 @@
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
 
-    /* Animações de Texto - POSICIONAMENTO PARA O CONTROLADOR */
-    /* Elas não precisam ser visíveis aqui, só no overlay. Apenas a estrutura. */
+    /* Animações de Texto - NO CONTROLADOR, ELAS SÃO SEMPRE ESCONDIDAS */
     .animated-text {
       display: none; /* Esconde no controlador */
+      /* Se precisar de uma representação visual, ajuste aqui, mas geralmente é desnecessário. */
     }
 
     /* Classes para controlar a visibilidade dos modos */
@@ -253,14 +253,9 @@
         display: none !important;
     }
     
-    /* Todas as animações de texto começam escondidas */
+    /* TODAS as animações de texto devem começar escondidas no controlador */
     .animated-text.hidden {
         display: none !important;
-    }
-
-    /* A animação ativa recebe display flex para aparecer */
-    .animated-text.active-mode { 
-        display: flex;
     }
 
     /* Estilos do Painel de Controle - Mantidos */
@@ -472,10 +467,8 @@
           <div class="penalty-balls-container" id="penaltiesDisplay2"></div>
         </div>
       </div>
-      </div>
+    </div>
     <div class="animated-text" id="goalAnimation">GOOOOL!</div>
-    <div class="animated-text" id="incredulousAnimation">INACREDITÁVEL!!!</div>
-    <div class="animated-text" id="beautifulAnimation">QUE BELEZA!!!</div>
   </div>
 
   <div class="control-panel-container" id="controlPanelContainer">
@@ -503,11 +496,9 @@
         </div>
 
         <div class="control-group">
-            <label>Animações de Texto:</label>
+            <label>Animação de Gol:</label>
             <div class="goal-trigger">
                 <button class="btn purple" onclick="triggerAnimation('goalAnimation')" style="font-size: 20px; padding: 10px 20px;">GOL!</button>
-                <button class="btn purple" onclick="triggerAnimation('incredulousAnimation')" style="font-size: 20px; padding: 10px 20px;">INACREDITÁVEL!</button>
-                <button class="btn purple" onclick="triggerAnimation('beautifulAnimation')" style="font-size: 20px; padding: 10px 20px;">QUE BELEZA!</button>
             </div>
         </div>
       </div>
@@ -638,7 +629,7 @@
       timerRunning: false,
       placarThemeIndex: 0,
       penaltyModeActive: false,
-      activeAnimation: null, // Novo: controla qual animação está ativa ('goalAnimation', 'incredulousAnimation', 'beautifulAnimation', ou null)
+      activeAnimation: null, // APENAS 'goalAnimation' ou null
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -750,20 +741,9 @@
       const penaltyContent = document.getElementById('penaltyPlacarContent');
       
       const goalAnimation = document.getElementById('goalAnimation');
-      const incredulousAnimation = document.getElementById('incredulousAnimation');
-      const beautifulAnimation = document.getElementById('beautifulAnimation');
 
-      // Esconde todas as animações e conteúdos por padrão
-      // NOTA: As animações no CONTROLADOR não precisam ter a classe 'active-mode'
-      // Elas são hidden por padrão no CSS deste arquivo.
+      // Esconde todas as animações (no controlador, elas são sempre hidden)
       goalAnimation.classList.add('hidden'); 
-      incredulousAnimation.classList.add('hidden');
-      beautifulAnimation.classList.add('hidden');
-
-      normalContent.classList.remove('hidden'); 
-      cardsLine.classList.remove('hidden');
-      penaltyContent.classList.remove('active'); 
-      penaltyContent.classList.add('hidden'); 
 
       // Lógica de visibilidade dos modos
       if (overlayState.activeAnimation) {
@@ -976,7 +956,7 @@
         overlayState.penalties[time] = [];
       }
       // Limitar a 5 pênaltis, se necessário, ou aumentar o limite
-      if (overlayState.penalties[time].length < 10) { // Aumentei para 10 para mais rounds, se for o caso
+      if (overlayState.penalties[time].length < 5) { // Limite de 5 pênaltis
         overlayState.penalties[time].push(resultado === 'convertido' ? 'green' : 'red');
         saveState();
       }
@@ -987,8 +967,8 @@
       penaltyBallsContainer.innerHTML = '';
       const penalties = overlayState.penalties[time] || []; 
 
-      // Renderiza as bolinhas existentes e as vazias até 5
-      for (let i = 0; i < Math.max(5, penalties.length); i++) { // Renderiza pelo menos 5, ou mais se tiver mais pênaltis
+      // Renderiza sempre 5 bolinhas. Se não houver resultado, a bola será vazia.
+      for (let i = 0; i < 5; i++) { 
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
         if (penalties[i]) {
