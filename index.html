@@ -256,8 +256,8 @@
       font-weight: 900; /* Mais negrito */
       color: #0ff;
       text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 8px rgba(0, 255, 255, 0.6); /* Brilho mais intenso */
-      opacity: 0;
-      visibility: hidden;
+      opacity: 0; /* Inicia transparente */
+      visibility: hidden; /* Inicia escondido */
       animation-fill-mode: forwards;
       z-index: 1000;
       pointer-events: none;
@@ -270,9 +270,11 @@
     }
 
     @keyframes fadeInScaleOut {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); visibility: hidden; }
+      1% { visibility: visible; } /* Torna visível bem no início da animação */
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); visibility: visible; }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); visibility: visible; }
+      99% { opacity: 0; visibility: visible; } /* Permanece visível (mas transparente) até o fim */
       100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); visibility: hidden;}
     }
 
@@ -286,11 +288,15 @@
     .penalty-shootout-placar.hidden {
         display: none !important; /* Força a ocultação */
     }
+    
+    /* Esta classe `hidden` no goal-animation agora será usada APENAS quando não estiver em modo de animação de gol */
     .goal-animation.hidden {
         display: none !important;
     }
-    .goal-animation.active-mode { /* Nova classe para ativar o display quando for o modo ativo */
-        display: flex; /* Exibe o elemento */
+
+    /* Nova classe para ativar o display quando for o modo ativo */
+    .goal-animation.active-mode { 
+        display: flex; /* Exibe o elemento. IMPORTANTE para que o CSS de animação possa agir */
     }
 
     .control-panel-container {
@@ -513,379 +519,7 @@
     const app = firebase.initializeApp(firebaseConfig);
     const database = app.database();
     const overlayStateRef = database.ref('overlayState');
-    // REMOVEMOS goalAnimationTriggerRef daqui
 
     let overlayState = {
       placar: { '1': 0, '2': 0 },
-      cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
-      penalties: { '1': [], '2': [] },
-      seconds: 0,
-      timerRunning: false,
-      placarThemeIndex: 0,
-      penaltyModeActive: false,
-      isGoalAnimationActive: false, // NOVO: Estado da animação de gol
-      currentPeriod: 1,
-      nome1: '',
-      nome2: '',
-      escudo1: '',
-      escudo2: '',
-      logoOverlay: '',
-      isVisible: true
-    };
-
-    let timerInterval;
-    let goalAnimationTimeout; // Para controlar o tempo da animação do gol
-
-    const placarThemes = [
-      { bg: 'rgba(34, 34, 34, 0.9)', text: 'white', border: '#555', timerColor: '#0ff' }, // Tema padrão
-      { bg: 'rgba(0, 123, 255, 0.9)', text: 'white', border: '#0056b3', timerColor: '#fff' }, // Azul
-      { bg: 'rgba(40, 167, 69, 0.9)', text: 'white', border: '#218838', timerColor: '#fff' }, // Verde
-      { bg: 'rgba(220, 53, 69, 0.9)', text: 'white', border: '#c82333', timerColor: '#fff' }, // Vermelho
-      { bg: 'rgba(255, 193, 7, 0.9)', text: 'black', border: '#e0a800', timerColor: '#333' } // Amarelo
-    ];
-
-    const periodNames = {
-        0: 'Parado',
-        1: '1º Tempo',
-        2: '2º Tempo',
-        3: 'Prorrogação',
-        4: 'Intervalo',
-        5: 'Tempo Extra'
-    };
-
-    document.addEventListener('DOMContentLoaded', initializeFirebaseAndLoadState);
-
-    function initializeFirebaseAndLoadState() {
-        overlayStateRef.once('value', (snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                Object.assign(overlayState, data); 
-            }
-            renderUI();
-            if (overlayState.timerRunning && !timerInterval) {
-                startTimer(false); 
-            }
-        });
-
-        document.getElementById('nome1').addEventListener('input', (e) => {
-            overlayState.nome1 = e.target.value;
-            saveState();
-        });
-        document.getElementById('nome2').addEventListener('input', (e) => {
-            overlayState.nome2 = e.target.value;
-            saveState();
-        });
-    }
-
-    function saveState() {
-      overlayStateRef.set(overlayState)
-        .then(() => {
-          renderUI();
-        })
-        .catch((error) => {
-          console.error("Erro ao salvar no Firebase: ", error);
-        });
-    }
-
-    function renderUI() {
-      document.getElementById('placar1').innerText = overlayState.placar['1'];
-      document.getElementById('placar2').innerText = overlayState.placar['2'];
-      document.getElementById('nome1').value = overlayState.nome1;
-      document.getElementById('nome2').value = overlayState.nome2;
-
-      document.getElementById('escudo1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
-      document.getElementById('escudoPenalty1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-      document.getElementById('escudo2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-      document.getElementById('escudoPenalty2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-
-      document.getElementById('logoOverlay').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-      document.getElementById('logoOverlayPenalty').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-
-      renderCards('1');
-      renderCards('2');
-      document.getElementById('cronometro').innerText = formatTime(overlayState.seconds);
-      document.getElementById('periodoDisplay').innerText = periodNames[overlayState.currentPeriod] || 'N/A';
-      renderPenalties('1');
-      renderPenalties('2');
-      applyPlacarTheme();
-
-      const normalContent = document.getElementById('normalPlacarContent');
-      const cardsLine = document.getElementById('placarCardsLine');
-      const penaltyContent = document.getElementById('penaltyPlacarContent');
-      const goalAnimation = document.getElementById('goalAnimation');
-
-      // Lógica de visibilidade dos modos
-      if (overlayState.isGoalAnimationActive) {
-        normalContent.classList.add('hidden');
-        cardsLine.classList.add('hidden');
-        penaltyContent.classList.add('hidden'); // Garante que pênaltis também sejam ocultados
-        
-        goalAnimation.classList.add('active-mode'); // Garante que o display esteja flex
-        goalAnimation.classList.remove('hidden'); // Garante que não esteja hidden via CSS
-        goalAnimation.classList.add('active'); // Inicia a animação CSS
-      } else if (overlayState.penaltyModeActive) {
-        normalContent.classList.add('hidden');
-        cardsLine.classList.add('hidden');
-        penaltyContent.classList.remove('hidden');
-        penaltyContent.classList.add('active'); // Se já não estiver
-
-        goalAnimation.classList.add('hidden'); // Garante que a animação de gol esteja oculta
-        goalAnimation.classList.remove('active-mode'); // Remove a classe que força display
-        goalAnimation.classList.remove('active'); // Garante que a animação pare
-      } else {
-        normalContent.classList.remove('hidden');
-        cardsLine.classList.remove('hidden');
-        penaltyContent.classList.add('hidden');
-        penaltyContent.classList.remove('active'); // Remove a classe active também
-
-        goalAnimation.classList.add('hidden'); // Garante que a animação de gol esteja oculta
-        goalAnimation.classList.remove('active-mode');
-        goalAnimation.classList.remove('active');
-      }
-
-      const visualContainer = document.getElementById('visualOverlayContainer');
-      const toggleButton = document.querySelector('.btn.dark-gray[onclick="toggleOverlayVisibility()"]');
-      if (overlayState.isVisible) {
-        visualContainer.classList.remove('hidden-display');
-        if (toggleButton) toggleButton.innerText = 'Ocultar Placar na Transmissão';
-      } else {
-        visualContainer.classList.add('hidden-display');
-        if (toggleButton) toggleButton.innerText = 'Mostrar Placar na Transmissão';
-      }
-    }
-
-    function alterarPlacar(time, valor) {
-      overlayState.placar[time] += valor;
-      if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
-      saveState();
-    }
-
-    function togglePlacarTheme() {
-      overlayState.placarThemeIndex = (overlayState.placarThemeIndex + 1) % placarThemes.length;
-      saveState();
-    }
-
-    function applyPlacarTheme() {
-      const theme = placarThemes[overlayState.placarThemeIndex];
-      document.documentElement.style.setProperty('--placar-bg', theme.bg);
-      document.documentElement.style.setProperty('--placar-text', theme.text);
-      document.documentElement.style.setProperty('--placar-border', theme.border);
-      document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
-      document.documentElement.style.setProperty('--highlight-color', theme.timerColor); 
-    }
-
-    function loadEscudo(event, time) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = function() {
-            const MAX_DIMENSION = 200; 
-            let width = img.width;
-            let height = img.height;
-
-            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-              if (width > height) {
-                height = Math.round(height * (MAX_DIMENSION / width));
-                width = MAX_DIMENSION;
-              } else {
-                width = Math.round(width * (MAX_DIMENSION / height));
-                height = MAX_DIMENSION;
-              }
-            }
-
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-
-            overlayState['escudo' + time] = canvas.toDataURL('image/png');
-            saveState();
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function loadLogo(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = function() {
-            const MAX_DIMENSION = 200; 
-            let width = img.width;
-            let height = img.height;
-
-            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-              if (width > height) {
-                height = Math.round(height * (MAX_DIMENSION / width));
-                width = MAX_DIMENSION;
-              } else {
-                width = Math.round(width * (MAX_DIMENSION / height));
-                height = MAX_DIMENSION;
-              }
-            }
-
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-
-            overlayState.logoOverlay = canvas.toDataURL('image/png');
-            saveState();
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function startTimer(save = true) {
-      if (!timerInterval) {
-        overlayState.timerRunning = true;
-        timerInterval = setInterval(() => {
-          overlayState.seconds++;
-          if (save) {
-              saveState();
-          } else { 
-              document.getElementById('cronometro').innerText = formatTime(overlayState.seconds);
-          }
-        }, 1000);
-      }
-      if (save) saveState();
-    }
-
-    function pauseTimer() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      overlayState.timerRunning = false;
-      saveState();
-    }
-
-    function resetTimer() {
-      pauseTimer();
-      overlayState.seconds = 0;
-      saveState();
-    }
-
-    function formatTime(s) {
-      const min = String(Math.floor(s / 60)).padStart(2, '0');
-      const sec = String(s % 60).padStart(2, '0');
-      return `${min}:${sec}`;
-    }
-
-    function nextPeriod() {
-        if (overlayState.currentPeriod < 5) {
-            overlayState.currentPeriod++;
-        } else {
-            overlayState.currentPeriod = 1; 
-        }
-        saveState();
-    }
-
-    function setPeriod(periodNumber) {
-        overlayState.currentPeriod = periodNumber;
-        saveState();
-    }
-
-    function addCartao(time, cor) {
-      if (!overlayState.cards[time]) {
-          overlayState.cards[time] = { 'amarelo': 0, 'vermelho': 0 };
-      }
-      if (!overlayState.cards[time][cor]) {
-          overlayState.cards[time][cor] = 0;
-      }
-      overlayState.cards[time][cor]++;
-      saveState();
-    }
-
-    function renderCards(time) {
-      const displayElement = document.getElementById('cardsDisplay' + time);
-      displayElement.innerHTML = '';
-      const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
-      const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
-
-      for (let i = 0; i < amarelos; i++) {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card-indicator yellow-card';
-        displayElement.appendChild(cardDiv);
-      }
-      for (let i = 0; i < vermelhos; i++) {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card-indicator red-card';
-        displayElement.appendChild(cardDiv);
-      }
-    }
-
-    function resetCards(time, cor) {
-      if (overlayState.cards[time] && overlayState.cards[time].hasOwnProperty(cor)) {
-        overlayState.cards[time][cor] = 0;
-        saveState();
-      }
-    }
-
-    function addPenalty(time, resultado) {
-      if (!overlayState.penalties[time]) {
-        overlayState.penalties[time] = [];
-      }
-      if (overlayState.penalties[time].length < 5) { 
-        overlayState.penalties[time].push(resultado === 'convertido' ? 'green' : 'red');
-        saveState();
-      }
-    }
-
-    function renderPenalties(time) {
-      const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}`);
-      penaltyBallsContainer.innerHTML = '';
-      const penalties = overlayState.penalties[time] || []; 
-
-      for (let i = 0; i < 5; i++) { 
-        const ballDiv = document.createElement('div');
-        ballDiv.className = 'penalty-ball';
-        if (penalties[i]) {
-          ballDiv.classList.add(penalties[i]); 
-        }
-        penaltyBallsContainer.appendChild(ballDiv);
-      }
-    }
-
-    function togglePenaltyMode(activate) {
-      overlayState.penaltyModeActive = activate;
-      overlayState.isGoalAnimationActive = false; // Desativa animação de gol se ativar pênaltis
-      saveState();
-    }
-
-    function resetPenalties() {
-        overlayState.penalties = { '1': [], '2': [] };
-        saveState();
-    }
-
-    function triggerGoalAnimation() {
-      // Limpa qualquer timeout anterior para evitar conflitos
-      if (goalAnimationTimeout) {
-        clearTimeout(goalAnimationTimeout);
-      }
-
-      overlayState.isGoalAnimationActive = true;
-      saveState(); // Salva para ativar a animação no overlay
-
-      // Inicia o timeout para desativar a animação após 3 segundos
-      goalAnimationTimeout = setTimeout(() => {
-        overlayState.isGoalAnimationActive = false;
-        saveState(); // Salva para desativar a animação no overlay
-      }, 3000); // 3 segundos
-    }
-
-    function toggleOverlayVisibility() {
-      overlayState.isVisible = !overlayState.isVisible;
-      saveState();
-    }
-  </script>
-</body>
-  </html>
+      cards: { '1': { 'amarelo': 0, 'vermel
