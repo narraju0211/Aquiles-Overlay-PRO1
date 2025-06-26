@@ -33,7 +33,7 @@
     /* Estilos do Placar Visual */
     .visual-overlay-container {
       width: 100%;
-      max-width: 900px; /* Mantém a largura máxima */
+      max-width: 900px; 
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -41,11 +41,10 @@
       opacity: 1;
       visibility: visible;
       background-color: transparent;
-      position: relative;
+      position: relative; /* Mantido para centralizar o placar */
       z-index: 2;
-      /* AJUSTE AQUI: Para garantir que o container do overlay tenha altura suficiente */
-      min-height: 200px; /* Um valor razoável para o placar e animações */
-      justify-content: flex-start; /* Alinha o placar ao topo dentro dele */
+      min-height: 200px; 
+      justify-content: flex-start; 
     }
 
     .visual-overlay-container.hidden-display {
@@ -59,18 +58,18 @@
       flex-direction: column;
       align-items: center;
       background: var(--placar-bg);
-      padding: 5px 15px; /* Reduz o padding vertical */
+      padding: 5px 15px; 
       border-radius: 12px;
       margin-top: 15px;
       width: 100%;
       box-sizing: border-box;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
-      position: relative;
-      overflow: hidden;
+      position: relative; /* Necessário para posicionar as animações dentro */
+      overflow: hidden; /* NECESSÁRIO para conter as animações */
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      min-height: unset; /* Remove min-height */
-      height: fit-content; /* Ajusta a altura ao conteúdo */
+      min-height: unset; 
+      height: fit-content; 
       justify-content: center;
     }
 
@@ -78,17 +77,17 @@
     .placar-main-line {
       display: flex;
       align-items: center;
-      justify-content: center; /* Centraliza tudo na linha principal */
+      justify-content: center; 
       width: 100%;
-      gap: 5px; /* Espaço entre os elementos */
+      gap: 5px; 
       flex-wrap: nowrap;
     }
 
     .placar-group {
       display: flex;
       align-items: center;
-      gap: 5px; /* Espaço entre elementos dentro de um grupo */
-      flex-shrink: 0; /* Não permite encolher */
+      gap: 5px; 
+      flex-shrink: 0; 
     }
 
     /* REINTRODUZIDO E AJUSTADO: Logo Central */
@@ -96,29 +95,29 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0; /* Não encolher */
-      padding: 0 10px; /* Espaçamento ajustado ao redor da logo */
-      min-width: 60px; /* Largura mínima para a logo */
+      flex-shrink: 0; 
+      padding: 0 10px; 
+      min-width: 60px; 
     }
     .logo-central img {
-      width: 60px; /* Tamanho da logo */
+      width: 60px; 
       height: 60px;
       object-fit: contain;
       filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
     }
 
     .escudo {
-      width: 45px; /* Levemente maior para dar destaque */
+      width: 45px; 
       height: 45px;
       object-fit: contain;
       flex-shrink: 0;
       filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
     }
     .placar-numero {
-      font-size: 42px; /* Aumenta um pouco o placar */
+      font-size: 42px; 
       font-weight: bold;
-      margin: 0 3px; /* Margem menor */
-      min-width: 50px; /* Garante que o número tenha espaço */
+      margin: 0 3px; 
+      min-width: 50px; 
       text-align: center;
       flex-shrink: 0;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
@@ -126,13 +125,13 @@
 
     /* CORREÇÃO: Aumenta o tamanho da fonte da abreviação */
     .team-name-abbr {
-      font-size: 24px; /* Aumentado de 18px para 24px */
+      font-size: 28px; /* Aumentado de 24px para 28px */
       font-weight: bold;
       color: var(--placar-text);
       background: rgba(0, 0, 0, 0.4);
       padding: 4px 8px;
       border-radius: 4px;
-      text-transform: uppercase; /* Para garantir maiúsculas */
+      text-transform: uppercase; 
       flex-shrink: 0;
       white-space: nowrap;
     }
@@ -140,7 +139,7 @@
     /* Cronômetro e Período */
     #cronometro,
     #periodoDisplay {
-      font-size: 24px; /* Aumenta um pouco a fonte */
+      font-size: 24px; 
       font-weight: bold;
       color: var(--placar-timer-color);
       background: rgba(0, 0, 0, 0.6);
@@ -151,7 +150,7 @@
       flex-shrink: 0;
     }
     #periodoDisplay {
-        font-size: 20px; /* Período um pouco menor que o cronômetro */
+        font-size: 20px; 
         background: rgba(0, 0, 0, 0.4);
         color: var(--placar-text);
     }
@@ -160,13 +159,13 @@
     .placar-cards-line {
       display: flex;
       align-items: center;
-      justify-content: center; /* Centraliza os cartões */
+      justify-content: center; 
       width: 100%;
-      margin-top: 8px; /* Espaço maior entre a linha principal e os cartões */
-      padding-top: 8px; /* Padding superior para a linha */
-      border-top: 1px solid rgba(255, 255, 255, 0.15); /* Borda mais visível */
+      margin-top: 8px; 
+      padding-top: 8px; 
+      border-top: 1px solid rgba(255, 255, 255, 0.15); 
       flex-wrap: nowrap;
-      gap: 40px; /* Espaço entre os displays de cartão */
+      gap: 40px; 
     }
 
     .cards-display {
@@ -176,12 +175,12 @@
       justify-content: center;
       width: unset;
       flex-shrink: 0;
-      gap: 5px; /* Espaço entre os cartões individuais */
+      gap: 5px; 
     }
     .card-indicator {
-      width: 20px; /* Tamanho maior do cartão */
+      width: 20px; 
       height: 20px;
-      border-radius: 4px; /* Maior arredondamento */
+      border-radius: 4px; 
       margin: 0;
       border: 1px solid #777;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
@@ -212,7 +211,7 @@
         flex-grow: 1;
     }
     .penalty-team-display .team-name-display {
-        font-size: 18px; /* Nome do time no pênalti maior */
+        font-size: 18px; 
         font-weight: bold;
         margin-top: 5px;
         background: rgba(0, 0, 0, 0.4);
@@ -221,7 +220,7 @@
         white-space: nowrap;
     }
     .penalty-team-display .escudo {
-        width: 55px; /* Escudo maior no pênalti */
+        width: 55px; 
         height: 55px;
     }
     .penalty-balls-container {
@@ -230,7 +229,7 @@
         margin-top: 5px;
     }
     .penalty-ball {
-        width: 28px; /* Bola de pênalti maior */
+        width: 28px; 
         height: 28px;
         border-radius: 50%;
         border: 2px solid white;
@@ -355,7 +354,7 @@
     .btn.dark-gray:hover { background: #23272b; }
 
     .section-title {
-      margin-top: 5px; /* Menor margem superior */
+      margin-top: 5px; 
       margin-bottom: 18px;
       font-weight: bold;
       color: var(--highlight-color);
@@ -364,18 +363,18 @@
       padding-bottom: 8px;
       text-align: center;
       text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
-      width: 100%; /* Título ocupa a largura total da seção */
+      width: 100%; 
     }
     .control-group {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 8px; /* Espaço entre label/input e botões */
+        gap: 8px; 
         width: 100%;
         margin-bottom: 10px;
     }
     .control-group.inline-buttons {
-        flex-direction: row; /* Botões na mesma linha */
+        flex-direction: row; 
         justify-content: center;
         flex-wrap: wrap;
     }
@@ -384,7 +383,7 @@
         margin-bottom: 5px;
     }
     .control-group input[type="text"] {
-        width: calc(100% - 20px); /* Ajusta a largura do input */
+        width: calc(100% - 20px); 
         padding: 8px;
         border-radius: 6px;
         border: 1px solid #555;
@@ -652,7 +651,7 @@
     };
 
     let timerInterval;
-    let animationTimeout; // Renomeado para gerenciar todas as animações de texto
+    let animationTimeout; 
 
     const placarThemes = [
       { bg: 'rgba(34, 34, 34, 0.9)', text: 'white', border: '#555', timerColor: '#0ff' }, 
@@ -761,23 +760,16 @@
       incredulousAnimation.classList.add('hidden');
       beautifulAnimation.classList.add('hidden');
 
-      normalContent.classList.remove('hidden'); // Começa mostrando o placar normal
+      normalContent.classList.remove('hidden'); 
       cardsLine.classList.remove('hidden');
-      penaltyContent.classList.remove('active'); // Garante que a classe 'active' do penalty não esteja lá
-      penaltyContent.classList.add('hidden'); // Esconde o modo pênalti
+      penaltyContent.classList.remove('active'); 
+      penaltyContent.classList.add('hidden'); 
 
       // Lógica de visibilidade dos modos
       if (overlayState.activeAnimation) {
           normalContent.classList.add('hidden');
           cardsLine.classList.add('hidden');
           penaltyContent.classList.add('hidden'); 
-
-          // No controlador, a animação que está ativa deve ser oculta (display: none)
-          // Isso evita que ela ocupe espaço desnecessário ou cause problemas de layout no painel.
-          // A animação real é renderizada APENAS no overlay.html
-          // Então, não precisamos fazer nada aqui para 'exibir' a animação.
-          // A linha abaixo apenas mantém a lógica, mas na prática, display: none já a esconde.
-          // document.getElementById(overlayState.activeAnimation).classList.remove('hidden');
 
       } else if (overlayState.penaltyModeActive) {
           normalContent.classList.add('hidden');
@@ -983,7 +975,8 @@
       if (!overlayState.penalties[time]) {
         overlayState.penalties[time] = [];
       }
-      if (overlayState.penalties[time].length < 5) { 
+      // Limitar a 5 pênaltis, se necessário, ou aumentar o limite
+      if (overlayState.penalties[time].length < 10) { // Aumentei para 10 para mais rounds, se for o caso
         overlayState.penalties[time].push(resultado === 'convertido' ? 'green' : 'red');
         saveState();
       }
@@ -994,7 +987,8 @@
       penaltyBallsContainer.innerHTML = '';
       const penalties = overlayState.penalties[time] || []; 
 
-      for (let i = 0; i < 5; i++) { 
+      // Renderiza as bolinhas existentes e as vazias até 5
+      for (let i = 0; i < Math.max(5, penalties.length); i++) { // Renderiza pelo menos 5, ou mais se tiver mais pênaltis
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
         if (penalties[i]) {
@@ -1010,7 +1004,6 @@
       saveState();
     }
 
-    // CORREÇÃO: Função resetPenalties para resetar ambos os times
     function resetPenalties() {
         overlayState.penalties['1'] = [];
         overlayState.penalties['2'] = [];
@@ -1029,7 +1022,7 @@
       animationTimeout = setTimeout(() => {
         overlayState.activeAnimation = null;
         saveState(); 
-      }, 3000); // Duração da animação (3 segundos)
+      }, 2000); // Duração da animação (2 segundos)
     }
 
     function toggleOverlayVisibility() {
@@ -1038,4 +1031,4 @@
     }
   </script>
 </body>
-  </html>
+</html>
