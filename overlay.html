@@ -237,8 +237,8 @@
       font-weight: 900; /* Mais negrito */
       color: #0ff;
       text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 8px rgba(0, 255, 255, 0.6); /* Brilho mais intenso */
-      opacity: 0;
-      visibility: hidden;
+      opacity: 0; /* Inicia transparente */
+      visibility: hidden; /* Inicia escondido */
       animation-fill-mode: forwards;
       z-index: 1000;
       pointer-events: none;
@@ -251,9 +251,11 @@
     }
 
     @keyframes fadeInScaleOut {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); visibility: hidden; }
+      1% { visibility: visible; } /* Torna visível bem no início da animação */
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); visibility: visible; }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); visibility: visible; }
+      99% { opacity: 0; visibility: visible; } /* Permanece visível (mas transparente) até o fim */
       100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); visibility: hidden;}
     }
 
@@ -267,11 +269,15 @@
     .penalty-shootout-placar.hidden {
         display: none !important; /* Força a ocultação */
     }
+    
+    /* Esta classe `hidden` no goal-animation agora será usada APENAS quando não estiver em modo de animação de gol */
     .goal-animation.hidden {
         display: none !important;
     }
-    .goal-animation.active-mode { /* Nova classe para ativar o display quando for o modo ativo */
-        display: flex; /* Exibe o elemento */
+
+    /* Nova classe para ativar o display quando for o modo ativo */
+    .goal-animation.active-mode { 
+        display: flex; /* Exibe o elemento. IMPORTANTE para que o CSS de animação possa agir */
     }
   </style>
 </head>
@@ -343,7 +349,6 @@
     const app = firebase.initializeApp(firebaseConfig);
     const database = app.database();
     const overlayStateRef = database.ref('overlayState');
-    // REMOVEMOS goalAnimationTriggerRef daqui
 
     let overlayState = {
       placar: { '1': 0, '2': 0 },
@@ -353,7 +358,7 @@
       timerRunning: false,
       placarThemeIndex: 0,
       penaltyModeActive: false,
-      isGoalAnimationActive: false, // NOVO: Estado da animação de gol
+      isGoalAnimationActive: false, 
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -364,6 +369,7 @@
     };
 
     let timerInterval;
+    let currentGoalAnimationStatus = false; // Para detectar mudança e forçar reinício da animação
 
     const placarThemes = [
       { bg: 'rgba(34, 34, 34, 0.9)', text: 'white', border: '#555', timerColor: '#0ff' }, 
@@ -401,8 +407,6 @@
       }, (error) => {
         console.error("Erro ao ler dados do Firebase:", error);
       });
-
-      // REMOVEMOS O LISTENER PARA goalAnimationTriggerRef AQUI
     }
 
     function startLocalTimer(initialSeconds) {
@@ -455,11 +459,13 @@
         penaltyContent.classList.add('hidden');
         
         goalAnimation.classList.add('active-mode'); 
-        goalAnimation.classList.remove('hidden');
-        // Reinicia a animação se já estiver ativa ou foi recém-ativada
-        goalAnimation.classList.remove('active'); 
-        void goalAnimation.offsetWidth; // Força reflow
-        goalAnimation.classList.add('active'); 
+        // Apenas adiciona 'active' se o estado anterior era falso para reiniciar a animação
+        if (!currentGoalAnimationStatus) { 
+            goalAnimation.classList.remove('active'); 
+            void goalAnimation.offsetWidth; // Força reflow/re-render para reiniciar a animação
+            goalAnimation.classList.add('active'); 
+        }
+        goalAnimation.classList.remove('hidden'); // Garante que não esteja hidden
       } else if (overlayState.penaltyModeActive) {
         normalContent.classList.add('hidden');
         cardsLine.classList.add('hidden');
@@ -479,6 +485,9 @@
         goalAnimation.classList.remove('active-mode');
         goalAnimation.classList.remove('active');
       }
+
+      // Atualiza o status da animação de gol para a próxima comparação
+      currentGoalAnimationStatus = overlayState.isGoalAnimationActive;
 
       const visualContainer = document.getElementById('visualOverlayContainer');
       if (overlayState.isVisible) {
