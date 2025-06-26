@@ -21,8 +21,8 @@
       height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      padding-top: 15px;
+      align-items: flex-start; /* Alinha o conteúdo ao topo */
+      padding-top: 15px; /* Adiciona um padding no topo da página */
       box-sizing: border-box;
     }
 
@@ -36,8 +36,11 @@
       opacity: 1;
       visibility: visible;
       background-color: transparent;
-      position: relative;
+      position: relative; /* Essencial para o posicionamento das animações */
       z-index: 2;
+      /* Ajuste para que o container possa abrigar as animações */
+      height: calc(100vh - 30px); /* Ocupa a maior parte da altura da tela, considerando o padding do body */
+      justify-content: flex-start; /* O placar fica no topo, e as animações podem aparecer no meio */
     }
 
     .visual-overlay-container.hidden-display {
@@ -53,16 +56,15 @@
       background: var(--placar-bg);
       padding: 5px 15px; /* Reduz o padding vertical */
       border-radius: 12px;
-      margin-top: 15px;
+      /* Removendo margin-top, pois o padding-top do body já dá espaço */
       width: 100%;
       box-sizing: border-box;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
-      position: relative;
-      overflow: hidden;
+      /* Removido position: relative; overflow: hidden; para as animações poderem sair */
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      min-height: unset; /* Remove min-height */
-      height: fit-content; /* Ajusta a altura ao conteúdo */
+      min-height: unset; 
+      height: fit-content; 
       justify-content: center;
     }
 
@@ -116,9 +118,9 @@
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
 
-    /* Estilos para abreviações dos nomes */
+    /* CORREÇÃO: Aumenta o tamanho da fonte da abreviação */
     .team-name-abbr {
-      font-size: 18px; /* Tamanho da abreviação */
+      font-size: 24px; /* Aumentado de 18px para 24px */
       font-weight: bold;
       color: var(--placar-text);
       background: rgba(0, 0, 0, 0.4);
@@ -233,15 +235,15 @@
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
 
-    /* Animações de Texto */
+    /* Animações de Texto - CORREÇÃO DE POSICIONAMENTO E TAMANHO */
     .animated-text {
-      position: absolute;
+      position: absolute; /* Posição absoluta em relação ao .visual-overlay-container */
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 80px;
+      transform: translate(-50%, -50%); /* Centraliza o elemento */
+      font-size: 80px; /* Tamanho da fonte grande */
       font-weight: 900;
-      color: var(--highlight-color); /* Usa a cor de destaque */
+      color: var(--highlight-color); 
       text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 8px rgba(0, 255, 255, 0.6);
       opacity: 0;
       visibility: hidden;
@@ -252,8 +254,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 100%;
-      height: 100%;
+      width: 100%; /* Ocupa a largura total do container */
+      height: 100%; /* Ocupa a altura total do container */
     }
 
     @keyframes fadeInScaleOut {
@@ -336,11 +338,10 @@
           <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
         </div>
       </div>
-
-      <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
-      <div class="animated-text" id="incredulousAnimation_display">INACREDITÁVEL!!!</div>
-      <div class="animated-text" id="beautifulAnimation_display">QUE BELEZA!!!</div>
     </div>
+    <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
+    <div class="animated-text" id="incredulousAnimation_display">INACREDITÁVEL!!!</div>
+    <div class="animated-text" id="beautifulAnimation_display">QUE BELEZA!!!</div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -556,7 +557,7 @@
       for (let i = 0; i < vermelhos; i++) {
         const cardDiv = document.createElement('div');
         cardDiv.className = 'card-indicator red-card';
-        displayElement.appendChild(cardDiv);
+        displayDiv.appendChild(cardDiv);
       }
     }
 
