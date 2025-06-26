@@ -165,7 +165,7 @@
       align-items: center;
       justify-content: space-around;
       width: 100%;
-      margin-top: 8px; /* Mais margem superior */
+      margin-top: 8px; /* Más margem superior */
       padding-top: 8px;
       border-top: 1px solid rgba(255, 255, 255, 0.15); /* Borda mais visível */
       flex-wrap: nowrap;
@@ -176,7 +176,7 @@
       min-height: 25px; /* Altura mínima maior */
       align-items: center;
       justify-content: center;
-      width: 120px; /* Largura um pouco maior */
+      width: 120px; /* Largura um poco mayor */
       flex-shrink: 0;
       gap: 2px;
     }
@@ -191,42 +191,53 @@
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
 
+    /* Estilo para o placar de pênaltis - MUDANÇAS AQUI */
     .penalty-shootout-placar {
-      display: none; /* Inicia oculto */
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      gap: 10px; /* Mais espaço entre elementos dos pênaltis */
-      padding: 10px 0;
+        display: none; /* Inicia oculto */
+        flex-direction: row; /* Volta para linha como o placar principal */
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 15px; /* Espaço entre os times e a logo central */
+        padding: 10px 0;
     }
     .penalty-shootout-placar.active {
-      display: flex;
+        display: flex;
     }
     .penalty-team-display {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 200px; /* Largura mínima maior */
-      justify-content: center;
+        display: flex;
+        flex-direction: column; /* Agora as bolas ficam abaixo do nome/escudo */
+        align-items: center;
+        gap: 5px; /* Espaço entre escudo/nome e as bolinhas */
+        min-width: 150px; /* Largura mínima para o bloco do time */
+        justify-content: center;
+        flex-grow: 1; /* Permite que cresçam */
+    }
+    .penalty-team-display .team-name-display {
+        font-size: 16px; /* Nome do time nos pênaltis */
+        font-weight: bold;
+        margin-top: 5px;
     }
     .penalty-team-display .escudo {
-      width: 50px; /* Escudos maiores nos pênaltis */
-      height: 50px;
+        width: 50px; /* Escudos maiores nos pênaltis */
+        height: 50px;
     }
     .penalty-balls-container {
-      display: flex;
-      gap: 8px; /* Mais espaço entre as bolinhas */
+        display: flex;
+        gap: 8px; /* Mais espaço entre as bolinhas */
+        margin-top: 5px; /* Espaço das bolinhas para o nome */
     }
     .penalty-ball {
-      width: 25px; /* Bolinhas maiores */
-      height: 25px;
-      border-radius: 50%;
-      border: 2px solid white;
-      background-color: transparent;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        width: 25px; /* Bolinhas maiores */
+        height: 25px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background-color: transparent;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     }
     .penalty-ball.green { background-color: #28a745; border-color: #28a745; }
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
+
 
     .goal-animation {
       position: absolute; /* Posição absoluta para sobrepor */
@@ -315,14 +326,14 @@
       <div class="penalty-shootout-placar" id="penaltyPlacarContent_display">
         <div class="penalty-team-display">
           <img id="escudoPenalty1_display" class="escudo" src="" alt="Escudo Time 1">
-          <div class="penalty-balls-container" id="penaltiesDisplay1_display"></div>
+          <span id="nomePenalty1_display" class="team-name-display">Time 1</span> <div class="penalty-balls-container" id="penaltiesDisplay1_display"></div>
         </div>
         <div class="logo-central">
           <img id="logoOverlayPenalty_display" src="" alt="Sua Logo">
         </div>
         <div class="penalty-team-display">
           <img id="escudoPenalty2_display" class="escudo" src="" alt="Escudo Time 2">
-          <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
+          <span id="nomePenalty2_display" class="team-name-display">Time 2</span> <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
         </div>
       </div>
 
@@ -384,7 +395,7 @@
         1: '1º Tempo',
         2: '2º Tempo',
         3: 'Prorrogação',
-        4: 'Intervalo',
+        4: 'Intervalo', // NOVO PERÍODO
         5: 'Tempo Extra'
     };
 
@@ -430,6 +441,10 @@
       document.getElementById('placar2_display').innerText = overlayState.placar['2'];
       document.getElementById('nome1_display').innerText = overlayState.nome1 || 'Time 1';
       document.getElementById('nome2_display').innerText = overlayState.nome2 || 'Time 2';
+
+      // Adicionado para os nomes na seção de pênaltis também
+      document.getElementById('nomePenalty1_display').innerText = overlayState.nome1 || 'Time 1';
+      document.getElementById('nomePenalty2_display').innerText = overlayState.nome2 || 'Time 2';
 
       document.getElementById('escudo1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('escudoPenalty1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
@@ -545,4 +560,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
