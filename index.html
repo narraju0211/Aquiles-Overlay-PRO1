@@ -56,7 +56,7 @@
       flex-direction: column;
       align-items: center;
       background: var(--placar-bg);
-      padding: 10px 15px;
+      padding: 5px 15px; /* Reduz o padding vertical */
       border-radius: 12px;
       margin-top: 15px;
       width: 100%;
@@ -66,7 +66,8 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      min-height: 120px; /* Altura ajustada para o layout */
+      min-height: unset; /* Remove min-height */
+      height: fit-content; /* Ajusta a altura ao conteúdo */
       justify-content: center;
     }
 
@@ -74,20 +75,17 @@
     .placar-main-line {
       display: flex;
       align-items: center;
-      justify-content: space-between; /* Espaçamento entre os blocos principais */
+      justify-content: center; /* Centraliza tudo na linha principal */
       width: 100%;
-      gap: 5px; /* Reduzido para ser mais compacto */
+      gap: 5px; /* Espaço entre os elementos */
       flex-wrap: nowrap;
     }
 
-    /* NOVO: Estilo para os blocos de time */
-    .team-block {
+    .placar-group {
       display: flex;
       align-items: center;
-      gap: 5px; /* Menor gap para compactar */
-      flex-shrink: 1; /* Permite encolher um pouco se necessário */
-      min-width: unset; /* Remove min-width */
-      justify-content: center;
+      gap: 5px; /* Espaço entre elementos dentro de um grupo */
+      flex-shrink: 0; /* Não permite encolher */
     }
 
     /* REINTRODUZIDO E AJUSTADO: Logo Central */
@@ -96,36 +94,36 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0; /* Não encolher */
-      padding: 0 5px; /* Espaçamento ajustado */
+      padding: 0 10px; /* Espaçamento ajustado ao redor da logo */
       min-width: 60px; /* Largura mínima para a logo */
     }
     .logo-central img {
-      width: 55px; /* Tamanho da logo */
-      height: 55px;
+      width: 60px; /* Tamanho da logo */
+      height: 60px;
       object-fit: contain;
       filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
     }
 
     .escudo {
-      width: 40px; /* Levemente menor para compactar */
-      height: 40px;
+      width: 45px; /* Levemente maior para dar destaque */
+      height: 45px;
       object-fit: contain;
       flex-shrink: 0;
       filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
     }
     .placar-numero {
-      font-size: 38px; /* Mantém o tamanho do placar */
+      font-size: 42px; /* Aumenta um pouco o placar */
       font-weight: bold;
-      margin: 0 5px; /* Menor margem */
-      min-width: 45px;
+      margin: 0 3px; /* Margem menor */
+      min-width: 50px; /* Garante que o número tenha espaço */
       text-align: center;
       flex-shrink: 0;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
 
-    /* NOVO: Estilos para abreviações dos nomes */
+    /* Estilos para abreviações dos nomes */
     .team-name-abbr {
-      font-size: 16px; /* Tamanho da abreviação */
+      font-size: 18px; /* Tamanho da abreviação */
       font-weight: bold;
       color: var(--placar-text);
       background: rgba(0, 0, 0, 0.4);
@@ -136,33 +134,21 @@
       white-space: nowrap;
     }
 
-    .team-name-input,
-    .team-name-display { /* team-name-display é para o overlay.html */
-      display: none; /* Esconde os nomes completos no placar */
-    }
-
-    /* NOVO: Cronômetro e Período juntos */
-    .time-period-group {
-      display: flex;
-      align-items: center;
-      gap: 8px; /* Espaço entre cronômetro e período */
-      flex-shrink: 0;
-    }
-
+    /* Cronômetro e Período */
     #cronometro,
     #periodoDisplay {
-      font-size: 22px;
+      font-size: 24px; /* Aumenta um pouco a fonte */
       font-weight: bold;
       color: var(--placar-timer-color);
       background: rgba(0, 0, 0, 0.6);
-      padding: 4px 12px;
+      padding: 4px 10px;
       border-radius: 6px;
       white-space: nowrap;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
       flex-shrink: 0;
     }
     #periodoDisplay {
-        font-size: 17px;
+        font-size: 20px; /* Período um pouco menor que o cronômetro */
         background: rgba(0, 0, 0, 0.4);
         color: var(--placar-text);
     }
@@ -173,39 +159,39 @@
       align-items: center;
       justify-content: center; /* Centraliza os cartões */
       width: 100%;
-      margin-top: 5px; /* Reduz margem superior */
-      padding-top: 5px; /* Reduz padding superior */
-      border-top: 1px solid rgba(255, 255, 255, 0.1); /* Borda mais discreta */
+      margin-top: 8px; /* Espaço maior entre a linha principal e os cartões */
+      padding-top: 8px; /* Padding superior para a linha */
+      border-top: 1px solid rgba(255, 255, 255, 0.15); /* Borda mais visível */
       flex-wrap: nowrap;
-      gap: 30px; /* Espaço entre os displays de cartão */
+      gap: 40px; /* Espaço entre os displays de cartão */
     }
 
     .cards-display {
       display: flex;
-      min-height: 20px; /* Menor altura */
+      min-height: 20px;
       align-items: center;
       justify-content: center;
-      width: unset; /* Remove largura fixa */
+      width: unset;
       flex-shrink: 0;
-      gap: 3px; /* Espaço entre os cartões individuais */
+      gap: 5px; /* Espaço entre os cartões individuais */
     }
     .card-indicator {
-      width: 16px; /* Menor tamanho do cartão */
-      height: 16px;
-      border-radius: 3px; /* Menor arredondamento */
-      margin: 0; /* Remove margem individual */
+      width: 20px; /* Tamanho maior do cartão */
+      height: 20px;
+      border-radius: 4px; /* Maior arredondamento */
+      margin: 0;
       border: 1px solid #777;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Sombra mais discreta */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
 
-    /* Estilo para o placar de pênaltis (mantido como antes, ajustado ao novo contexto) */
+    /* Estilo para o placar de pênaltis */
     .penalty-shootout-placar {
         display: none;
         flex-direction: row;
         align-items: center;
-        justify-content: space-between; /* Ajuste para espaçamento */
+        justify-content: space-between;
         width: 100%;
         gap: 15px;
         padding: 10px 0;
@@ -223,13 +209,17 @@
         flex-grow: 1;
     }
     .penalty-team-display .team-name-display {
-        font-size: 16px;
+        font-size: 18px; /* Nome do time no pênalti maior */
         font-weight: bold;
         margin-top: 5px;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 4px 10px;
+        border-radius: 5px;
+        white-space: nowrap;
     }
     .penalty-team-display .escudo {
-        width: 50px;
-        height: 50px;
+        width: 55px; /* Escudo maior no pênalti */
+        height: 55px;
     }
     .penalty-balls-container {
         display: flex;
@@ -237,8 +227,8 @@
         margin-top: 5px;
     }
     .penalty-ball {
-        width: 25px;
-        height: 25px;
+        width: 28px; /* Bola de pênalti maior */
+        height: 28px;
         border-radius: 50%;
         border: 2px solid white;
         background-color: transparent;
@@ -248,14 +238,15 @@
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
 
-    .goal-animation {
+    /* Animações de Texto */
+    .animated-text {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 80px;
       font-weight: 900;
-      color: #0ff;
+      color: var(--highlight-color); /* Usa a cor de destaque */
       text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 8px rgba(0, 255, 255, 0.6);
       opacity: 0;
       visibility: hidden;
@@ -279,7 +270,7 @@
       100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); visibility: hidden;}
     }
 
-    .goal-animation.active {
+    .animated-text.active {
       animation: fadeInScaleOut 2.5s ease-out forwards;
     }
 
@@ -290,11 +281,13 @@
         display: none !important;
     }
     
-    .goal-animation.hidden {
+    /* Todas as animações de texto começam escondidas */
+    .animated-text.hidden {
         display: none !important;
     }
 
-    .goal-animation.active-mode { 
+    /* A animação ativa recebe display flex para aparecer */
+    .animated-text.active-mode { 
         display: flex;
     }
 
@@ -462,12 +455,11 @@
   <div class="visual-overlay-container" id="visualOverlayContainer">
     <div class="placar" id="placarPrincipal">
       <div class="placar-main-line" id="normalPlacarContent">
-        <div class="time-period-group">
-          <div id="cronometro">00:00</div>
-          <div id="periodoDisplay" class="periodo">1º T</div>
+        <div class="placar-group">
+            <div id="cronometro">00:00</div>
         </div>
 
-        <div class="team-block team1">
+        <div class="placar-group">
             <img id="escudo1" class="escudo" src="" alt="Escudo Time 1">
             <span id="nomeAbbr1" class="team-name-abbr">T1</span>
             <span id="placar1" class="placar-numero">0</span>
@@ -477,10 +469,14 @@
           <img id="logoOverlay" src="" alt="Sua Logo">
         </div>
 
-        <div class="team-block team2">
+        <div class="placar-group">
             <span id="placar2" class="placar-numero">0</span>
             <span id="nomeAbbr2" class="team-name-abbr">T2</span>
             <img id="escudo2" class="escudo" src="" alt="Escudo Time 2">
+        </div>
+        
+        <div class="placar-group">
+            <div id="periodoDisplay" class="periodo">1º T</div>
         </div>
       </div>
 
@@ -505,7 +501,9 @@
         </div>
       </div>
 
-      <div class="goal-animation" id="goalAnimation">GOOOOL!</div>
+      <div class="animated-text" id="goalAnimation">GOOOOL!</div>
+      <div class="animated-text" id="incredulousAnimation">INACREDITÁVEL!!!</div>
+      <div class="animated-text" id="beautifulAnimation">QUE BELEZA!!!</div>
     </div>
   </div>
 
@@ -534,9 +532,11 @@
         </div>
 
         <div class="control-group">
-            <label>Animações:</label>
+            <label>Animações de Texto:</label>
             <div class="goal-trigger">
-                <button class="btn purple" onclick="triggerGoalAnimation()" style="font-size: 24px; padding: 12px 25px;">GOL!</button>
+                <button class="btn purple" onclick="triggerAnimation('goalAnimation')" style="font-size: 20px; padding: 10px 20px;">GOL!</button>
+                <button class="btn purple" onclick="triggerAnimation('incredulousAnimation')" style="font-size: 20px; padding: 10px 20px;">INACREDITÁVEL!</button>
+                <button class="btn purple" onclick="triggerAnimation('beautifulAnimation')" style="font-size: 20px; padding: 10px 20px;">QUE BELEZA!</button>
             </div>
         </div>
       </div>
@@ -667,20 +667,20 @@
       timerRunning: false,
       placarThemeIndex: 0,
       penaltyModeActive: false,
-      isGoalAnimationActive: false, 
+      activeAnimation: null, // Novo: controla qual animação está ativa ('goalAnimation', 'incredulousAnimation', 'beautifulAnimation', ou null)
       currentPeriod: 1,
       nome1: '',
       nome2: '',
-      nomeAbbr1: 'T1', // Abreviação padrão
-      nomeAbbr2: 'T2', // Abreviação padrão
+      nomeAbbr1: 'T1', 
+      nomeAbbr2: 'T2', 
       escudo1: '',
       escudo2: '',
-      logoOverlay: '', // Agora aparecerá no placar principal
+      logoOverlay: '', 
       isVisible: true
     };
 
     let timerInterval;
-    let goalAnimationTimeout; 
+    let animationTimeout; // Renomeado para gerenciar todas as animações de texto
 
     const placarThemes = [
       { bg: 'rgba(34, 34, 34, 0.9)', text: 'white', border: '#555', timerColor: '#0ff' }, 
@@ -713,7 +713,6 @@
             }
         });
 
-        // Event listeners para nomes completos
         document.getElementById('nome1_input_panel').addEventListener('input', (e) => {
             overlayState.nome1 = e.target.value;
             saveState();
@@ -723,13 +722,12 @@
             saveState();
         });
 
-        // Event listeners para abreviações
         document.getElementById('nomeAbbr1_input_panel').addEventListener('input', (e) => {
-            overlayState.nomeAbbr1 = e.target.value.toUpperCase().substring(0, 3); // Limita a 3 letras e maiúsculas
+            overlayState.nomeAbbr1 = e.target.value.toUpperCase().substring(0, 3);
             saveState();
         });
         document.getElementById('nomeAbbr2_input_panel').addEventListener('input', (e) => {
-            overlayState.nomeAbbr2 = e.target.value.toUpperCase().substring(0, 3); // Limita a 3 letras e maiúsculas
+            overlayState.nomeAbbr2 = e.target.value.toUpperCase().substring(0, 3);
             saveState();
         });
     }
@@ -745,31 +743,25 @@
     }
 
     function renderUI() {
-      // Atualiza placar
       document.getElementById('placar1').innerText = overlayState.placar['1'];
       document.getElementById('placar2').innerText = overlayState.placar['2'];
       
-      // Atualiza inputs do painel de controle para nomes completos e abreviações
       document.getElementById('nome1_input_panel').value = overlayState.nome1;
       document.getElementById('nome2_input_panel').value = overlayState.nome2;
       document.getElementById('nomeAbbr1_input_panel').value = overlayState.nomeAbbr1;
       document.getElementById('nomeAbbr2_input_panel').value = overlayState.nomeAbbr2;
 
-      // Atualiza abreviações no placar principal
       document.getElementById('nomeAbbr1').innerText = overlayState.nomeAbbr1;
       document.getElementById('nomeAbbr2').innerText = overlayState.nomeAbbr2;
 
-      // Atualiza nomes no modo pênalti (usa nome completo aqui)
       document.getElementById('nomePenalty1').innerText = overlayState.nome1 || 'Time 1';
       document.getElementById('nomePenalty2').innerText = overlayState.nome2 || 'Time 2';
 
-      // Atualiza escudos
       document.getElementById('escudo1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
       document.getElementById('escudoPenalty1').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('escudo2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('escudoPenalty2').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
-      // Logo central (agora aparecerá no placar principal e no modo pênalti)
       document.getElementById('logoOverlay').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('logoOverlayPenalty').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
@@ -785,35 +777,42 @@
       const normalContent = document.getElementById('normalPlacarContent');
       const cardsLine = document.getElementById('placarCardsLine');
       const penaltyContent = document.getElementById('penaltyPlacarContent');
+      
       const goalAnimation = document.getElementById('goalAnimation');
+      const incredulousAnimation = document.getElementById('incredulousAnimation');
+      const beautifulAnimation = document.getElementById('beautifulAnimation');
+
+      // Esconde todas as animações e conteúdos por padrão
+      goalAnimation.classList.add('hidden', 'active-mode'); // Adiciona active-mode para que o display:flex funcione corretamente
+      incredulousAnimation.classList.add('hidden', 'active-mode');
+      beautifulAnimation.classList.add('hidden', 'active-mode');
+
+      normalContent.classList.remove('hidden'); // Começa mostrando o placar normal
+      cardsLine.classList.remove('hidden');
+      penaltyContent.classList.remove('active'); // Garante que a classe 'active' do penalty não esteja lá
+      penaltyContent.classList.add('hidden'); // Esconde o modo pênalti
 
       // Lógica de visibilidade dos modos
-      if (overlayState.isGoalAnimationActive) {
-        normalContent.classList.add('hidden');
-        cardsLine.classList.add('hidden');
-        penaltyContent.classList.add('hidden'); 
-        
-        goalAnimation.classList.add('active-mode'); 
-        goalAnimation.classList.remove('hidden'); 
-        goalAnimation.classList.add('active'); 
+      if (overlayState.activeAnimation) {
+          normalContent.classList.add('hidden');
+          cardsLine.classList.add('hidden');
+          penaltyContent.classList.add('hidden'); 
+
+          // Ativa apenas a animação correspondente
+          document.getElementById(overlayState.activeAnimation).classList.remove('hidden');
+          document.getElementById(overlayState.activeAnimation).classList.add('active');
+
       } else if (overlayState.penaltyModeActive) {
-        normalContent.classList.add('hidden');
-        cardsLine.classList.add('hidden');
-        penaltyContent.classList.remove('hidden');
-        penaltyContent.classList.add('active'); 
+          normalContent.classList.add('hidden');
+          cardsLine.classList.add('hidden');
+          penaltyContent.classList.remove('hidden');
+          penaltyContent.classList.add('active'); 
 
-        goalAnimation.classList.add('hidden'); 
-        goalAnimation.classList.remove('active-mode'); 
-        goalAnimation.classList.remove('active'); 
       } else {
-        normalContent.classList.remove('hidden');
-        cardsLine.classList.remove('hidden'); // Cartões sempre visíveis com placar normal
-        penaltyContent.classList.add('hidden');
-        penaltyContent.classList.remove('active');
-
-        goalAnimation.classList.add('hidden'); 
-        goalAnimation.classList.remove('active-mode');
-        goalAnimation.classList.remove('active');
+          normalContent.classList.remove('hidden');
+          cardsLine.classList.remove('hidden'); 
+          penaltyContent.classList.add('hidden');
+          penaltyContent.classList.remove('active');
       }
 
       const visualContainer = document.getElementById('visualOverlayContainer');
@@ -1030,7 +1029,7 @@
 
     function togglePenaltyMode(activate) {
       overlayState.penaltyModeActive = activate;
-      overlayState.isGoalAnimationActive = false;
+      overlayState.activeAnimation = null; // Garante que nenhuma animação de texto esteja ativa
       saveState();
     }
 
@@ -1039,19 +1038,19 @@
         saveState();
     }
 
-    function triggerGoalAnimation() {
-      if (goalAnimationTimeout) {
-        clearTimeout(goalAnimationTimeout);
+    function triggerAnimation(animationId) {
+      if (animationTimeout) {
+        clearTimeout(animationTimeout);
       }
 
-      overlayState.isGoalAnimationActive = true;
+      overlayState.activeAnimation = animationId;
       overlayState.penaltyModeActive = false; 
       saveState(); 
 
-      goalAnimationTimeout = setTimeout(() => {
-        overlayState.isGoalAnimationActive = false;
+      animationTimeout = setTimeout(() => {
+        overlayState.activeAnimation = null;
         saveState(); 
-      }, 3000);
+      }, 3000); // Duração da animação (3 segundos)
     }
 
     function toggleOverlayVisibility() {
@@ -1060,4 +1059,4 @@
     }
   </script>
 </body>
-              </html>
+  </html>
