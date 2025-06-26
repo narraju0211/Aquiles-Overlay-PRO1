@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --placar-bg: rgba(34, 34, 34, 0.9);
+      --placar-bg-rgb: 34, 34, 34; /* Usamos RGB para controlar a alfa separadamente */
+      --placar-opacity: 0.9; /* Valor padrão de opacidade (0 a 1) */
       --placar-text: white;
       --placar-border: #555;
       --placar-timer-color: #0ff;
@@ -21,8 +22,8 @@
       height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start; /* Alinha o conteúdo ao topo */
-      padding-top: 15px; /* Adiciona um padding no topo da página */
+      align-items: flex-start; 
+      padding-top: 15px; 
       box-sizing: border-box;
     }
 
@@ -30,15 +31,16 @@
       width: 100%;
       max-width: 900px;
       display: flex;
-      flex-direction: column; /* Para empilhar placar e animação */
+      flex-direction: column; 
       align-items: center;
       transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
       opacity: 1;
       visibility: visible;
       background-color: transparent;
-      position: relative; /* CRÍTICO: Container para posicionar o placar e a animação */
+      position: relative; 
       z-index: 2;
-      height: calc(100vh - 30px); 
+      height: fit-content; /* Deixa ele abraçar o conteúdo */
+      min-height: 120px; /* Garante uma altura mínima razoável */
       justify-content: flex-start; 
     }
 
@@ -52,14 +54,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: var(--placar-bg);
+      /* Usa as variáveis CSS para o background */
+      background: rgba(var(--placar-bg-rgb), var(--placar-opacity)); 
       padding: 5px 15px; 
       border-radius: 12px;
       width: 100%;
       box-sizing: border-box;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
-      position: relative; /* Continua relativo para layout interno */
+      position: relative; 
       overflow: hidden; 
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
       min-height: unset; 
@@ -67,7 +70,6 @@
       justify-content: center;
     }
 
-    /* NOVO: Layout do Placar Principal */
     .placar-main-line {
       display: flex;
       align-items: center;
@@ -75,6 +77,7 @@
       width: 100%;
       gap: 5px; 
       flex-wrap: nowrap;
+      padding: 5px 0; /* Ajuste para o espaçamento vertical */
     }
 
     .placar-group {
@@ -84,7 +87,6 @@
       flex-shrink: 0; 
     }
 
-    /* REINTRODUZIDO E AJUSTADO: Logo Central */
     .logo-central {
       display: flex;
       align-items: center;
@@ -117,7 +119,6 @@
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
     }
 
-    /* CORREÇÃO: Aumenta o tamanho da fonte da abreviação */
     .team-name-abbr {
       font-size: 28px; 
       font-weight: bold;
@@ -130,7 +131,6 @@
       white-space: nowrap;
     }
 
-    /* Cronômetro e Período */
     #cronometro_display,
     #periodoDisplay_display {
       font-size: 24px; 
@@ -149,7 +149,6 @@
         color: var(--placar-text);
     }
 
-    /* NOVO: Posicionamento discreto dos cartões */
     .placar-cards-line {
       display: flex;
       align-items: center;
@@ -160,6 +159,7 @@
       border-top: 1px solid rgba(255, 255, 255, 0.15); 
       flex-wrap: nowrap;
       gap: 40px; 
+      padding-bottom: 5px; /* Ajuste para o espaçamento vertical */
     }
 
     .cards-display {
@@ -180,9 +180,8 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
-    .card-indicator.red-card { background-color: #dc3545; } /* Confirma que a cor está correta */
+    .card-indicator.red-card { background-color: #dc3545; } 
 
-    /* Estilo para o placar de pênaltis */
     .penalty-shootout-placar {
         display: none;
         flex-direction: row;
@@ -190,7 +189,7 @@
         justify-content: space-between;
         width: 100%;
         gap: 15px;
-        padding: 10px 0;
+        padding: 10px 0; /* Padding interno para o modo pênalti */
     }
     .penalty-shootout-placar.active {
         display: flex;
@@ -234,9 +233,8 @@
     .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
 
 
-    /* Animações de Texto - SOMENTE A DE GOOOOL! */
     .animated-text {
-      position: absolute; /* Posição absoluta em relação ao .visual-overlay-container */
+      position: absolute; 
       top: 0;
       left: 0;
       width: 100%;
@@ -259,17 +257,16 @@
     @keyframes fadeInScaleOut {
       0% { opacity: 0; transform: scale(0.5); visibility: hidden; }
       1% { visibility: visible; }
-      20% { opacity: 1; transform: scale(1.05); visibility: visible; } /* Escala um pouco mais */
+      20% { opacity: 1; transform: scale(1.05); visibility: visible; } 
       80% { opacity: 1; transform: scale(1); visibility: visible; }
       99% { opacity: 0; visibility: visible; }
-      100% { opacity: 0; transform: scale(0.9); visibility: hidden;} /* Encolhe levemente ao sair */
+      100% { opacity: 0; transform: scale(0.9); visibility: hidden;} 
     }
 
     .animated-text.active {
       animation: fadeInScaleOut 2s ease-out forwards; 
     }
 
-    /* Classes para controlar a visibilidade dos modos */
     .placar-main-line.hidden,
     .placar-cards-line.hidden,
     .penalty-shootout-placar.hidden {
@@ -357,6 +354,7 @@
       seconds: 0,
       timerRunning: false,
       placarThemeIndex: 0,
+      placarOpacity: 90, // NOVO: Opacidade do placar (0-100)
       penaltyModeActive: false,
       activeAnimation: null, 
       currentPeriod: 1,
@@ -372,12 +370,13 @@
 
     let timerInterval;
 
+    // Atualizado para usar valores RGB e a opacidade separada
     const placarThemes = [
-      { bg: 'rgba(34, 34, 34, 0.9)', text: 'white', border: '#555', timerColor: '#0ff' }, 
-      { bg: 'rgba(0, 123, 255, 0.9)', text: 'white', border: '#0056b3', timerColor: '#fff' },
-      { bg: 'rgba(40, 167, 69, 0.9)', text: 'white', border: '#218838', timerColor: '#fff' },
-      { bg: 'rgba(220, 53, 69, 0.9)', text: 'white', border: '#c82333', timerColor: '#fff' },
-      { bg: 'rgba(255, 193, 7, 0.9)', text: 'black', border: '#e0a800', timerColor: '#333' }
+      { rgb: '34, 34, 34', text: 'white', border: '#555', timerColor: '#0ff' }, 
+      { rgb: '0, 123, 255', text: 'white', border: '#0056b3', timerColor: '#fff' },
+      { rgb: '40, 167, 69', text: 'white', border: '#218838', timerColor: '#fff' },
+      { rgb: '220, 53, 69', text: 'white', border: '#c82333', timerColor: '#fff' },
+      { rgb: '255, 193, 7', text: 'black', border: '#e0a800', timerColor: '#333' }
     ];
 
     const periodNames = {
@@ -461,21 +460,21 @@
       normalContent.classList.add('hidden');
       cardsLine.classList.add('hidden');
       penaltyContent.classList.add('hidden');
-      penaltyContent.classList.remove('active'); // Garante que a classe 'active' para display:flex seja removida
+      penaltyContent.classList.remove('active'); 
 
       // Reseta e esconde a animação de gol
-      goalAnimation.classList.remove('active'); // Remove a classe 'active' para permitir re-animação
-      goalAnimation.style.opacity = '0'; // Garante que esteja invisível quando não ativo
-      goalAnimation.style.visibility = 'hidden'; // Garante que esteja hidden quando não ativo
+      goalAnimation.classList.remove('active'); 
+      goalAnimation.style.opacity = '0'; 
+      goalAnimation.style.visibility = 'hidden'; 
 
 
       // Lógica de visibilidade dos modos
       if (overlayState.activeAnimation === 'goalAnimation') {
           goalAnimation.style.visibility = 'visible';
-          goalAnimation.classList.add('active'); // Adiciona a classe para iniciar a animação
+          goalAnimation.classList.add('active'); 
       } else if (overlayState.penaltyModeActive) {
           penaltyContent.classList.remove('hidden');
-          penaltyContent.classList.add('active'); // Adiciona a classe 'active' para display:flex
+          penaltyContent.classList.add('active'); 
       } else {
           normalContent.classList.remove('hidden');
           cardsLine.classList.remove('hidden'); 
@@ -497,7 +496,9 @@
 
     function applyPlacarTheme() {
       const theme = placarThemes[overlayState.placarThemeIndex];
-      document.documentElement.style.setProperty('--placar-bg', theme.bg);
+      // Define a cor RGB e a opacidade separadamente
+      document.documentElement.style.setProperty('--placar-bg-rgb', theme.rgb);
+      document.documentElement.style.setProperty('--placar-opacity', (overlayState.placarOpacity / 100).toFixed(2));
       document.documentElement.style.setProperty('--placar-text', theme.text);
       document.documentElement.style.setProperty('--placar-border', theme.border);
       document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
@@ -517,7 +518,7 @@
       }
       for (let i = 0; i < vermelhos; i++) {
         const cardDiv = document.createElement('div');
-        cardDiv.className = 'card-indicator red-card'; // Garante que a classe está correta
+        cardDiv.className = 'card-indicator red-card'; 
         displayElement.appendChild(cardDiv);
       }
     }
@@ -527,7 +528,6 @@
       penaltyBallsContainer.innerHTML = '';
       const penalties = overlayState.penalties[time] || []; 
       
-      // Renderiza sempre 5 bolinhas. Se não houver resultado, a bola será vazia (transparente).
       for (let i = 0; i < 5; i++) { 
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
