@@ -39,8 +39,8 @@
       background-color: transparent;
       position: relative; 
       z-index: 2;
-      height: fit-content; /* Deixa ele abraçar o conteúdo */
-      min-height: 120px; /* Garante uma altura mínima razoável */
+      height: fit-content; 
+      min-height: 120px; 
       justify-content: flex-start; 
     }
 
@@ -54,7 +54,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      /* Usa as variáveis CSS para o background */
       background: rgba(var(--placar-bg-rgb), var(--placar-opacity)); 
       padding: 5px 15px; 
       border-radius: 12px;
@@ -77,7 +76,7 @@
       width: 100%;
       gap: 5px; 
       flex-wrap: nowrap;
-      padding: 5px 0; /* Ajuste para o espaçamento vertical */
+      padding: 5px 0; 
     }
 
     .placar-group {
@@ -159,7 +158,7 @@
       border-top: 1px solid rgba(255, 255, 255, 0.15); 
       flex-wrap: nowrap;
       gap: 40px; 
-      padding-bottom: 5px; /* Ajuste para o espaçamento vertical */
+      padding-bottom: 5px; 
     }
 
     .cards-display {
@@ -189,7 +188,7 @@
         justify-content: space-between;
         width: 100%;
         gap: 15px;
-        padding: 10px 0; /* Padding interno para o modo pênalti */
+        padding: 10px 0; 
     }
     .penalty-shootout-placar.active {
         display: flex;
@@ -235,7 +234,6 @@
 
     .animated-text {
       position: absolute; 
-      /* Ajustado para centralizar dentro do visual-overlay-container */
       top: 50%; 
       left: 50%;
       transform: translate(-50%, -50%); 
@@ -251,16 +249,12 @@
       white-space: nowrap;
     }
 
-    /* Removi a propriedade display: none; do seletor .animated-text */
-    /* A visibilidade inicial será controlada por opacity/visibility e pela classe 'active' */
-
-
     @keyframes fadeInScaleOut {
       0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); visibility: hidden; }
       1% { visibility: visible; }
       20% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } 
       80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      99% { opacity: 0; visibility: visible; } /* Mantém visível antes de sumir */
+      99% { opacity: 0; visibility: visible; } 
       100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); visibility: hidden;} 
     }
 
@@ -268,11 +262,31 @@
       animation: fadeInScaleOut 2s ease-out forwards; 
     }
 
-    .placar-main-line.hidden,
-    .placar-cards-line.hidden,
-    .penalty-shootout-placar.hidden {
-        display: none !important;
+    /* Adicionado para esconder o placar principal e os cards quando a animação está ativa */
+    .placar-main-line.hide-content,
+    .placar-cards-line.hide-content,
+    .penalty-shootout-placar.hide-content {
+        visibility: hidden !important;
+        opacity: 0 !important;
+        transition: visibility 0.3s, opacity 0.3s; /* Transição para esconder suavemente */
     }
+
+    /* Classes para exibir o conteúdo normal/penalti */
+    .placar-main-line.show-content,
+    .placar-cards-line.show-content {
+        display: flex !important; /* Volta a ser flex */
+        visibility: visible !important;
+        opacity: 1 !important;
+        transition: visibility 0.3s, opacity 0.3s;
+    }
+
+    .penalty-shootout-placar.show-content {
+        display: flex !important; /* Volta a ser flex */
+        visibility: visible !important;
+        opacity: 1 !important;
+        transition: visibility 0.3s, opacity 0.3s;
+    }
+
   </style>
 </head>
 <body>
@@ -355,7 +369,7 @@
       seconds: 0,
       timerRunning: false,
       placarThemeIndex: 0,
-      placarOpacity: 90, // NOVO: Opacidade do placar (0-100)
+      placarOpacity: 90, 
       penaltyModeActive: false,
       activeAnimation: null, 
       currentPeriod: 1,
@@ -371,7 +385,6 @@
 
     let timerInterval;
 
-    // Atualizado para usar valores RGB e a opacidade separada
     const placarThemes = [
       { rgb: '34, 34, 34', text: 'white', border: '#555', timerColor: '#0ff' }, 
       { rgb: '0, 123, 255', text: 'white', border: '#0056b3', timerColor: '#fff' },
@@ -396,15 +409,13 @@
         if (snapshot.exists()) {
           const newState = snapshot.val();
           
-          // Verifica se o timer precisa ser iniciado/parado localmente
           if (newState.timerRunning && !overlayState.timerRunning) {
               startLocalTimer(newState.seconds);
           } else if (!newState.timerRunning && overlayState.timerRunning) {
               stopLocalTimer();
           }
           
-          // Atualiza o estado completo
-          overlayState = newState; 
+          overlayState = newState;
           renderUI();
         }
       }, (error) => {
@@ -413,9 +424,10 @@
     }
 
     function startLocalTimer(initialSeconds) {
-        if (timerInterval) clearInterval(timerInterval); // Limpa qualquer timer existente
-        overlayState.seconds = initialSeconds; // Define os segundos iniciais
-        document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds); // Atualiza instantaneamente
+        if (timerInterval) clearInterval(timerInterval);
+        overlayState.seconds = initialSeconds; 
+        // Atualiza o display do cronômetro imediatamente ao iniciar
+        document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds); 
 
         timerInterval = setInterval(() => {
             overlayState.seconds++;
@@ -431,25 +443,24 @@
     }
 
     function renderUI() {
+      // Atualiza os dados do placar
       document.getElementById('placar1_display').innerText = overlayState.placar['1'];
       document.getElementById('placar2_display').innerText = overlayState.placar['2'];
       document.getElementById('nomeAbbr1_display').innerText = overlayState.nomeAbbr1 || 'T1'; 
       document.getElementById('nomeAbbr2_display').innerText = overlayState.nomeAbbr2 || 'T2'; 
-
       document.getElementById('nomePenalty1_display').innerText = overlayState.nome1 || 'Time 1';
       document.getElementById('nomePenalty2_display').innerText = overlayState.nome2 || 'Time 2';
 
       document.getElementById('escudo1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-      document.getElementById('escudoPenalty1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-      document.getElementById('escudo2_display').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-      document.getElementById('escudoPenalty2_display').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      document.getElementById('escudoPenalty1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+      document.getElementById('escudo2_display').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+      document.getElementById('escudoPenalty2_display').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
 
       document.getElementById('logoOverlay_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-      document.getElementById('logoOverlayPenalty_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      document.getElementById('logoOverlayPenalty_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
 
       renderCards('1');
       renderCards('2');
-      // O cronometro_display é atualizado pelo localTimerInterval ou quando o estado completo é lido.
       document.getElementById('periodoDisplay_display').innerText = periodNames[overlayState.currentPeriod] || 'N/A';
       renderPenalties('1');
       renderPenalties('2');
@@ -460,44 +471,49 @@
       const penaltyContent = document.getElementById('penaltyPlacarContent_display');
       const goalAnimation = document.getElementById('goalAnimation_display');
 
-      // Sempre resetar a animação de gol primeiro, para garantir que ela não fique ativa indevidamente
+      // Primeiro, sempre remove a classe 'active' da animação para que ela possa ser disparada novamente
       goalAnimation.classList.remove('active'); 
-      goalAnimation.style.opacity = '0'; 
-      goalAnimation.style.visibility = 'hidden'; 
+      // E esconde o texto para garantir que ele não fique visível quando não deveria
+      goalAnimation.style.opacity = '0';
+      goalAnimation.style.visibility = 'hidden';
 
-      // Lógica de visibilidade dos modos
+      // Gerencia a visibilidade do placar normal/pênalti vs. animação de gol
       if (overlayState.activeAnimation === 'goalAnimation') {
-          // Se a animação de gol está ativa no estado Firebase
-          normalContent.classList.add('hidden');
-          cardsLine.classList.add('hidden');
-          penaltyContent.classList.add('hidden');
-          penaltyContent.classList.remove('active'); 
+          // Se a animação de gol está ativa no Firebase, esconde o placar e mostra a animação
+          normalContent.classList.add('hide-content');
+          normalContent.classList.remove('show-content');
+          cardsLine.classList.add('hide-content');
+          cardsLine.classList.remove('show-content');
+          penaltyContent.classList.add('hide-content');
+          penaltyContent.classList.remove('show-content');
+          penaltyContent.classList.remove('active'); // Garante que a classe 'active' do pênalti seja removida
 
           goalAnimation.style.visibility = 'visible';
-          goalAnimation.classList.add('active'); 
-
-          // IMPORTANTE: Remove a classe 'active' e esconde a animação após a duração da animação CSS
-          // Isso é necessário porque o estado Firebase não 'reseta' automaticamente 'activeAnimation'
-          // É o controlador que deve fazer isso. Esta lógica aqui é para o caso de a animação ter sido
-          // disparada e o Firebase ter sido lento na atualização ou o controlador não ter resetado.
-          // No entanto, o ideal é que o controlador *também* zere overlayState.activeAnimation após um tempo.
-          // Para essa overlay, vamos confiar que o controlador irá zerar o activeAnimation.
-          // Se a animação precisa de um tempo para completar, e o activeAnimation é zerado muito rápido,
-          // a animação pode ser cortada.
-          // Vamos ajustar isso no controlador, para que ele zere `activeAnimation` APÓS um tempo.
-      } else if (overlayState.penaltyModeActive) {
-          normalContent.classList.add('hidden');
-          cardsLine.classList.add('hidden');
-          penaltyContent.classList.remove('hidden');
-          penaltyContent.classList.add('active'); 
+          goalAnimation.classList.add('active'); // Inicia a animação CSS
       } else {
-          // Modo normal ativo
-          normalContent.classList.remove('hidden');
-          cardsLine.classList.remove('hidden'); 
-          penaltyContent.classList.add('hidden');
-          penaltyContent.classList.remove('active');
+          // Se não há animação ativa, decide entre placar normal e pênaltis
+          if (overlayState.penaltyModeActive) {
+              normalContent.classList.add('hide-content');
+              normalContent.classList.remove('show-content');
+              cardsLine.classList.add('hide-content');
+              cardsLine.classList.remove('show-content');
+              
+              penaltyContent.classList.remove('hide-content');
+              penaltyContent.classList.add('show-content');
+              penaltyContent.classList.add('active'); 
+          } else {
+              normalContent.classList.remove('hide-content');
+              normalContent.classList.add('show-content');
+              cardsLine.classList.remove('hide-content');
+              cardsLine.classList.add('show-content');
+              
+              penaltyContent.classList.add('hide-content');
+              penaltyContent.classList.remove('show-content');
+              penaltyContent.classList.remove('active');
+          }
       }
 
+      // Controla a visibilidade geral da overlay
       const visualContainer = document.getElementById('visualOverlayContainer');
       if (overlayState.isVisible) {
         visualContainer.classList.remove('hidden-display');
@@ -514,7 +530,6 @@
 
     function applyPlacarTheme() {
       const theme = placarThemes[overlayState.placarThemeIndex];
-      // Define a cor RGB e a opacidade separadamente
       document.documentElement.style.setProperty('--placar-bg-rgb', theme.rgb);
       document.documentElement.style.setProperty('--placar-opacity', (overlayState.placarOpacity / 100).toFixed(2));
       document.documentElement.style.setProperty('--placar-text', theme.text);
