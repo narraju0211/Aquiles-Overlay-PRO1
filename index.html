@@ -238,7 +238,32 @@
 
 
     .animated-text {
-      display: none; 
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 8em; /* Tamanho grande para GOOOOL! */
+      font-weight: bold;
+      color: #FFD700; /* Cor dourada */
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.5);
+      z-index: 1001; /* Acima do placar */
+      white-space: nowrap;
+      pointer-events: none; /* Permite cliques passarem por ele */
+      display: none; /* Controlado pela classe .hidden */
+    }
+
+    /* Keyframe animations for the GOOOOL! text */
+    @keyframes pulse {
+        0% { transform: translate(-50%, -50%) scale(1); }
+        50% { transform: translate(-50%, -50%) scale(1.05); }
+        100% { transform: translate(-50%, -50%) scale(1); }
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
     }
 
     .placar-main-line.hidden,
@@ -516,13 +541,7 @@
             </div>
         </div>
 
-        <div class="control-group">
-            <label>Animação de Gol:</label>
-            <div class="goal-trigger">
-                <button class="btn purple" onclick="triggerAnimation('goalAnimation')" style="font-size: 20px; padding: 10px 20px;">GOL!</button>
-            </div>
         </div>
-      </div>
 
       <div>
         <div class="section-title">Nomes e Imagens</div>
@@ -656,7 +675,7 @@
       placarThemeIndex: 0,
       placarOpacity: 90, // NOVO: Opacidade do placar (0-100)
       penaltyModeActive: false,
-      activeAnimation: null, 
+      activeAnimation: null, // Controla qual animação está ativa (ex: 'goalAnimation')
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -669,7 +688,7 @@
     };
 
     let timerInterval;
-    let animationTimeout; 
+    let animationTimeout; // Para controlar o tempo da animação de gol
 
     // Atualizado para usar valores RGB e a opacidade separada
     const placarThemes = [
@@ -778,27 +797,29 @@
       const normalContent = document.getElementById('normalPlacarContent');
       const cardsLine = document.getElementById('placarCardsLine');
       const penaltyContent = document.getElementById('penaltyPlacarContent');
-      
       const goalAnimation = document.getElementById('goalAnimation');
 
-      goalAnimation.classList.add('hidden'); 
+      // Oculta todos os elementos principais e a animação por padrão
+      normalContent.classList.add('hidden');
+      cardsLine.classList.add('hidden');
+      penaltyContent.classList.add('hidden');
+      penaltyContent.classList.remove('active'); // Garante que 'active' seja removido quando oculto
+      goalAnimation.classList.add('hidden'); // Garante que o texto GOOOOL! esteja oculto
 
-      if (overlayState.activeAnimation) {
-          normalContent.classList.add('hidden');
-          cardsLine.classList.add('hidden');
-          penaltyContent.classList.add('hidden'); 
+      // Limpa as animações CSS para permitir que sejam reiniciadas
+      goalAnimation.style.animation = '';
 
+      // Determina qual conteúdo deve ser visível
+      if (overlayState.activeAnimation === 'goalAnimation') {
+          goalAnimation.classList.remove('hidden'); // Mostra o texto GOOOOL!
+          // Aplica as animações CSS diretamente quando o estado é ativo
+          goalAnimation.style.animation = 'pulse 1.5s infinite alternate, fadeInOut 3.5s forwards'; 
       } else if (overlayState.penaltyModeActive) {
-          normalContent.classList.add('hidden');
-          cardsLine.classList.add('hidden');
           penaltyContent.classList.remove('hidden');
-          penaltyContent.classList.add('active'); 
-
+          penaltyContent.classList.add('active');
       } else {
           normalContent.classList.remove('hidden');
-          cardsLine.classList.remove('hidden'); 
-          penaltyContent.classList.add('hidden');
-          penaltyContent.classList.remove('active');
+          cardsLine.classList.remove('hidden');
       }
 
       const visualContainer = document.getElementById('visualOverlayContainer');
@@ -812,7 +833,29 @@
       }
     }
 
+    // NOVA FUNÇÃO: Dispara a animação de gol
+    function triggerGoalAnimation() {
+        // Limpa qualquer timeout de animação anterior para evitar conflitos
+        clearTimeout(animationTimeout);
+        
+        // Define o estado da animação no Firebase para 'goalAnimation'
+        overlayState.activeAnimation = 'goalAnimation';
+        saveState(); // Salva o estado para que a overlay reaja
+
+        const animationDuration = 3500; // Duração total da animação em milissegundos (3.5 segundos)
+        
+        // Configura um timeout para limpar o estado da animação depois que ela terminar
+        animationTimeout = setTimeout(() => {
+            overlayState.activeAnimation = null; // Limpa o estado da animação
+            saveState(); // Salva o estado para que a overlay retorne ao placar normal
+        }, animationDuration);
+    }
+
+
     function alterarPlacar(time, valor) {
+      if (valor === 1) { // Só ativa a animação se for para aumentar o placar (fazer gol)
+        triggerGoalAnimation();
+      }
       overlayState.placar[time] += valor;
       if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
       saveState();
@@ -830,7 +873,7 @@
 
     function applyPlacarTheme() {
       const theme = placarThemes[overlayState.placarThemeIndex];
-      // Define a cor RGB e a opacidade separadamente
+      // Define a cor RGB e a opacidade separada
       document.documentElement.style.setProperty('--placar-bg-rgb', theme.rgb);
       document.documentElement.style.setProperty('--placar-opacity', (overlayState.placarOpacity / 100).toFixed(2));
       document.documentElement.style.setProperty('--placar-text', theme.text);
@@ -939,122 +982,96 @@
       saveState();
     }
 
-    function formatTime(s) {
-      const min = String(Math.floor(s / 60)).padStart(2, '0');
-      const sec = String(s % 60).padStart(2, '0');
-      return `${min}:${sec}`;
+    function formatTime(totalSeconds) {
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function setPeriod(period) {
+        overlayState.currentPeriod = period;
+        saveState();
     }
 
     function nextPeriod() {
-        if (overlayState.currentPeriod < 5) {
-            overlayState.currentPeriod++;
+        if (overlayState.currentPeriod >= 5) { // Reset if maxed out or define more periods
+            overlayState.currentPeriod = 1;
         } else {
-            overlayState.currentPeriod = 1; 
+            overlayState.currentPeriod++;
         }
         saveState();
     }
 
-    function setPeriod(periodNumber) {
-        overlayState.currentPeriod = periodNumber;
+    function addCartao(time, tipo) {
+        overlayState.cards[time][tipo]++;
         saveState();
     }
 
-    function addCartao(time, cor) {
-      if (!overlayState.cards[time]) {
-          overlayState.cards[time] = { 'amarelo': 0, 'vermelho': 0 };
-      }
-      if (!overlayState.cards[time][cor]) {
-          overlayState.cards[time][cor] = 0;
-      }
-      overlayState.cards[time][cor]++;
-      saveState();
+    function resetCards(time, tipo) {
+        overlayState.cards[time][tipo] = 0;
+        saveState();
     }
 
     function renderCards(time) {
-      const displayElement = document.getElementById('cardsDisplay' + time);
-      displayElement.innerHTML = '';
-      const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
-      const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
+        const display = document.getElementById('cardsDisplay' + time);
+        display.innerHTML = ''; // Limpa os cartões existentes
 
-      for (let i = 0; i < amarelos; i++) {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card-indicator yellow-card';
-        displayElement.appendChild(cardDiv);
-      }
-      for (let i = 0; i < vermelhos; i++) {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card-indicator red-card';
-        displayElement.appendChild(cardDiv);
-      }
-    }
-
-    function resetCards(time, cor) {
-      if (overlayState.cards[time] && overlayState.cards[time].hasOwnProperty(cor)) {
-        overlayState.cards[time][cor] = 0;
-        saveState();
-      }
-    }
-
-    function addPenalty(time, resultado) {
-      if (!overlayState.penalties[time]) {
-        overlayState.penalties[time] = [];
-      }
-      // Limitar a 5 pênaltis, se necessário, ou aumentar o limite
-      if (overlayState.penalties[time].length < 5) { 
-        overlayState.penalties[time].push(resultado === 'convertido' ? 'green' : 'red');
-        saveState();
-      }
-    }
-
-    function renderPenalties(time) {
-      const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}`);
-      penaltyBallsContainer.innerHTML = '';
-      const penalties = overlayState.penalties[time] || []; 
-
-      for (let i = 0; i < 5; i++) { 
-        const ballDiv = document.createElement('div');
-        ballDiv.className = 'penalty-ball';
-        if (penalties[i]) {
-          ballDiv.classList.add(penalties[i]); 
+        for (let i = 0; i < overlayState.cards[time]['amarelo']; i++) {
+            const card = document.createElement('div');
+            card.classList.add('card-indicator', 'yellow-card');
+            display.appendChild(card);
         }
-        penaltyBallsContainer.appendChild(ballDiv);
-      }
+        for (let i = 0; i < overlayState.cards[time]['vermelho']; i++) {
+            const card = document.createElement('div');
+            card.classList.add('card-indicator', 'red-card');
+            display.appendChild(card);
+        }
     }
 
-    function togglePenaltyMode(activate) {
-      overlayState.penaltyModeActive = activate;
-      overlayState.activeAnimation = null; 
-      saveState();
+    function togglePenaltyMode(active) {
+        overlayState.penaltyModeActive = active;
+        if (!active) {
+            // Se desativar o modo pênalti, resetar os pênaltis para não mostrar resquícios
+            overlayState.penalties['1'] = [];
+            overlayState.penalties['2'] = [];
+        }
+        saveState();
     }
 
-    // CORREÇÃO: Resetar pênaltis agora também zera o placar de gols dos pênaltis
+    function addPenalty(time, outcome) {
+        // outcome pode ser 'convertido' ou 'perdido'
+        if (overlayState.penalties[time].length < 5) { // Limite de 5 pênaltis por time
+            overlayState.penalties[time].push(outcome);
+        }
+        saveState();
+    }
+
     function resetPenalties() {
         overlayState.penalties['1'] = [];
         overlayState.penalties['2'] = [];
-        // Se houver um placar de gols separado para pênaltis, zere-o aqui também
-        // Por exemplo: overlayState.placarPenalties = { '1': 0, '2': 0 };
         saveState();
     }
 
-    function triggerAnimation(animationId) {
-      if (animationTimeout) {
-        clearTimeout(animationTimeout);
-      }
+    function renderPenalties(time) {
+        const display = document.getElementById('penaltiesDisplay' + time);
+        display.innerHTML = '';
 
-      overlayState.activeAnimation = animationId;
-      overlayState.penaltyModeActive = false; 
-      saveState(); 
-
-      animationTimeout = setTimeout(() => {
-        overlayState.activeAnimation = null;
-        saveState(); 
-      }, 2000); 
+        overlayState.penalties[time].forEach(outcome => {
+            const ball = document.createElement('div');
+            ball.classList.add('penalty-ball');
+            if (outcome === 'convertido') {
+                ball.classList.add('green');
+            } else {
+                ball.classList.add('red');
+            }
+            display.appendChild(ball);
+        });
     }
 
     function toggleOverlayVisibility() {
-      overlayState.isVisible = !overlayState.isVisible;
-      saveState();
+        overlayState.isVisible = !overlayState.isVisible;
+        saveState();
     }
   </script>
 </body>
-            </html>
+              </html>
