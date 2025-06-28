@@ -31,12 +31,6 @@
       min-height: 100vh;
     }
 
-    /* REMOVIDO: O container da overlay visual NÃO PERTENCE ao controlador */
-    /* REMOVIDO: Estilos do placar visual (eles pertencem APENAS à overlay) */
-    /* REMOVIDO: Estilos da animação (eles pertencem APENAS à overlay) */
-
-
-    /* Estilos do Painel de Controle - Mantidos e ligeiramente ajustados para clareza */
     .control-panel-container {
         width: 100%;
         max-width: 900px;
@@ -76,7 +70,7 @@
     }
     .painel > div.main-section .placar-controls,
     .painel > div.main-section .timer-controls,
-    .painel > div.main-section .goal-trigger {
+    .painel > div.main-section .goal-trigger { /* O .goal-trigger pode ser removido do CSS se o botão for removido do HTML */
         display: flex;
         justify-content: center;
         flex-wrap: wrap; 
@@ -233,10 +227,10 @@
         <div class="control-group">
             <label>Placar:</label>
             <div class="placar-controls">
-                <button class="btn green" onclick="alterarPlacar('1', 1)">+ Time 1</button>
-                <button class="btn red" onclick="alterarPlacar('1', -1)">- Time 1</button>
-                <button class="btn green" onclick="alterarPlacar('2', 1)">+ Time 2</button>
-                <button class="btn red" onclick="alterarPlacar('2', -1)">- Time 2</button>
+                <button class="btn green" onclick="alterarPlacar('1', 1, true)">+ Time 1</button>
+                <button class="btn red" onclick="alterarPlacar('1', -1, false)">- Time 1</button>
+                <button class="btn green" onclick="alterarPlacar('2', 1, true)">+ Time 2</button>
+                <button class="btn red" onclick="alterarPlacar('2', -1, false)">- Time 2</button>
             </div>
         </div>
         
@@ -249,13 +243,7 @@
             </div>
         </div>
 
-        <div class="control-group">
-            <label>Animação de Gol:</label>
-            <div class="goal-trigger">
-                <button class="btn purple" onclick="triggerGoalAnimation()" style="font-size: 20px; padding: 10px 20px;">GOL!</button>
-            </div>
         </div>
-      </div>
 
       <div>
         <div class="section-title">Nomes e Imagens</div>
@@ -389,7 +377,7 @@
       placarThemeIndex: 0,
       placarOpacity: 90, 
       penaltyModeActive: false,
-      activeAnimation: null, // Mantenha isso no controlador para dizer à overlay qual animação está ativa
+      activeAnimation: null, 
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -402,10 +390,8 @@
     };
 
     let timerInterval;
-    // O animationTimeout agora é para o controlador zerar o activeAnimation no Firebase
     let animationTimeoutController; 
 
-    // Atualizado para usar valores RGB e a opacidade separada
     const placarThemes = [
       { rgb: '34, 34, 34', text: 'white', border: '#555', timerColor: '#0ff' }, 
       { rgb: '0, 123, 255', text: 'white', border: '#0056b3', timerColor: '#fff' },
@@ -426,17 +412,14 @@
     document.addEventListener('DOMContentLoaded', initializeFirebaseAndLoadState);
 
     function initializeFirebaseAndLoadState() {
-        // Usa overlayStateRef.on para escutar mudanças em tempo real
         overlayStateRef.on('value', (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                // Merge, mas com fallback para novas propriedades
                 Object.assign(overlayState, { 
-                    placarOpacity: 90, // Garante valor padrão se não existir no DB
+                    placarOpacity: 90, 
                     ...data 
                 });
             }
-            // O renderUI do controlador só precisa atualizar os inputs e não os displays da overlay
             renderControllerUI(); 
         });
 
@@ -466,8 +449,6 @@
     function saveState() {
       overlayStateRef.set(overlayState)
         .then(() => {
-          // Após salvar, o listener do Firebase (overlayStateRef.on) irá chamar renderControllerUI
-          // renderControllerUI(); // Não precisa chamar aqui, o listener já faz isso
         })
         .catch((error) => {
           console.error("Erro ao salvar no Firebase: ", error);
@@ -475,14 +456,12 @@
     }
 
     function renderControllerUI() {
-      // Atualiza os inputs do painel de controle com os valores do estado
       document.getElementById('nome1_input_panel').value = overlayState.nome1;
       document.getElementById('nome2_input_panel').value = overlayState.nome2;
       document.getElementById('nomeAbbr1_input_panel').value = overlayState.nomeAbbr1;
       document.getElementById('nomeAbbr2_input_panel').value = overlayState.nomeAbbr2;
       document.getElementById('placarOpacitySlider').value = overlayState.placarOpacity;
 
-      // Atualiza o texto do botão de visibilidade
       const toggleButton = document.querySelector('.btn.dark-gray[onclick="toggleOverlayVisibility()"]');
       if (overlayState.isVisible) {
         if (toggleButton) toggleButton.innerText = 'Ocultar Placar na Transmissão';
@@ -491,10 +470,17 @@
       }
     }
 
-    function alterarPlacar(time, valor) {
+    // Função alterarPlacar modificada para disparar a animação
+    function alterarPlacar(time, valor, triggerAnimation = false) {
       overlayState.placar[time] += valor;
       if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
-      saveState();
+      
+      // Dispara a animação APENAS se triggerAnimation for verdadeiro (botões de +1)
+      if (valor > 0 && triggerAnimation) {
+          triggerGoalAnimation();
+      } else {
+          saveState(); // Salva o estado se não for disparar animação (ex: botão de -1)
+      }
     }
 
     function togglePlacarTheme() {
@@ -520,7 +506,7 @@
 
             if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
               if (width > height) {
-                height = Math.round(height * (MAX_DIMension / width));
+                height = Math.round(height * (MAX_DIMENSION / width));
                 width = MAX_DIMENSION;
               } else {
                 width = Math.round(width * (MAX_DIMENSION / height));
@@ -580,26 +566,23 @@
     }
 
     function startTimer() {
-      // O controlador apenas muda o estado no Firebase
       overlayState.timerRunning = true;
       saveState();
     }
 
     function pauseTimer() {
-      // O controlador apenas muda o estado no Firebase
       overlayState.timerRunning = false;
       saveState();
     }
 
     function resetTimer() {
-      // O controlador apenas muda o estado no Firebase
       overlayState.seconds = 0;
       overlayState.timerRunning = false;
       saveState();
     }
 
     function nextPeriod() {
-        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1; // Ciclo de 1 a 5
+        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1;
         saveState();
     }
 
@@ -629,7 +612,7 @@
 
     function addPenalty(team, result) {
         if (!overlayState.penalties[team]) overlayState.penalties[team] = [];
-        if (overlayState.penalties[team].length < 5) { // Limita a 5 pênaltis por time
+        if (overlayState.penalties[team].length < 5) { 
             overlayState.penalties[team].push(result === 'convertido' ? 'green' : 'red');
             saveState();
         } else {
@@ -648,23 +631,18 @@
       saveState();
     }
 
-    // NOVA FUNÇÃO: Dispara a animação no Firebase
     function triggerGoalAnimation() {
-        // Limpa qualquer timeout anterior para garantir que uma nova animação possa começar
         if (animationTimeoutController) {
             clearTimeout(animationTimeoutController);
         }
 
-        // Define a animação ativa no estado do Firebase
         overlayState.activeAnimation = 'goalAnimation';
-        saveState();
+        saveState(); // Salva o estado para a overlay iniciar a animação
 
-        // Após a duração da animação (2 segundos, conforme o CSS da overlay),
-        // zera a propriedade activeAnimation no Firebase para que o placar retorne
         animationTimeoutController = setTimeout(() => {
-            overlayState.activeAnimation = null;
-            saveState();
-        }, 2000); // 2000ms = 2 segundos, correspondendo à duração da animação fadeInScaleOut
+            overlayState.activeAnimation = null; // Zera activeAnimation após a animação
+            saveState(); // Salva novamente para a overlay voltar ao normal
+        }, 2000); // 2 segundos, duração da animação
     }
   </script>
 </body>
