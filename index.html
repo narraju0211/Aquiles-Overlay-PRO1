@@ -5,6 +5,7 @@
   <title>Aquiles Overlay PRO - Controlador</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* ... (seu CSS existente aqui, sem mudanças) ... */
     :root {
       --placar-bg-rgb: 34, 34, 34; /* Usamos RGB para controlar a alfa separadamente */
       --placar-opacity: 0.9; /* Valor padrão de opacidade (0 a 1) */
@@ -242,8 +243,7 @@
                 <button class="btn red" onclick="resetTimer()">Resetar</button>
             </div>
         </div>
-
-        </div>
+      </div>
 
       <div>
         <div class="section-title">Nomes e Imagens</div>
@@ -415,14 +415,34 @@
         overlayStateRef.on('value', (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
+                
+                // ATENÇÃO: É CRUCIAL USAR Object.assign COM CUIDADO AQUI
+                // Para não sobrescrever o timerRunning e seconds que o controlador está gerenciando
+                // apenas atualizamos os outros dados.
+                // OU, melhor ainda, paramos e reiniciamos o timer LOCAL se o estado do Firebase indicar.
+                
+                // Primeiro, paramos o timer local para evitar múltiplos intervalos.
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+
+                // Carrega o estado completo do Firebase.
                 Object.assign(overlayState, { 
-                    placarOpacity: 90, 
+                    placarOpacity: 90, // Mantém o padrão se não estiver no Firebase
                     ...data 
                 });
+
+                // Se o timer estava rodando no Firebase, inicia ou retoma o timer LOCAL.
+                if (overlayState.timerRunning) {
+                    startLocalTimer(overlayState.seconds);
+                }
+
             }
             renderControllerUI(); 
         });
 
+        // Event Listeners para inputs de texto (já existentes e ok)
         document.getElementById('nome1_input_panel').addEventListener('input', (e) => {
             overlayState.nome1 = e.target.value;
             saveState();
@@ -445,6 +465,28 @@
             updatePlacarOpacity(e.target.value);
         });
     }
+
+    // NOVA FUNÇÃO: Gerencia o timer LOCAL no CONTROLADOR
+    function startLocalTimer(initialSeconds) {
+        if (timerInterval) clearInterval(timerInterval); // Limpa qualquer timer existente
+        overlayState.seconds = initialSeconds; // Define os segundos iniciais
+
+        timerInterval = setInterval(() => {
+            overlayState.seconds++;
+            // ATENÇÃO: Salve o estado do cronômetro no Firebase a cada segundo
+            // Isso garante persistência mesmo se o controlador fechar
+            saveState(); 
+        }, 1000);
+    }
+
+    // Função para parar o timer LOCAL
+    function stopLocalTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
 
     function saveState() {
       overlayStateRef.set(overlayState)
@@ -470,16 +512,14 @@
       }
     }
 
-    // Função alterarPlacar modificada para disparar a animação
     function alterarPlacar(time, valor, triggerAnimation = false) {
       overlayState.placar[time] += valor;
       if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
       
-      // Dispara a animação APENAS se triggerAnimation for verdadeiro (botões de +1)
       if (valor > 0 && triggerAnimation) {
           triggerGoalAnimation();
       } else {
-          saveState(); // Salva o estado se não for disparar animação (ex: botão de -1)
+          saveState(); 
       }
     }
 
@@ -565,20 +605,24 @@
       }
     }
 
+    // Modificadas para controlar o timer LOCAL e salvar o estado
     function startTimer() {
       overlayState.timerRunning = true;
-      saveState();
+      saveState(); // Salva o estado para o Firebase
+      startLocalTimer(overlayState.seconds); // Inicia o timer local
     }
 
     function pauseTimer() {
       overlayState.timerRunning = false;
-      saveState();
+      stopLocalTimer(); // Para o timer local
+      saveState(); // Salva o estado no Firebase
     }
 
     function resetTimer() {
       overlayState.seconds = 0;
       overlayState.timerRunning = false;
-      saveState();
+      stopLocalTimer(); // Para o timer local
+      saveState(); // Salva o estado no Firebase
     }
 
     function nextPeriod() {
