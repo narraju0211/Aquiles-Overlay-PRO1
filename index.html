@@ -225,6 +225,12 @@
         <div class="section-title">Controle Principal</div>
 
         <div class="control-group">
+            <label for="narratorId_input">ID do Narrador:</label>
+            <input type="text" id="narratorId_input" placeholder="ID único (ex: meu_canal_futebol)">
+        </div>
+        <hr>
+
+        <div class="control-group">
             <label>Placar:</label>
             <div class="placar-controls">
                 <button class="btn green" onclick="alterarPlacar('1', 1, true)">+ Time 1</button>
@@ -365,8 +371,8 @@
 
     // Inicialize o Firebase
     const app = firebase.initializeApp(firebaseConfig);
-    const database = app.database();
-    const overlayStateRef = database.ref('overlayState');
+    let database;
+    let overlayStateRef;
 
     let overlayState = {
       placar: { '1': 0, '2': 0 },
@@ -377,7 +383,7 @@
       placarThemeIndex: 0,
       placarOpacity: 90, 
       penaltyModeActive: false,
-      activeAnimation: null, 
+      activeAnimation: null, // MANTIDO: Animação de gol original
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -409,20 +415,38 @@
         5: 'T. Extra' 
     };
 
-    document.addEventListener('DOMContentLoaded', initializeFirebaseAndLoadState);
+    document.addEventListener('DOMContentLoaded', initializeApp);
 
-    function initializeFirebaseAndLoadState() {
-        overlayStateRef.on('value', (snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                Object.assign(overlayState, { 
-                    placarOpacity: 90, 
-                    ...data 
-                });
+    function initializeApp() {
+        database = app.database(); // Inicializa o database aqui
+        
+        const narratorIdInput = document.getElementById('narratorId_input');
+        
+        // Tenta carregar o ID do narrador do localStorage, se existir
+        const savedNarratorId = localStorage.getItem('aquilesNarratorId');
+        if (savedNarratorId) {
+            narratorIdInput.value = savedNarratorId;
+            setupFirebaseForNarrator(savedNarratorId);
+        } else {
+            // Se não houver ID salvo, define um padrão temporário e espera o usuário inserir
+            narratorIdInput.value = 'default_narrator';
+            setupFirebaseForNarrator('default_narrator');
+        }
+
+        narratorIdInput.addEventListener('change', (e) => {
+            const newId = e.target.value.trim();
+            if (newId) {
+                localStorage.setItem('aquilesNarratorId', newId);
+                setupFirebaseForNarrator(newId);
+                alert(`ID do Narrador definido para: ${newId}. Reinicie a Overlay!`);
+            } else {
+                alert('O ID do Narrador não pode ser vazio.');
+                // Reverter para o último ID salvo ou para o padrão
+                narratorIdInput.value = localStorage.getItem('aquilesNarratorId') || 'default_narrator';
             }
-            renderControllerUI(); 
         });
-
+        
+        // Demais listeners de input
         document.getElementById('nome1_input_panel').addEventListener('input', (e) => {
             overlayState.nome1 = e.target.value;
             saveState();
@@ -446,7 +470,44 @@
         });
     }
 
+    function setupFirebaseForNarrator(narratorId) {
+        // Desconecta o listener anterior se houver
+        if (overlayStateRef) {
+            overlayStateRef.off();
+        }
+        // Define a nova referência com base no ID do narrador
+        overlayStateRef = database.ref(`narrators/${narratorId}/overlayState`);
+
+        overlayStateRef.on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                // Garante que 'penalties' é um objeto com arrays, mesmo que não venha do Firebase
+                if (!data.penalties) {
+                    data.penalties = { '1': [], '2': [] };
+                } else {
+                    if (!data.penalties['1']) data.penalties['1'] = [];
+                    if (!data.penalties['2']) data.penalties['2'] = [];
+                }
+                
+                Object.assign(overlayState, { 
+                    placarOpacity: 90, 
+                    ...data 
+                });
+            } else {
+                // Se o nó para o narrador não existe, inicializa o estado no Firebase
+                console.log(`Nó para narrador '${narratorId}' não encontrado. Inicializando estado.`);
+                // Copia o estado inicial padrão para o novo nó do narrador
+                overlayStateRef.set(overlayState);
+            }
+            renderControllerUI(); 
+        });
+    }
+
     function saveState() {
+      if (!overlayStateRef) {
+          console.error("overlayStateRef não está definido. Insira um ID de Narrador.");
+          return;
+      }
       overlayStateRef.set(overlayState)
         .then(() => {
         })
@@ -470,7 +531,7 @@
       }
     }
 
-    // Função alterarPlacar modificada para disparar a animação
+    // Função alterarPlacar modificada para disparar a animação (ORIGINALMENTE SUA)
     function alterarPlacar(time, valor, triggerAnimation = false) {
       overlayState.placar[time] += valor;
       if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
@@ -611,7 +672,12 @@
     }
 
     function addPenalty(team, result) {
-        if (!overlayState.penalties[team]) overlayState.penalties[team] = [];
+        // Garante que o array de pênaltis exista antes de adicionar
+        if (!overlayState.penalties[team]) {
+            overlayState.penalties[team] = [];
+        }
+        
+        // Garante que o array tenha no máximo 5 elementos antes de adicionar
         if (overlayState.penalties[team].length < 5) { 
             overlayState.penalties[team].push(result === 'convertido' ? 'green' : 'red');
             saveState();
@@ -621,9 +687,10 @@
     }
 
     function resetPenalties() {
+        // Limpa os arrays para ambos os times
         overlayState.penalties['1'] = [];
         overlayState.penalties['2'] = [];
-        saveState();
+        saveState(); // Salva o estado atualizado (arrays vazios) para o Firebase
     }
 
     function toggleOverlayVisibility() {
@@ -631,18 +698,19 @@
       saveState();
     }
 
+    // ANIMAÇÃO DE GOL - REVERTIDA PARA A SUA LÓGICA ORIGINAL
     function triggerGoalAnimation() {
         if (animationTimeoutController) {
             clearTimeout(animationTimeoutController);
         }
 
         overlayState.activeAnimation = 'goalAnimation';
-        saveState(); // Salva o estado para a overlay iniciar a animação
+        saveState(); 
 
         animationTimeoutController = setTimeout(() => {
-            overlayState.activeAnimation = null; // Zera activeAnimation após a animação
-            saveState(); // Salva novamente para a overlay voltar ao normal
-        }, 2000); // 2 segundos, duração da animação
+            overlayState.activeAnimation = null; 
+            saveState(); 
+        }, 2000); // Duração da animação em milissegundos
     }
   </script>
 </body>
