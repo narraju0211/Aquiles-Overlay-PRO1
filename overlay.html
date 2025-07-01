@@ -23,7 +23,7 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       justify-content: center;
-      align-items: flex-start; /* Ajustado para alinhar no topo, o wrapper controla a posição vertical */
+      align-items: flex-start; /* Alinha no topo */
       height: 100vh;
       width: 100vw;
       -webkit-font-smoothing: antialiased;
@@ -35,10 +35,9 @@
         position: relative; /* Para posicionar placar, pênaltis, animação um sobre o outro */
         top: 50px; /* Desloca o placar para baixo para não ficar colado no topo */
         width: auto; /* Ajusta à largura do conteúdo */
-        height: 100px; /* Altura aproximada do placar para manter o layout */
         display: flex; /* Para centralizar o wrapper na tela */
-        justify-content: center;
-        align-items: center;
+        flex-direction: column; /* Organiza placar e cartões verticalmente */
+        align-items: center; /* Centraliza o conteúdo */
         opacity: 1;
         transform: translateY(0);
         transition: opacity 0.5s ease-out, transform 0.5s ease-out;
@@ -55,22 +54,22 @@
     .container, .penalties-container, .goal-animation-overlay {
         position: absolute; /* Todos ocupam o mesmo espaço */
         top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        left: 0; /* Ajustado para cobrir o centro, alinhado pelo wrapper */
+        right: 0; /* Ajustado para cobrir o centro, alinhado pelo wrapper */
+        bottom: 0; /* Ajustado */
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: center; /* Centraliza o conteúdo */
         padding: 10px 25px;
         border-radius: 15px;
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
         font-weight: bold;
-        font-size: 4em; 
         white-space: nowrap; 
         transition: opacity 0.3s ease-in-out, visibility 0.3s; /* Transição para aparecer/desaparecer */
         opacity: 0; /* Por padrão, invisível */
         visibility: hidden; /* Esconde para não ser interativo */
         text-align: center; /* Centraliza o texto GOL! */
+        min-height: 80px; /* Garante altura mínima para o container */
     }
 
     /* Estilo para o placar normal */
@@ -80,6 +79,8 @@
         color: var(--placar-text);
         z-index: 1; 
         justify-content: space-between; /* Espaçamento entre os elementos do placar */
+        width: 800px; /* Largura fixa para o placar principal */
+        height: 100px; /* Altura fixa para o placar principal */
     }
 
     /* Estilo para o modo de pênaltis */
@@ -90,6 +91,8 @@
         z-index: 2; 
         flex-direction: row; /* Para os times de pênalti ficarem lado a lado */
         gap: 40px; /* Espaço entre os dois times na tela de pênaltis */
+        width: 800px; /* Largura igual ao placar normal */
+        height: 100px; /* Altura igual ao placar normal */
     }
 
     /* Estilo para a animação de gol */
@@ -102,6 +105,8 @@
         z-index: 3; 
         pointer-events: none; 
         animation: goalAppear 0.5s ease-out forwards; 
+        width: 800px; /* Largura igual ao placar normal */
+        height: 100px; /* Altura igual ao placar normal */
     }
 
     @keyframes goalAppear {
@@ -125,24 +130,41 @@
     .team {
       display: flex;
       align-items: center;
-      gap: 15px;
+      /* gap: 15px; Removido para controle mais fino */
       padding: 0 10px;
+      flex-grow: 1; /* Permite que os times ocupem o espaço disponível */
+      justify-content: flex-start; /* Alinha conteúdo do time 1 à esquerda */
     }
-    /* Inverter ordem para o time 2 */
+    /* Inverter ordem e alinhar à direita para o time 2 */
     .team2 {
         flex-direction: row-reverse;
+        justify-content: flex-start; /* Conteúdo do time 2 à direita */
+    }
+
+    /* Agrupamento para escudo + nome abreviado + cronômetro/período */
+    .team-details-group {
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Espaço entre escudo, nome/cronômetro/período */
+    }
+
+    .team1 .team-details-group {
+        flex-direction: row; /* Escudo - Cronômetro - NomeAbbr */
+    }
+    .team2 .team-details-group {
+        flex-direction: row-reverse; /* Período - NomeAbbr - Escudo (para alinhar com o placar) */
     }
 
     .team-name-abbr {
-        font-size: 0.4em; 
-        margin-top: 5px; 
+        font-size: 0.6em; /* Aumenta um pouco para ser mais visível */
         text-transform: uppercase;
         letter-spacing: 1px;
         color: rgba(var(--placar-text), 0.8);
+        white-space: nowrap;
     }
     .score {
-      font-size: 1.5em; 
-      min-width: 50px; 
+      font-size: 1.5em; /* Tamanho base para placar, cronômetro e período */
+      min-width: 60px; /* Garante largura mínima para o placar */
       text-align: center;
       color: var(--highlight-color);
       text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
@@ -153,35 +175,30 @@
       width: auto;
       margin: 0 20px;
       transition: opacity 0.3s ease-out;
+      flex-shrink: 0; /* Impede que a logo encolha */
     }
 
     /* Cronômetro e Período com a mesma fonte e tamanho do placar */
-    .team-info-line {
-        display: flex;
-        align-items: center;
-        gap: 10px; /* Espaço entre escudo, timer/period e nome/placar */
-    }
     .timer-display, .period-display {
-        font-size: 1.5em; /* Mesma fonte do .score */
+        font-size: 1em; /* Relativo ao .score para herdar o tamanho base */
         color: var(--highlight-color);
         text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
         white-space: nowrap;
+        margin: 0 5px; /* Pequeno ajuste de margem */
     }
-    .timer-display { margin-left: 10px; } /* Ajuste extra para o timer */
-    .period-display { margin-right: 10px; } /* Ajuste extra para o período */
-
 
     .escudo {
       height: 70px; 
       width: auto;
       object-fit: contain;
+      flex-shrink: 0; /* Impede que o escudo encolha */
     }
 
     /* Cartões agora são individuais e posicionados abaixo de cada time */
     .cards-wrapper {
-        position: absolute;
-        bottom: -35px; /* Posição fixa abaixo do placar principal */
-        width: 100%;
+        position: absolute; /* Posição absoluta em relação ao main-display-wrapper */
+        top: 105px; /* Abaixo do placar principal */
+        width: 100%; /* Ocupa a largura do main-display-wrapper */
         display: flex;
         justify-content: space-between;
         padding: 0 20px;
@@ -201,6 +218,8 @@
         opacity: 0; /* Invisível por padrão */
         visibility: hidden;
         transition: opacity 0.3s ease-in-out, visibility 0.3s;
+        min-width: 80px; /* Largura mínima para os cartões */
+        justify-content: center;
     }
     .card-group.active {
         opacity: 1;
@@ -215,7 +234,7 @@
     .card-icon.yellow { background-color: #ffc107; }
     .card-icon.red { background-color: #dc3545; }
     .card-count {
-        font-size: 0.5em; /* Relativo ao font-size do .container */
+        font-size: 0.6em; /* Relativo ao font-size do .container */
         color: var(--placar-text);
         font-weight: bold;
     }
@@ -225,25 +244,28 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: 8px; /* Espaço entre elementos do time de pênaltis */
+        flex: 1; /* Cada time ocupa metade do espaço */
     }
     .penalty-header {
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
     .penalty-team .escudo {
         height: 60px; /* Tamanho do escudo nos pênaltis */
     }
     .penalty-team .team-name-abbr {
-        font-size: 0.7em; /* Nome abreviado nos pênaltis */
+        font-size: 0.8em; /* Nome abreviado nos pênaltis */
         color: var(--placar-text);
+        font-weight: bold;
     }
     .penalty-score-label {
-        font-size: 0.8em; 
+        font-size: 0.9em; 
         margin-bottom: 5px;
         color: var(--highlight-color);
+        font-weight: bold;
     }
     .penalty-marks {
         display: flex;
@@ -272,11 +294,11 @@
     
     <div class="container" id="overlayContainer">
       <div class="team team1">
-        <div class="team-info-line">
-            <span class="timer-display" id="timer">00:00</span>
+        <div class="team-details-group">
             <img src="" alt="Escudo Time 1" class="escudo" id="escudo1">
+            <span class="timer-display" id="timer">00:00</span>
+            <span class="team-name-abbr" id="nomeAbbr1">T1</span>
         </div>
-        <span class="team-name-abbr" id="nomeAbbr1">T1</span>
         <span class="score" id="placar1">0</span>
       </div>
 
@@ -284,10 +306,10 @@
 
       <div class="team team2">
         <span class="score" id="placar2">0</span>
-        <span class="team-name-abbr" id="nomeAbbr2">T2</span>
-        <div class="team-info-line">
-            <img src="" alt="Escudo Time 2" class="escudo" id="escudo2">
+        <div class="team-details-group">
+            <span class="team-name-abbr" id="nomeAbbr2">T2</span>
             <span class="period-display" id="period">1º T</span>
+            <img src="" alt="Escudo Time 2" class="escudo" id="escudo2">
         </div>
       </div>
     </div>
@@ -449,7 +471,7 @@
             placarThemeIndex: 0,
             placarOpacity: 90, 
             penaltyModeActive: false,
-            activeAnimation: null,
+            activeAnimation: null, 
             currentPeriod: 1,
             nome1: '',
             nome2: '',
@@ -458,9 +480,13 @@
             escudo1: '',
             escudo2: '',
             logoOverlay: '', 
-            isVisible: true,
-            ...data 
+            isVisible: true
           });
+
+          // Certifica-se que 'cards' e suas subpropriedades existem para evitar erros
+          currentOverlayState.cards['1'] = currentOverlayState.cards['1'] || { 'amarelo': 0, 'vermelho': 0 };
+          currentOverlayState.cards['2'] = currentOverlayState.cards['2'] || { 'amarelo': 0, 'vermelho': 0 };
+
 
           if (currentOverlayState.timerRunning) {
               if (!timerDisplayInterval) { 
@@ -539,10 +565,10 @@
       periodElement.textContent = periodNames[currentOverlayState.currentPeriod] || 'N/A';
 
       // Atualiza os cartões (mas não a visibilidade ainda)
-      cards1YellowElement.textContent = (currentOverlayState.cards['1'] && currentOverlayState.cards['1']['amarelo'] !== undefined) ? currentOverlayState.cards['1']['amarelo'] : 0;
-      cards1RedElement.textContent = (currentOverlayState.cards['1'] && currentOverlayState.cards['1']['vermelho'] !== undefined) ? currentOverlayState.cards['1']['vermelho'] : 0;
-      cards2YellowElement.textContent = (currentOverlayState.cards['2'] && currentOverlayState.cards['2']['amarelo'] !== undefined) ? currentOverlayState.cards['2']['amarelo'] : 0;
-      cards2RedElement.textContent = (currentOverlayState.cards['2'] && currentOverlayState.cards['2']['vermelho'] !== undefined) ? currentOverlayState.cards['2']['vermelho'] : 0;
+      cards1YellowElement.textContent = currentOverlayState.cards['1']['amarelo'];
+      cards1RedElement.textContent = currentOverlayState.cards['1']['vermelho'];
+      cards2YellowElement.textContent = currentOverlayState.cards['2']['amarelo'];
+      cards2RedElement.textContent = currentOverlayState.cards['2']['vermelho'];
 
       // === Lógica de visibilidade dos elementos principais ===
       // Primeiro, esconde todos os displays alternados
@@ -625,4 +651,4 @@
     }
   </script>
 </body>
-                                                   </html>
+</html>
