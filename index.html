@@ -429,9 +429,7 @@
                     console.log("Controlador: Timer local parado antes de carregar novo estado.");
                 }
 
-                // Usar Object.assign para atualizar o estado, mantendo defaults se algum campo estiver faltando no Firebase
                 Object.assign(overlayState, { 
-                    // Valores padrão para garantir que existam
                     placar: { '1': 0, '2': 0 },
                     cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
                     penalties: { '1': [], '2': [] },
@@ -539,11 +537,9 @@
       overlayState.placar[time] += valor;
       if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
       
-      // Se for um gol (+1) e a animação for para ser disparada
       if (valor > 0 && triggerAnimation) {
           triggerGoalAnimation();
       } else {
-          // Se for -1 ou não for para disparar animação, apenas salva o estado
           saveState(); 
       }
     }
@@ -649,7 +645,7 @@
     }
 
     function nextPeriod() {
-        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1; // Ajustado para 5 períodos + "parado"
+        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1; 
         saveState();
     }
 
@@ -676,7 +672,6 @@
 
     function togglePenaltyMode(active) {
         overlayState.penaltyModeActive = active;
-        // Ao ativar ou desativar o modo de pênaltis, também limpa os pênaltis atuais
         if (!active) {
             resetPenalties(); 
         }
@@ -685,7 +680,7 @@
 
     function addPenalty(team, result) {
         if (!overlayState.penalties[team]) overlayState.penalties[team] = [];
-        if (overlayState.penalties[team].length < 5) { // Limite de 5 pênaltis
+        if (overlayState.penalties[team].length < 5) { 
             overlayState.penalties[team].push(result === 'convertido' ? 'green' : 'red');
             saveState();
         } else {
@@ -709,17 +704,14 @@
             clearTimeout(animationTimeoutController);
         }
 
-        // Define a animação para 'goalAnimation' no estado para ser enviada ao Firebase
         overlayState.activeAnimation = 'goalAnimation';
         saveState(); 
 
-        // Após um tempo, remove o estado da animação
-        // O tempo da animação (1000ms) deve corresponder à duração da animação CSS
         animationTimeoutController = setTimeout(() => {
             overlayState.activeAnimation = null; 
             saveState(); 
-        }, 1000); // Duração da animação em milissegundos
+        }, 1000); 
     }
   </script>
 </body>
-    </html>
+</html>
