@@ -27,13 +27,13 @@
       align-items: center;
       padding: 15px;
       box-sizing: border-box;
-      overflow-x: hidden; /* Evita barra de rolagem horizontal desnecessária */
+      overflow-x: hidden;
       min-height: 100vh;
     }
 
     .control-panel-container {
         width: 100%;
-        max-width: 900px; /* Limite a largura para telas maiores */
+        max-width: 900px;
         margin-top: 30px;
         z-index: 1;
     }
@@ -44,15 +44,14 @@
       border-radius: 12px;
       box-sizing: border-box;
       display: flex;
-      flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha */
-      justify-content: center; /* Centraliza os itens quando há espaço */
-      gap: 25px; /* Espaço entre os módulos */
+      flex-wrap: wrap;
+      justify-content: center; 
+      gap: 25px; 
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     }
-
     .painel > div {
-      flex: 1 1 calc(50% - 25px); /* Dois módulos por linha em telas maiores, considerando o gap */
-      min-width: 300px; /* Garante que os módulos não fiquem muito estreitos */
+      flex: 1 1 calc(50% - 25px); 
+      min-width: 300px; 
       background: var(--section-bg);
       padding: 18px;
       border-radius: 10px;
@@ -60,27 +59,24 @@
       border: 1px solid #3a3a3a;
       display: flex; 
       flex-direction: column; 
-      align-items: center; /* Centraliza o conteúdo dentro de cada módulo */
+      align-items: center; 
     }
-
     .painel > div.main-section {
-        flex-basis: 100%; /* Ocupa a largura total em qualquer tela */
+        flex-basis: 100%; 
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 15px; 
     }
-
     .painel > div.main-section .placar-controls,
     .painel > div.main-section .timer-controls,
     .painel > div.main-section .goal-trigger { 
         display: flex;
-        justify-content: center; /* Centraliza os botões */
-        flex-wrap: wrap; /* Permite que os botões quebrem a linha */
-        gap: 10px; /* Espaço entre os botões */
-        width: 100%; /* Ocupa a largura total da seção */
+        justify-content: center;
+        flex-wrap: wrap; 
+        gap: 10px; 
+        width: 100%;
     }
-
     .painel > div.main-section .team-score-controls { 
         display: flex;
         align-items: center;
@@ -89,13 +85,13 @@
 
     @media (max-width: 768px) {
       .painel > div {
-        flex: 1 1 100%; /* Um módulo por linha em telas menores */
+        flex: 1 1 100%; 
       }
     }
 
     .btn {
       padding: 10px 18px;
-      margin: 0; /* Remover margens extras para melhor controle do gap */
+      margin: 0; 
       font-size: 18px;
       border: none;
       border-radius: 6px;
@@ -103,7 +99,7 @@
       color: white;
       cursor: pointer;
       transition: background 0.3s ease, transform 0.1s ease;
-      white-space: nowrap; /* Evita que o texto do botão quebre */
+      white-space: nowrap; 
     }
     .btn:hover { 
       filter: brightness(var(--button-hover-brightness)); 
@@ -133,27 +129,27 @@
       padding-bottom: 8px;
       text-align: center;
       text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
-      width: 100%; /* Garante que o título ocupe a largura total da seção */
+      width: 100%; 
     }
     .control-group {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 8px; /* Espaço entre label e input/botões */
-        width: 100%; /* Ocupa a largura total da seção */
-        margin-bottom: 10px; /* Espaço entre grupos de controle */
+        gap: 8px; 
+        width: 100%;
+        margin-bottom: 10px;
     }
     .control-group.inline-buttons {
-        flex-direction: row; /* Botões na mesma linha */
+        flex-direction: row; 
         justify-content: center;
-        flex-wrap: wrap; /* Permite que os botões quebrem a linha se necessário */
+        flex-wrap: wrap;
     }
     .control-group label {
         font-weight: bold;
         margin-bottom: 5px;
     }
     .control-group input[type="text"] {
-        width: calc(100% - 20px); /* Ajusta largura com padding */
+        width: calc(100% - 20px); 
         padding: 8px;
         border-radius: 6px;
         border: 1px solid #555;
@@ -186,7 +182,7 @@
     }
     .control-group input[type="range"] {
         width: calc(100% - 20px);
-        -webkit-appearance: none; /* Remove estilo padrão do navegador */
+        -webkit-appearance: none;
         height: 8px;
         border-radius: 5px;
         background: #555;
@@ -355,7 +351,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    // ** SEU FIREBASE CONFIG ESTÁ AQUI **
+    // ** SEU FIREBASE CONFIG ESTÁ AQUI (MANTIDO O SEU ORIGINAL) **
     const firebaseConfig = {
       apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
       authDomain: "aquilesplacarpro.firebaseapp.com",
@@ -370,13 +366,10 @@
     const app = firebase.initializeApp(firebaseConfig);
     const database = app.database();
 
-    // --- MUDANÇA CRÍTICA AQUI: Definição do ID do Jogo (Canal) ---
     const urlParams = new URLSearchParams(window.location.search);
-    // 'channel' é o nome do parâmetro na URL (ex: controlador.html?channel=narraju)
     const gameId = urlParams.get('channel') || 'default_channel'; 
     console.log(`Controlador: Ativo para o canal: ${gameId}`);
 
-    // Referência do Firebase para o canal específico
     const gameRef = database.ref('channels').child(gameId); 
 
     let overlayState = {
@@ -430,16 +423,15 @@
                 const data = snapshot.val();
                 console.log("Controlador: Dados recebidos do Firebase:", data);
 
-                // IMPORTANTE: Antes de atualizar o overlayState com os novos dados,
-                // paramos o timer local para evitar conflitos se ele já estiver rodando.
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
                     console.log("Controlador: Timer local parado antes de carregar novo estado.");
                 }
 
-                // Atualiza o overlayState com os dados do Firebase, garantindo valores padrão
+                // Usar Object.assign para atualizar o estado, mantendo defaults se algum campo estiver faltando no Firebase
                 Object.assign(overlayState, { 
+                    // Valores padrão para garantir que existam
                     placar: { '1': 0, '2': 0 },
                     cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
                     penalties: { '1': [], '2': [] },
@@ -462,7 +454,6 @@
                 });
                 console.log("Controlador: overlayState atualizado:", overlayState);
 
-                // Se o timer estava rodando no Firebase, reinicia o timer LOCAL no controlador.
                 if (overlayState.timerRunning) {
                     console.log("Controlador: timerRunning é true no Firebase. Iniciando timer local com seconds:", overlayState.seconds);
                     startLocalTimer(overlayState.seconds);
@@ -472,8 +463,6 @@
 
             } else {
                 console.log(`Controlador: Nenhum dado no Firebase para o canal '${gameId}'. Usando estado inicial padrão e salvando.`);
-                // Se não há dados para o canal, o overlayState já estará com os valores padrão.
-                // Apenas salva para inicializar o Firebase para este canal.
                 saveState(); 
             }
             renderControllerUI(); 
@@ -506,11 +495,8 @@
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
-            console.log("Controlador: Limpando timerInterval existente antes de iniciar um novo.");
         }
         overlayState.seconds = initialSeconds; 
-        console.log("Controlador: Iniciando timer local com seconds:", overlayState.seconds);
-
         timerInterval = setInterval(() => {
             overlayState.seconds++;
             saveState(); 
@@ -521,15 +507,13 @@
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
-            console.log("Controlador: Timer local parado.");
         }
     }
 
     function saveState() {
-      console.log("Controlador: Tentando salvar estado para Firebase:", overlayState);
       gameRef.set(overlayState) 
         .then(() => {
-          console.log("Controlador: Estado salvo com sucesso!");
+          // console.log("Controlador: Estado salvo com sucesso!");
         })
         .catch((error) => {
           console.error("Controlador: Erro ao salvar no Firebase: ", error);
@@ -554,24 +538,23 @@
     function alterarPlacar(time, valor, triggerAnimation = false) {
       overlayState.placar[time] += valor;
       if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
-      console.log(`Controlador: Alterando placar para Time ${time}. Novo placar: ${overlayState.placar[time]}. triggerAnimation: ${triggerAnimation}`);
       
+      // Se for um gol (+1) e a animação for para ser disparada
       if (valor > 0 && triggerAnimation) {
           triggerGoalAnimation();
       } else {
+          // Se for -1 ou não for para disparar animação, apenas salva o estado
           saveState(); 
       }
     }
 
     function togglePlacarTheme() {
       overlayState.placarThemeIndex = (overlayState.placarThemeIndex + 1) % placarThemes.length;
-      console.log("Controlador: Alterando tema do placar. Index:", overlayState.placarThemeIndex);
       saveState();
     }
 
     function updatePlacarOpacity(value) {
         overlayState.placarOpacity = parseInt(value, 10);
-        console.log("Controlador: Alterando opacidade do placar:", overlayState.placarOpacity);
         saveState();
     }
 
@@ -603,7 +586,6 @@
             ctx.drawImage(img, 0, 0, width, height);
 
             overlayState['escudo' + time] = canvas.toDataURL('image/png');
-            console.log(`Controlador: Escudo Time ${time} carregado.`);
             saveState();
           };
           img.src = e.target.result;
@@ -640,7 +622,6 @@
             ctx.drawImage(img, 0, 0, width, height);
 
             overlayState.logoOverlay = canvas.toDataURL('image/png');
-            console.log("Controlador: Logo da overlay carregada.");
             saveState();
           };
           img.src = e.target.result;
@@ -650,62 +631,51 @@
     }
 
     function startTimer() {
-      console.log("Controlador: Botão 'Iniciar' cronômetro clicado.");
       overlayState.timerRunning = true;
       saveState(); 
-      // A startLocalTimer será chamada pelo listener do Firebase quando o estado for atualizado.
-      // Isso evita desincronização entre o controlador e a overlay.
     }
 
     function pauseTimer() {
-      console.log("Controlador: Botão 'Pausar' cronômetro clicado.");
       overlayState.timerRunning = false;
-      stopLocalTimer(); // Para o timer local imediatamente
+      stopLocalTimer(); 
       saveState(); 
     }
 
     function resetTimer() {
-      console.log("Controlador: Botão 'Resetar' cronômetro clicado.");
       overlayState.seconds = 0;
       overlayState.timerRunning = false;
-      stopLocalTimer(); // Para o timer local imediatamente
+      stopLocalTimer(); 
       saveState(); 
     }
 
     function nextPeriod() {
-        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1;
-        console.log("Controlador: Próximo período:", overlayState.currentPeriod);
+        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1; // Ajustado para 5 períodos + "parado"
         saveState();
     }
 
     function setPeriod(period) {
         overlayState.currentPeriod = period;
-        console.log("Controlador: Período definido para:", overlayState.currentPeriod);
         saveState();
     }
 
     function addCartao(time, tipo) {
-        // Garante que o objeto cards e seus sub-objetos existam
         if (!overlayState.cards) overlayState.cards = {};
         if (!overlayState.cards[time]) overlayState.cards[time] = {};
-        if (overlayState.cards[time][tipo] === undefined) overlayState.cards[time][tipo] = 0; // Inicializa se for undefined
+        if (overlayState.cards[time][tipo] === undefined) overlayState.cards[time][tipo] = 0;
         
         overlayState.cards[time][tipo]++;
-        console.log(`Controlador: Adicionado cartão ${tipo} para Time ${time}. Total: ${overlayState.cards[time][tipo]}`);
         saveState();
     }
 
     function resetCards(time, tipo) {
         if (overlayState.cards[time] && overlayState.cards[time][tipo] !== undefined) {
             overlayState.cards[time][tipo] = 0;
-            console.log(`Controlador: Cartões ${tipo} do Time ${time} resetados.`);
             saveState();
         }
     }
 
     function togglePenaltyMode(active) {
         overlayState.penaltyModeActive = active;
-        console.log("Controlador: Modo pênaltis ativado:", overlayState.penaltyModeActive);
         // Ao ativar ou desativar o modo de pênaltis, também limpa os pênaltis atuais
         if (!active) {
             resetPenalties(); 
@@ -717,7 +687,6 @@
         if (!overlayState.penalties[team]) overlayState.penalties[team] = [];
         if (overlayState.penalties[team].length < 5) { // Limite de 5 pênaltis
             overlayState.penalties[team].push(result === 'convertido' ? 'green' : 'red');
-            console.log(`Controlador: Pênalti Time ${team} (${result}). Total: ${overlayState.penalties[team].length}`);
             saveState();
         } else {
             console.warn(`Controlador: Limite de 5 pênaltis para o Time ${team} atingido.`);
@@ -727,33 +696,30 @@
     function resetPenalties() {
         overlayState.penalties['1'] = [];
         overlayState.penalties['2'] = [];
-        console.log("Controlador: Pênaltis resetados.");
         saveState();
     }
 
     function toggleOverlayVisibility() {
       overlayState.isVisible = !overlayState.isVisible;
-      console.log("Controlador: Visibilidade da overlay:", overlayState.isVisible);
       saveState();
     }
 
     function triggerGoalAnimation() {
-        // Limpa qualquer timeout anterior para que a animação possa ser re-disparada
         if (animationTimeoutController) {
             clearTimeout(animationTimeoutController);
         }
 
         // Define a animação para 'goalAnimation' no estado para ser enviada ao Firebase
         overlayState.activeAnimation = 'goalAnimation';
-        console.log("Controlador: Disparando animação de gol.");
         saveState(); 
 
         // Após um tempo, remove o estado da animação
+        // O tempo da animação (1000ms) deve corresponder à duração da animação CSS
         animationTimeoutController = setTimeout(() => {
             overlayState.activeAnimation = null; 
             saveState(); 
-        }, 1000); // 1 segundo para a animação do gol
+        }, 1000); // Duração da animação em milissegundos
     }
   </script>
 </body>
-  </html>
+    </html>
