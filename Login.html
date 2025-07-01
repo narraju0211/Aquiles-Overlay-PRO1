@@ -1,1 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Aquiles Overlay PRO - Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0d1117;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+      padding: 20px;
+    }
 
+    .login-container {
+      background: #1c1c1c;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      width: 100%;
+      max-width: 450px;
+      box-sizing: border-box;
+      border: 1px solid #3a3a3a;
+    }
+
+    .login-container h1 {
+      color: #0ff; /* Cor de destaque */
+      margin-bottom: 30px;
+      font-size: 2.2em;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+    }
+
+    .login-container p {
+      color: #bbb;
+      margin-bottom: 25px;
+      font-size: 0.95em;
+    }
+
+    .input-group {
+      margin-bottom: 25px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #eee;
+      font-size: 1.1em;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #555;
+      background-color: #3a3a3a;
+      color: white;
+      font-size: 1.1em;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .input-group input:focus {
+      border-color: #0ff;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+      outline: none;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.1s ease;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .error-message {
+      color: #ff6347; /* Tomato */
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 0.95em;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1>Aquiles Overlay PRO</h1>
+    <p>Insira seu ID único de narrador para acessar o painel de controle e sua overlay.</p>
+
+    <div class="input-group">
+      <label for="narratorIdInput">ID do Narrador:</label>
+      <input type="text" id="narratorIdInput" placeholder="Ex: meu_canal_esportes" autocomplete="off">
+    </div>
+
+    <button class="btn" onclick="login()">Entrar</button>
+    <p class="error-message" id="errorMessage"></p>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedNarratorId = localStorage.getItem('aquilesNarratorId');
+      if (savedNarratorId) {
+        document.getElementById('narratorIdInput').value = savedNarratorId;
+      }
+
+      document.getElementById('narratorIdInput').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+          login();
+        }
+      });
+    });
+
+    function login() {
+      const narratorId = document.getElementById('narratorIdInput').value.trim();
+      const errorMessageElement = document.getElementById('errorMessage');
+
+      if (!narratorId) {
+        errorMessageElement.innerText = 'Por favor, insira um ID de narrador.';
+        return;
+      }
+
+      // Validação básica para evitar IDs com caracteres especiais que poderiam causar problemas no Firebase
+      if (!/^[a-zA-Z0-9_-]+$/.test(narratorId)) {
+        errorMessageElement.innerText = 'O ID deve conter apenas letras, números, hífens (-) e underscores (_).';
+        return;
+      }
+
+      localStorage.setItem('aquilesNarratorId', narratorId);
+      window.location.href = `controlador.html?narratorId=${narratorId}`;
+    }
+  </script>
+</body>
+</html>
