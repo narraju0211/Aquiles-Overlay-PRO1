@@ -182,7 +182,7 @@
     .card-indicator.red-card { background-color: #dc3545; } 
 
     .penalty-shootout-placar {
-        display: none;
+        display: none; /* Inicia oculto, será exibido via JS */
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
@@ -190,7 +190,7 @@
         gap: 15px;
         padding: 10px 0; 
     }
-    .penalty-shootout-placar.active {
+    .penalty-shootout-placar.active { /* Esta classe é para controle de visibilidade via JS */
         display: flex;
     }
     .penalty-team-display {
@@ -263,28 +263,25 @@
     }
 
     /* Adicionado para esconder o placar principal e os cards quando a animação está ativa */
+    /* Usando 'display: none' em vez de 'visibility: hidden' para remover completamente do fluxo */
     .placar-main-line.hide-content,
-    .placar-cards-line.hide-content,
+    .placar-cards-line.hide-content {
+        display: none !important;
+    }
+
     .penalty-shootout-placar.hide-content {
-        visibility: hidden !important;
-        opacity: 0 !important;
-        transition: visibility 0.3s, opacity 0.3s; /* Transição para esconder suavemente */
+        display: none !important;
     }
 
     /* Classes para exibir o conteúdo normal/penalti */
+    /* Voltando para 'display: flex' para que o flexbox funcione corretamente */
     .placar-main-line.show-content,
     .placar-cards-line.show-content {
-        display: flex !important; /* Volta a ser flex */
-        visibility: visible !important;
-        opacity: 1 !important;
-        transition: visibility 0.3s, opacity 0.3s;
+        display: flex !important;
     }
 
     .penalty-shootout-placar.show-content {
-        display: flex !important; /* Volta a ser flex */
-        visibility: visible !important;
-        opacity: 1 !important;
-        transition: visibility 0.3s, opacity 0.3s;
+        display: flex !important;
     }
 
   </style>
@@ -359,8 +356,8 @@
 
     // Inicialize o Firebase
     const app = firebase.initializeApp(firebaseConfig);
-    const database = app.database();
-    const overlayStateRef = database.ref('overlayState');
+    let database;
+    let overlayStateRef; // Será definida dinamicamente
 
     let overlayState = {
       placar: { '1': 0, '2': 0 },
@@ -371,7 +368,7 @@
       placarThemeIndex: 0,
       placarOpacity: 90, 
       penaltyModeActive: false,
-      activeAnimation: null, 
+      activeAnimation: null, // MANTIDO: Animação de gol original
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -402,31 +399,62 @@
         5: 'T. Extra'
     };
 
-    document.addEventListener('DOMContentLoaded', setupFirebaseListeners);
+    document.addEventListener('DOMContentLoaded', initializeApp);
 
-    function setupFirebaseListeners() {
-      overlayStateRef.on('value', (snapshot) => {
-        if (snapshot.exists()) {
-          const newState = snapshot.val();
-          
-          if (newState.timerRunning && !overlayState.timerRunning) {
-              startLocalTimer(newState.seconds);
-          } else if (!newState.timerRunning && overlayState.timerRunning) {
-              stopLocalTimer();
-          }
-          
-          overlayState = newState;
-          renderUI();
+    function initializeApp() {
+        database = app.database(); // Inicializa o database aqui
+
+        // Pega o ID do narrador da URL (ex: ?narratorId=meu_canal)
+        const urlParams = new URLSearchParams(window.location.search);
+        const narratorId = urlParams.get('narratorId');
+
+        if (narratorId) {
+            setupFirebaseForNarrator(narratorId);
+        } else {
+            console.error("ID do Narrador não encontrado na URL. Use ?narratorId=SEU_ID");
+            // Pode exibir uma mensagem na tela ou um placar padrão de erro
+            document.getElementById('placarPrincipal').innerHTML = '<div style="color: red; font-size: 24px; text-align: center; padding: 20px;">ERRO: ID do Narrador não definido na URL.<br>Ex: overlay.html?narratorId=seu_id</div>';
         }
-      }, (error) => {
-        console.error("Erro ao ler dados do Firebase:", error);
-      });
     }
+
+    function setupFirebaseForNarrator(narratorId) {
+        // Define a referência do Firebase com base no ID do narrador
+        overlayStateRef = database.ref(`narrators/${narratorId}/overlayState`);
+
+        overlayStateRef.on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                const newState = snapshot.val();
+                
+                if (newState.timerRunning && !overlayState.timerRunning) {
+                    startLocalTimer(newState.seconds);
+                } else if (!newState.timerRunning && overlayState.timerRunning) {
+                    stopLocalTimer();
+                }
+                
+                // Assegura que penalties sempre é um objeto com arrays, mesmo que venha nulo/undefined do Firebase
+                if (!newState.penalties) {
+                    newState.penalties = { '1': [], '2': [] };
+                } else {
+                    if (!newState.penalties['1']) newState.penalties['1'] = [];
+                    if (!newState.penalties['2']) newState.penalties['2'] = [];
+                }
+
+                overlayState = newState;
+                renderUI();
+            } else {
+                console.warn(`Nó para narrador '${narratorId}' não encontrado no Firebase. Aguardando dados do controlador.`);
+                // Se o nó não existe, o placar ficará em branco ou com valores iniciais até o controlador enviar dados.
+            }
+        }, (error) => {
+          console.error("Erro ao ler dados do Firebase:", error);
+          document.getElementById('placarPrincipal').innerHTML = '<div style="color: red; font-size: 24px; text-align: center; padding: 20px;">ERRO DE FIREBASE.<br>Verifique sua configuração ou conexão.</div>';
+        });
+    }
+
 
     function startLocalTimer(initialSeconds) {
         if (timerInterval) clearInterval(timerInterval);
         overlayState.seconds = initialSeconds; 
-        // Atualiza o display do cronômetro imediatamente ao iniciar
         document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds); 
 
         timerInterval = setInterval(() => {
@@ -462,8 +490,11 @@
       renderCards('1');
       renderCards('2');
       document.getElementById('periodoDisplay_display').innerText = periodNames[overlayState.currentPeriod] || 'N/A';
+      
+      // Chamada para renderizar os pênaltis sempre que o estado é atualizado
       renderPenalties('1');
       renderPenalties('2');
+
       applyPlacarTheme();
 
       const normalContent = document.getElementById('normalPlacarContent_display');
@@ -471,6 +502,7 @@
       const penaltyContent = document.getElementById('penaltyPlacarContent_display');
       const goalAnimation = document.getElementById('goalAnimation_display');
 
+      // ANIMAÇÃO DE GOL - MANTIDA SUA LÓGICA ORIGINAL AQUI
       // Primeiro, sempre remove a classe 'active' da animação para que ela possa ser disparada novamente
       goalAnimation.classList.remove('active'); 
       // E esconde o texto para garantir que ele não fique visível quando não deveria
@@ -486,10 +518,10 @@
           cardsLine.classList.remove('show-content');
           penaltyContent.classList.add('hide-content');
           penaltyContent.classList.remove('show-content');
-          penaltyContent.classList.remove('active'); // Garante que a classe 'active' do pênalti seja removida
+          penaltyContent.classList.remove('active'); 
 
           goalAnimation.style.visibility = 'visible';
-          goalAnimation.classList.add('active'); // Inicia a animação CSS
+          goalAnimation.classList.add('active'); 
       } else {
           // Se não há animação ativa, decide entre placar normal e pênaltis
           if (overlayState.penaltyModeActive) {
@@ -540,7 +572,7 @@
 
     function renderCards(time) {
       const displayElement = document.getElementById(`cardsDisplay${time}_display`);
-      displayElement.innerHTML = '';
+      displayElement.innerHTML = ''; // Limpa antes de renderizar
       const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
       const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
 
@@ -556,16 +588,19 @@
       }
     }
 
+    // CORREÇÃO DO BUG DOS PÊNALTIS AQUI
     function renderPenalties(time) {
       const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
-      penaltyBallsContainer.innerHTML = '';
-      const penalties = overlayState.penalties[time] || []; 
+      penaltyBallsContainer.innerHTML = ''; // Limpa TODAS as bolinhas existentes para recriá-las
+
+      // Garante que overlayState.penalties[time] é um array, mesmo que venha nulo/undefined do Firebase
+      const penalties = overlayState.penalties && overlayState.penalties[time] ? overlayState.penalties[time] : []; 
       
-      for (let i = 0; i < 5; i++) { 
+      for (let i = 0; i < 5; i++) { // Cria 5 espaços para as bolinhas (conforme seu design de 5)
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
         if (penalties[i]) {
-          ballDiv.classList.add(penalties[i]); 
+          ballDiv.classList.add(penalties[i]); // Adiciona 'green' ou 'red' se houver um resultado
         }
         penaltyBallsContainer.appendChild(ballDiv);
       }
