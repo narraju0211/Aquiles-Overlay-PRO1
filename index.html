@@ -27,13 +27,13 @@
       align-items: center;
       padding: 15px;
       box-sizing: border-box;
-      overflow-x: hidden;
+      overflow-x: hidden; /* Evita barra de rolagem horizontal desnecessária */
       min-height: 100vh;
     }
 
     .control-panel-container {
         width: 100%;
-        max-width: 900px;
+        max-width: 900px; /* Limite a largura para telas maiores */
         margin-top: 30px;
         z-index: 1;
     }
@@ -44,14 +44,15 @@
       border-radius: 12px;
       box-sizing: border-box;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center; 
-      gap: 25px; 
+      flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha */
+      justify-content: center; /* Centraliza os itens quando há espaço */
+      gap: 25px; /* Espaço entre os módulos */
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     }
+
     .painel > div {
-      flex: 1 1 calc(50% - 25px); 
-      min-width: 300px; 
+      flex: 1 1 calc(50% - 25px); /* Dois módulos por linha em telas maiores, considerando o gap */
+      min-width: 300px; /* Garante que os módulos não fiquem muito estreitos */
       background: var(--section-bg);
       padding: 18px;
       border-radius: 10px;
@@ -59,24 +60,27 @@
       border: 1px solid #3a3a3a;
       display: flex; 
       flex-direction: column; 
-      align-items: center; 
+      align-items: center; /* Centraliza o conteúdo dentro de cada módulo */
     }
+
     .painel > div.main-section {
-        flex-basis: 100%; 
+        flex-basis: 100%; /* Ocupa a largura total em qualquer tela */
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 15px; 
     }
+
     .painel > div.main-section .placar-controls,
     .painel > div.main-section .timer-controls,
     .painel > div.main-section .goal-trigger { 
         display: flex;
-        justify-content: center;
-        flex-wrap: wrap; 
-        gap: 10px; 
-        width: 100%;
+        justify-content: center; /* Centraliza os botões */
+        flex-wrap: wrap; /* Permite que os botões quebrem a linha */
+        gap: 10px; /* Espaço entre os botões */
+        width: 100%; /* Ocupa a largura total da seção */
     }
+
     .painel > div.main-section .team-score-controls { 
         display: flex;
         align-items: center;
@@ -85,13 +89,13 @@
 
     @media (max-width: 768px) {
       .painel > div {
-        flex: 1 1 100%; 
+        flex: 1 1 100%; /* Um módulo por linha em telas menores */
       }
     }
 
     .btn {
       padding: 10px 18px;
-      margin: 0; 
+      margin: 0; /* Remover margens extras para melhor controle do gap */
       font-size: 18px;
       border: none;
       border-radius: 6px;
@@ -99,7 +103,7 @@
       color: white;
       cursor: pointer;
       transition: background 0.3s ease, transform 0.1s ease;
-      white-space: nowrap; 
+      white-space: nowrap; /* Evita que o texto do botão quebre */
     }
     .btn:hover { 
       filter: brightness(var(--button-hover-brightness)); 
@@ -129,27 +133,27 @@
       padding-bottom: 8px;
       text-align: center;
       text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
-      width: 100%; 
+      width: 100%; /* Garante que o título ocupe a largura total da seção */
     }
     .control-group {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 8px; 
-        width: 100%;
-        margin-bottom: 10px;
+        gap: 8px; /* Espaço entre label e input/botões */
+        width: 100%; /* Ocupa a largura total da seção */
+        margin-bottom: 10px; /* Espaço entre grupos de controle */
     }
     .control-group.inline-buttons {
-        flex-direction: row; 
+        flex-direction: row; /* Botões na mesma linha */
         justify-content: center;
-        flex-wrap: wrap;
+        flex-wrap: wrap; /* Permite que os botões quebrem a linha se necessário */
     }
     .control-group label {
         font-weight: bold;
         margin-bottom: 5px;
     }
     .control-group input[type="text"] {
-        width: calc(100% - 20px); 
+        width: calc(100% - 20px); /* Ajusta largura com padding */
         padding: 8px;
         border-radius: 6px;
         border: 1px solid #555;
@@ -182,7 +186,7 @@
     }
     .control-group input[type="range"] {
         width: calc(100% - 20px);
-        -webkit-appearance: none;
+        -webkit-appearance: none; /* Remove estilo padrão do navegador */
         height: 8px;
         border-radius: 5px;
         background: #555;
@@ -384,7 +388,7 @@
       placarThemeIndex: 0,
       placarOpacity: 90, 
       penaltyModeActive: false,
-      activeAnimation: null, 
+      activeAnimation: null, // 'goalAnimation' ou null
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -420,7 +424,6 @@
 
     function initializeFirebaseAndLoadState() {
         console.log("Controlador: DOMContentLoaded - Inicializando Firebase e carregando estado...");
-        // --- MUDANÇA AQUI: Usando gameRef para ouvir dados do canal específico ---
         gameRef.on('value', (snapshot) => { 
             console.log("Controlador: Dados do Firebase recebidos.");
             if (snapshot.exists()) {
@@ -435,10 +438,26 @@
                     console.log("Controlador: Timer local parado antes de carregar novo estado.");
                 }
 
-                // Atualiza o overlayState com os dados do Firebase.
-                // Usamos um valor padrão para placarOpacity caso não exista no Firebase.
+                // Atualiza o overlayState com os dados do Firebase, garantindo valores padrão
                 Object.assign(overlayState, { 
+                    placar: { '1': 0, '2': 0 },
+                    cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
+                    penalties: { '1': [], '2': [] },
+                    seconds: 0,
+                    timerRunning: false,
+                    placarThemeIndex: 0,
                     placarOpacity: 90, 
+                    penaltyModeActive: false,
+                    activeAnimation: null,
+                    currentPeriod: 1,
+                    nome1: '',
+                    nome2: '',
+                    nomeAbbr1: 'T1', 
+                    nomeAbbr2: 'T2', 
+                    escudo1: '',
+                    escudo2: '',
+                    logoOverlay: '', 
+                    isVisible: true,
                     ...data 
                 });
                 console.log("Controlador: overlayState atualizado:", overlayState);
@@ -494,8 +513,6 @@
 
         timerInterval = setInterval(() => {
             overlayState.seconds++;
-            // Salva o estado do cronômetro no Firebase a cada segundo
-            // Isso garante persistência
             saveState(); 
         }, 1000);
     }
@@ -508,10 +525,8 @@
         }
     }
 
-
     function saveState() {
       console.log("Controlador: Tentando salvar estado para Firebase:", overlayState);
-      // --- MUDANÇA AQUI: Usando gameRef para salvar dados no canal específico ---
       gameRef.set(overlayState) 
         .then(() => {
           console.log("Controlador: Estado salvo com sucesso!");
@@ -638,13 +653,14 @@
       console.log("Controlador: Botão 'Iniciar' cronômetro clicado.");
       overlayState.timerRunning = true;
       saveState(); 
-      startLocalTimer(overlayState.seconds); 
+      // A startLocalTimer será chamada pelo listener do Firebase quando o estado for atualizado.
+      // Isso evita desincronização entre o controlador e a overlay.
     }
 
     function pauseTimer() {
       console.log("Controlador: Botão 'Pausar' cronômetro clicado.");
       overlayState.timerRunning = false;
-      stopLocalTimer(); 
+      stopLocalTimer(); // Para o timer local imediatamente
       saveState(); 
     }
 
@@ -652,7 +668,7 @@
       console.log("Controlador: Botão 'Resetar' cronômetro clicado.");
       overlayState.seconds = 0;
       overlayState.timerRunning = false;
-      stopLocalTimer(); 
+      stopLocalTimer(); // Para o timer local imediatamente
       saveState(); 
     }
 
@@ -669,8 +685,11 @@
     }
 
     function addCartao(time, tipo) {
+        // Garante que o objeto cards e seus sub-objetos existam
+        if (!overlayState.cards) overlayState.cards = {};
         if (!overlayState.cards[time]) overlayState.cards[time] = {};
-        if (!overlayState.cards[time][tipo]) overlayState.cards[time][tipo] = 0;
+        if (overlayState.cards[time][tipo] === undefined) overlayState.cards[time][tipo] = 0; // Inicializa se for undefined
+        
         overlayState.cards[time][tipo]++;
         console.log(`Controlador: Adicionado cartão ${tipo} para Time ${time}. Total: ${overlayState.cards[time][tipo]}`);
         saveState();
@@ -687,12 +706,16 @@
     function togglePenaltyMode(active) {
         overlayState.penaltyModeActive = active;
         console.log("Controlador: Modo pênaltis ativado:", overlayState.penaltyModeActive);
+        // Ao ativar ou desativar o modo de pênaltis, também limpa os pênaltis atuais
+        if (!active) {
+            resetPenalties(); 
+        }
         saveState();
     }
 
     function addPenalty(team, result) {
         if (!overlayState.penalties[team]) overlayState.penalties[team] = [];
-        if (overlayState.penalties[team].length < 5) { 
+        if (overlayState.penalties[team].length < 5) { // Limite de 5 pênaltis
             overlayState.penalties[team].push(result === 'convertido' ? 'green' : 'red');
             console.log(`Controlador: Pênalti Time ${team} (${result}). Total: ${overlayState.penalties[team].length}`);
             saveState();
@@ -715,19 +738,22 @@
     }
 
     function triggerGoalAnimation() {
+        // Limpa qualquer timeout anterior para que a animação possa ser re-disparada
         if (animationTimeoutController) {
             clearTimeout(animationTimeoutController);
         }
 
+        // Define a animação para 'goalAnimation' no estado para ser enviada ao Firebase
         overlayState.activeAnimation = 'goalAnimation';
         console.log("Controlador: Disparando animação de gol.");
         saveState(); 
 
+        // Após um tempo, remove o estado da animação
         animationTimeoutController = setTimeout(() => {
             overlayState.activeAnimation = null; 
             saveState(); 
-        }, 2000); // Duração da animação em milissegundos
+        }, 1000); // 1 segundo para a animação do gol
     }
   </script>
 </body>
-</html>
+  </html>
