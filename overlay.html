@@ -34,7 +34,8 @@
     .main-display-wrapper {
         position: relative; /* Para posicionar placar, pênaltis, animação um sobre o outro */
         top: 50px; /* Desloca o placar para baixo para não ficar colado no topo */
-        width: auto; /* Ajusta à largura do conteúdo */
+        width: 800px; /* Largura fixa para o placar principal */
+        height: 100px; /* Altura fixa para o placar principal */
         display: flex; /* Para centralizar o wrapper na tela */
         flex-direction: column; /* Organiza placar e cartões verticalmente */
         align-items: center; /* Centraliza o conteúdo */
@@ -51,12 +52,12 @@
     }
 
     /* Estilos base para todos os displays alternados (placar, pênaltis, gol) */
-    .container, .penalties-container, .goal-animation-overlay {
-        position: absolute; /* Todos ocupam o mesmo espaço */
+    .container-base { /* Nova classe base para containers alternados */
+        position: absolute; /* Todos ocupam o mesmo espaço dentro de main-display-wrapper */
         top: 0;
-        left: 0; /* Ajustado para cobrir o centro, alinhado pelo wrapper */
-        right: 0; /* Ajustado para cobrir o centro, alinhado pelo wrapper */
-        bottom: 0; /* Ajustado */
+        left: 0;
+        width: 100%; /* Ocupa toda a largura do main-display-wrapper */
+        height: 100%; /* Ocupa toda a altura do main-display-wrapper */
         display: flex;
         align-items: center;
         justify-content: center; /* Centraliza o conteúdo */
@@ -69,7 +70,6 @@
         opacity: 0; /* Por padrão, invisível */
         visibility: hidden; /* Esconde para não ser interativo */
         text-align: center; /* Centraliza o texto GOL! */
-        min-height: 80px; /* Garante altura mínima para o container */
     }
 
     /* Estilo para o placar normal */
@@ -79,8 +79,6 @@
         color: var(--placar-text);
         z-index: 1; 
         justify-content: space-between; /* Espaçamento entre os elementos do placar */
-        width: 800px; /* Largura fixa para o placar principal */
-        height: 100px; /* Altura fixa para o placar principal */
     }
 
     /* Estilo para o modo de pênaltis */
@@ -91,8 +89,6 @@
         z-index: 2; 
         flex-direction: row; /* Para os times de pênalti ficarem lado a lado */
         gap: 40px; /* Espaço entre os dois times na tela de pênaltis */
-        width: 800px; /* Largura igual ao placar normal */
-        height: 100px; /* Altura igual ao placar normal */
     }
 
     /* Estilo para a animação de gol */
@@ -105,8 +101,6 @@
         z-index: 3; 
         pointer-events: none; 
         animation: goalAppear 0.5s ease-out forwards; 
-        width: 800px; /* Largura igual ao placar normal */
-        height: 100px; /* Altura igual ao placar normal */
     }
 
     @keyframes goalAppear {
@@ -115,7 +109,7 @@
     }
 
     /* Classes para controlar a visibilidade */
-    .container.active, .penalties-container.active, .goal-animation-overlay.active {
+    .container-base.active { /* Use a classe base para controlar a visibilidade */
         opacity: 1;
         visibility: visible;
     }
@@ -126,11 +120,10 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Estilo para cada time dentro do placar normal */
+    /* Estilo para cada team dentro do placar normal */
     .team {
       display: flex;
       align-items: center;
-      /* gap: 15px; Removido para controle mais fino */
       padding: 0 10px;
       flex-grow: 1; /* Permite que os times ocupem o espaço disponível */
       justify-content: flex-start; /* Alinha conteúdo do time 1 à esquerda */
@@ -156,7 +149,7 @@
     }
 
     .team-name-abbr {
-        font-size: 0.6em; /* Aumenta um pouco para ser mais visível */
+        font-size: 0.6em; 
         text-transform: uppercase;
         letter-spacing: 1px;
         color: rgba(var(--placar-text), 0.8);
@@ -197,11 +190,11 @@
     /* Cartões agora são individuais e posicionados abaixo de cada time */
     .cards-wrapper {
         position: absolute; /* Posição absoluta em relação ao main-display-wrapper */
-        top: 105px; /* Abaixo do placar principal */
+        top: 115px; /* Abaixo do placar principal (100px altura do placar + 15px de gap) */
         width: 100%; /* Ocupa a largura do main-display-wrapper */
         display: flex;
         justify-content: space-between;
-        padding: 0 20px;
+        padding: 0 20px; /* Alinha com o padding do placar */
         box-sizing: border-box;
         pointer-events: none; /* Não bloqueia interação com o placar */
         z-index: 0; /* Abaixo do placar */
@@ -234,7 +227,7 @@
     .card-icon.yellow { background-color: #ffc107; }
     .card-icon.red { background-color: #dc3545; }
     .card-count {
-        font-size: 0.6em; /* Relativo ao font-size do .container */
+        font-size: 0.8em; /* Aumentado para ser mais visível */
         color: var(--placar-text);
         font-weight: bold;
     }
@@ -292,7 +285,7 @@
 <body>
   <div class="main-display-wrapper" id="mainDisplayWrapper">
     
-    <div class="container" id="overlayContainer">
+    <div class="container container-base" id="overlayContainer">
       <div class="team team1">
         <div class="team-details-group">
             <img src="" alt="Escudo Time 1" class="escudo" id="escudo1">
@@ -314,7 +307,7 @@
       </div>
     </div>
 
-    <div class="penalties-container" id="penaltiesContainer">
+    <div class="penalties-container container-base" id="penaltiesContainer">
         <div class="penalty-team team1-penalties">
             <div class="penalty-header">
                 <img src="" alt="Escudo Time 1" class="escudo" id="penaltyEscudo1">
@@ -335,8 +328,8 @@
         </div>
     </div>
 
-    <div class="goal-animation-overlay" id="goalAnimationOverlay">
-        GOL!
+    <div class="goal-animation-overlay container-base" id="goalAnimationOverlay">
+        GOOOOOL!
     </div>
 
   </div> <div class="cards-wrapper">
@@ -462,31 +455,35 @@
           const data = snapshot.val();
           console.log("Overlay: Dados recebidos do Firebase:", data);
           
+          // Garante que 'cards' e 'penalties' são objetos válidos antes de atribuir
+          const newCards = data.cards || { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
+          newCards['1'] = newCards['1'] || { 'amarelo': 0, 'vermelho': 0 };
+          newCards['2'] = newCards['2'] || { 'amarelo': 0, 'vermelho': 0 };
+
+          const newPenalties = data.penalties || { '1': [], '2': [] };
+          newPenalties['1'] = newPenalties['1'] || [];
+          newPenalties['2'] = newPenalties['2'] || [];
+
           Object.assign(currentOverlayState, { 
-            placar: { '1': 0, '2': 0 },
-            cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
-            penalties: { '1': [], '2': [] },
-            seconds: 0,
-            timerRunning: false,
-            placarThemeIndex: 0,
-            placarOpacity: 90, 
-            penaltyModeActive: false,
-            activeAnimation: null, 
-            currentPeriod: 1,
-            nome1: '',
-            nome2: '',
-            nomeAbbr1: 'T1', 
-            nomeAbbr2: 'T2', 
-            escudo1: '',
-            escudo2: '',
-            logoOverlay: '', 
-            isVisible: true
+            placar: data.placar || { '1': 0, '2': 0 },
+            cards: newCards,
+            penalties: newPenalties,
+            seconds: data.seconds || 0,
+            timerRunning: data.timerRunning || false,
+            placarThemeIndex: data.placarThemeIndex || 0,
+            placarOpacity: data.placarOpacity || 90, 
+            penaltyModeActive: data.penaltyModeActive || false,
+            activeAnimation: data.activeAnimation, // A overlay apenas lê este estado
+            currentPeriod: data.currentPeriod || 1,
+            nome1: data.nome1 || '',
+            nome2: data.nome2 || '',
+            nomeAbbr1: data.nomeAbbr1 || 'T1', 
+            nomeAbbr2: data.nomeAbbr2 || 'T2', 
+            escudo1: data.escudo1 || '',
+            escudo2: data.escudo2 || '',
+            logoOverlay: data.logoOverlay || '', 
+            isVisible: data.isVisible !== undefined ? data.isVisible : true
           });
-
-          // Certifica-se que 'cards' e suas subpropriedades existem para evitar erros
-          currentOverlayState.cards['1'] = currentOverlayState.cards['1'] || { 'amarelo': 0, 'vermelho': 0 };
-          currentOverlayState.cards['2'] = currentOverlayState.cards['2'] || { 'amarelo': 0, 'vermelho': 0 };
-
 
           if (currentOverlayState.timerRunning) {
               if (!timerDisplayInterval) { 
@@ -564,14 +561,14 @@
       timerElement.textContent = formatTime(currentOverlayState.seconds);
       periodElement.textContent = periodNames[currentOverlayState.currentPeriod] || 'N/A';
 
-      // Atualiza os cartões (mas não a visibilidade ainda)
+      // Atualiza os contadores de cartões
       cards1YellowElement.textContent = currentOverlayState.cards['1']['amarelo'];
       cards1RedElement.textContent = currentOverlayState.cards['1']['vermelho'];
       cards2YellowElement.textContent = currentOverlayState.cards['2']['amarelo'];
       cards2RedElement.textContent = currentOverlayState.cards['2']['vermelho'];
 
       // === Lógica de visibilidade dos elementos principais ===
-      // Primeiro, esconde todos os displays alternados
+      // Primeiro, esconde todos os displays alternados para evitar sobreposição
       overlayContainer.classList.remove('active');
       penaltiesContainer.classList.remove('active');
       goalAnimationOverlay.classList.remove('active');
