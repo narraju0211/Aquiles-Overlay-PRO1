@@ -5,9 +5,10 @@
   <title>Aquiles Overlay PRO - Controlador</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* ... (seu CSS existente aqui) ... */
     :root {
-      --placar-bg-rgb: 34, 34, 34;
-      --placar-opacity: 0.9;
+      --placar-bg-rgb: 34, 34, 34; /* Usamos RGB para controlar a alfa separadamente */
+      --placar-opacity: 0.9; /* Valor padrão de opacidade (0 a 1) */
       --placar-text: white;
       --placar-border: #555;
       --placar-timer-color: #0ff;
@@ -70,14 +71,14 @@
     }
     .painel > div.main-section .placar-controls,
     .painel > div.main-section .timer-controls,
-    .painel > div.main-section .goal-trigger { 
+    .painel > div.main-section .goal-trigger { /* O .goal-trigger pode ser removido do CSS se o botão for removido do HTML */
         display: flex;
         justify-content: center;
         flex-wrap: wrap; 
         gap: 10px; 
         width: 100%;
     }
-    .painel > div.main-section .team-score-controls { 
+    .painel > div.main-section .team-score-controls { /* Não usado no HTML atual, mas mantido */
         display: flex;
         align-items: center;
         gap: 10px;
@@ -351,7 +352,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    // ** SEU FIREBASE CONFIG ESTÁ AQUI (MANTIDO O SEU ORIGINAL) **
+    // ** SEU FIREBASE CONFIG ESTÁ AQUI **
     const firebaseConfig = {
       apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
       authDomain: "aquilesplacarpro.firebaseapp.com",
@@ -365,12 +366,7 @@
     // Inicialize o Firebase
     const app = firebase.initializeApp(firebaseConfig);
     const database = app.database();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const gameId = urlParams.get('channel') || 'default_channel'; 
-    console.log(`Controlador: Ativo para o canal: ${gameId}`);
-
-    const gameRef = database.ref('channels').child(gameId); 
+    const overlayStateRef = database.ref('overlayState');
 
     let overlayState = {
       placar: { '1': 0, '2': 0 },
@@ -381,7 +377,7 @@
       placarThemeIndex: 0,
       placarOpacity: 90, 
       penaltyModeActive: false,
-      activeAnimation: null, // 'goalAnimation' ou null
+      activeAnimation: null, 
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -417,51 +413,29 @@
 
     function initializeFirebaseAndLoadState() {
         console.log("Controlador: DOMContentLoaded - Inicializando Firebase e carregando estado...");
-        gameRef.on('value', (snapshot) => { 
+        overlayStateRef.on('value', (snapshot) => {
             console.log("Controlador: Dados do Firebase recebidos.");
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 console.log("Controlador: Dados recebidos do Firebase:", data);
 
+                // IMPORTANTE: Antes de atualizar o overlayState com os novos dados,
+                // paramos o timer local para evitar conflitos se ele já estiver rodando.
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
                     console.log("Controlador: Timer local parado antes de carregar novo estado.");
                 }
 
-                // Garante que 'cards' e 'penalties' são objetos válidos antes de atribuir
-                const newCards = data.cards || { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
-                newCards['1'] = newCards['1'] || { 'amarelo': 0, 'vermelho': 0 };
-                newCards['2'] = newCards['2'] || { 'amarelo': 0, 'vermelho': 0 };
-
-                const newPenalties = data.penalties || { '1': [], '2': [] };
-                newPenalties['1'] = newPenalties['1'] || [];
-                newPenalties['2'] = newPenalties['2'] || [];
-
-
+                // Atualiza o overlayState com os dados do Firebase.
+                // Usamos um valor padrão para placarOpacity caso não exista no Firebase.
                 Object.assign(overlayState, { 
-                    placar: data.placar || { '1': 0, '2': 0 },
-                    cards: newCards,
-                    penalties: newPenalties,
-                    seconds: data.seconds || 0,
-                    timerRunning: data.timerRunning || false,
-                    placarThemeIndex: data.placarThemeIndex || 0,
-                    placarOpacity: data.placarOpacity || 90, 
-                    penaltyModeActive: data.penaltyModeActive || false,
-                    // Mantém activeAnimation se já estiver ativo para não interromper animação na overlay
-                    activeAnimation: data.activeAnimation, 
-                    currentPeriod: data.currentPeriod || 1,
-                    nome1: data.nome1 || '',
-                    nome2: data.nome2 || '',
-                    nomeAbbr1: data.nomeAbbr1 || 'T1', 
-                    nomeAbbr2: data.nomeAbbr2 || 'T2', 
-                    escudo1: data.escudo1 || '',
-                    escudo2: data.escudo2 || '',
-                    logoOverlay: data.logoOverlay || '', 
-                    isVisible: data.isVisible !== undefined ? data.isVisible : true
+                    placarOpacity: 90, 
+                    ...data 
                 });
                 console.log("Controlador: overlayState atualizado:", overlayState);
 
+                // Se o timer estava rodando no Firebase, reinicia o timer LOCAL no controlador.
                 if (overlayState.timerRunning) {
                     console.log("Controlador: timerRunning é true no Firebase. Iniciando timer local com seconds:", overlayState.seconds);
                     startLocalTimer(overlayState.seconds);
@@ -470,7 +444,9 @@
                 }
 
             } else {
-                console.log(`Controlador: Nenhum dado no Firebase para o canal '${gameId}'. Usando estado inicial padrão e salvando.`);
+                console.log("Controlador: Nenhum dado no Firebase. Usando estado inicial padrão.");
+                // Se não há dados, o overlayState já estará com os valores padrão.
+                // Apenas salva para inicializar o Firebase.
                 saveState(); 
             }
             renderControllerUI(); 
@@ -503,10 +479,15 @@
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
+            console.log("Controlador: Limpando timerInterval existente antes de iniciar um novo.");
         }
         overlayState.seconds = initialSeconds; 
+        console.log("Controlador: Iniciando timer local com seconds:", overlayState.seconds);
+
         timerInterval = setInterval(() => {
             overlayState.seconds++;
+            // Salva o estado do cronômetro no Firebase a cada segundo
+            // Isso garante persistência
             saveState(); 
         }, 1000);
     }
@@ -515,13 +496,16 @@
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
+            console.log("Controlador: Timer local parado.");
         }
     }
 
+
     function saveState() {
-      gameRef.set(overlayState) 
+      console.log("Controlador: Tentando salvar estado para Firebase:", overlayState);
+      overlayStateRef.set(overlayState)
         .then(() => {
-          // console.log("Controlador: Estado salvo com sucesso!");
+          console.log("Controlador: Estado salvo com sucesso!");
         })
         .catch((error) => {
           console.error("Controlador: Erro ao salvar no Firebase: ", error);
@@ -546,6 +530,7 @@
     function alterarPlacar(time, valor, triggerAnimation = false) {
       overlayState.placar[time] += valor;
       if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
+      console.log(`Controlador: Alterando placar para Time ${time}. Novo placar: ${overlayState.placar[time]}. triggerAnimation: ${triggerAnimation}`);
       
       if (valor > 0 && triggerAnimation) {
           triggerGoalAnimation();
@@ -556,11 +541,13 @@
 
     function togglePlacarTheme() {
       overlayState.placarThemeIndex = (overlayState.placarThemeIndex + 1) % placarThemes.length;
+      console.log("Controlador: Alterando tema do placar. Index:", overlayState.placarThemeIndex);
       saveState();
     }
 
     function updatePlacarOpacity(value) {
         overlayState.placarOpacity = parseInt(value, 10);
+        console.log("Controlador: Alterando opacidade do placar:", overlayState.placarOpacity);
         saveState();
     }
 
@@ -592,6 +579,7 @@
             ctx.drawImage(img, 0, 0, width, height);
 
             overlayState['escudo' + time] = canvas.toDataURL('image/png');
+            console.log(`Controlador: Escudo Time ${time} carregado.`);
             saveState();
           };
           img.src = e.target.result;
@@ -628,6 +616,7 @@
             ctx.drawImage(img, 0, 0, width, height);
 
             overlayState.logoOverlay = canvas.toDataURL('image/png');
+            console.log("Controlador: Logo da overlay carregada.");
             saveState();
           };
           img.src = e.target.result;
@@ -637,17 +626,21 @@
     }
 
     function startTimer() {
+      console.log("Controlador: Botão 'Iniciar' cronômetro clicado.");
       overlayState.timerRunning = true;
       saveState(); 
+      startLocalTimer(overlayState.seconds); 
     }
 
     function pauseTimer() {
+      console.log("Controlador: Botão 'Pausar' cronômetro clicado.");
       overlayState.timerRunning = false;
       stopLocalTimer(); 
       saveState(); 
     }
 
     function resetTimer() {
+      console.log("Controlador: Botão 'Resetar' cronômetro clicado.");
       overlayState.seconds = 0;
       overlayState.timerRunning = false;
       stopLocalTimer(); 
@@ -655,37 +648,36 @@
     }
 
     function nextPeriod() {
-        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1; 
+        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1;
+        console.log("Controlador: Próximo período:", overlayState.currentPeriod);
         saveState();
     }
 
     function setPeriod(period) {
         overlayState.currentPeriod = period;
+        console.log("Controlador: Período definido para:", overlayState.currentPeriod);
         saveState();
     }
 
     function addCartao(time, tipo) {
-        // Garante que o objeto cards e suas propriedades existam
-        if (!overlayState.cards) overlayState.cards = { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
-        if (!overlayState.cards[time]) overlayState.cards[time] = { 'amarelo': 0, 'vermelho': 0 };
-        if (overlayState.cards[time][tipo] === undefined) overlayState.cards[time][tipo] = 0;
-        
+        if (!overlayState.cards[time]) overlayState.cards[time] = {};
+        if (!overlayState.cards[time][tipo]) overlayState.cards[time][tipo] = 0;
         overlayState.cards[time][tipo]++;
+        console.log(`Controlador: Adicionado cartão ${tipo} para Time ${time}. Total: ${overlayState.cards[time][tipo]}`);
         saveState();
     }
 
     function resetCards(time, tipo) {
         if (overlayState.cards[time] && overlayState.cards[time][tipo] !== undefined) {
             overlayState.cards[time][tipo] = 0;
+            console.log(`Controlador: Cartões ${tipo} do Time ${time} resetados.`);
             saveState();
         }
     }
 
     function togglePenaltyMode(active) {
         overlayState.penaltyModeActive = active;
-        if (!active) {
-            resetPenalties(); 
-        }
+        console.log("Controlador: Modo pênaltis ativado:", overlayState.penaltyModeActive);
         saveState();
     }
 
@@ -693,6 +685,7 @@
         if (!overlayState.penalties[team]) overlayState.penalties[team] = [];
         if (overlayState.penalties[team].length < 5) { 
             overlayState.penalties[team].push(result === 'convertido' ? 'green' : 'red');
+            console.log(`Controlador: Pênalti Time ${team} (${result}). Total: ${overlayState.penalties[team].length}`);
             saveState();
         } else {
             console.warn(`Controlador: Limite de 5 pênaltis para o Time ${team} atingido.`);
@@ -702,32 +695,30 @@
     function resetPenalties() {
         overlayState.penalties['1'] = [];
         overlayState.penalties['2'] = [];
+        console.log("Controlador: Pênaltis resetados.");
         saveState();
     }
 
     function toggleOverlayVisibility() {
       overlayState.isVisible = !overlayState.isVisible;
+      console.log("Controlador: Visibilidade da overlay:", overlayState.isVisible);
       saveState();
     }
 
     function triggerGoalAnimation() {
-        // Se já houver uma animação de gol ativa, não faz nada para não reiniciar
-        if (overlayState.activeAnimation === 'goalAnimation') {
-            return;
-        }
-
         if (animationTimeoutController) {
             clearTimeout(animationTimeoutController);
-            animationTimeoutController = null;
         }
 
         overlayState.activeAnimation = 'goalAnimation';
+        console.log("Controlador: Disparando animação de gol.");
         saveState(); 
 
         animationTimeoutController = setTimeout(() => {
             overlayState.activeAnimation = null; 
+            console.log("Controlador: Animação de gol finalizada. Resetando activeAnimation.");
             saveState(); 
-        }, 1500); // Exibe por 1.5 segundos
+        }, 2000); 
     }
   </script>
 </body>
