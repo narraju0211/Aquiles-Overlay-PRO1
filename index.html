@@ -429,26 +429,36 @@
                     console.log("Controlador: Timer local parado antes de carregar novo estado.");
                 }
 
+                // Garante que 'cards' e 'penalties' são objetos válidos antes de atribuir
+                const newCards = data.cards || { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
+                newCards['1'] = newCards['1'] || { 'amarelo': 0, 'vermelho': 0 };
+                newCards['2'] = newCards['2'] || { 'amarelo': 0, 'vermelho': 0 };
+
+                const newPenalties = data.penalties || { '1': [], '2': [] };
+                newPenalties['1'] = newPenalties['1'] || [];
+                newPenalties['2'] = newPenalties['2'] || [];
+
+
                 Object.assign(overlayState, { 
-                    placar: { '1': 0, '2': 0 },
-                    cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
-                    penalties: { '1': [], '2': [] },
-                    seconds: 0,
-                    timerRunning: false,
-                    placarThemeIndex: 0,
-                    placarOpacity: 90, 
-                    penaltyModeActive: false,
-                    activeAnimation: null,
-                    currentPeriod: 1,
-                    nome1: '',
-                    nome2: '',
-                    nomeAbbr1: 'T1', 
-                    nomeAbbr2: 'T2', 
-                    escudo1: '',
-                    escudo2: '',
-                    logoOverlay: '', 
-                    isVisible: true,
-                    ...data 
+                    placar: data.placar || { '1': 0, '2': 0 },
+                    cards: newCards,
+                    penalties: newPenalties,
+                    seconds: data.seconds || 0,
+                    timerRunning: data.timerRunning || false,
+                    placarThemeIndex: data.placarThemeIndex || 0,
+                    placarOpacity: data.placarOpacity || 90, 
+                    penaltyModeActive: data.penaltyModeActive || false,
+                    // Mantém activeAnimation se já estiver ativo para não interromper animação na overlay
+                    activeAnimation: data.activeAnimation, 
+                    currentPeriod: data.currentPeriod || 1,
+                    nome1: data.nome1 || '',
+                    nome2: data.nome2 || '',
+                    nomeAbbr1: data.nomeAbbr1 || 'T1', 
+                    nomeAbbr2: data.nomeAbbr2 || 'T2', 
+                    escudo1: data.escudo1 || '',
+                    escudo2: data.escudo2 || '',
+                    logoOverlay: data.logoOverlay || '', 
+                    isVisible: data.isVisible !== undefined ? data.isVisible : true
                 });
                 console.log("Controlador: overlayState atualizado:", overlayState);
 
@@ -655,8 +665,9 @@
     }
 
     function addCartao(time, tipo) {
-        if (!overlayState.cards) overlayState.cards = {};
-        if (!overlayState.cards[time]) overlayState.cards[time] = {};
+        // Garante que o objeto cards e suas propriedades existam
+        if (!overlayState.cards) overlayState.cards = { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
+        if (!overlayState.cards[time]) overlayState.cards[time] = { 'amarelo': 0, 'vermelho': 0 };
         if (overlayState.cards[time][tipo] === undefined) overlayState.cards[time][tipo] = 0;
         
         overlayState.cards[time][tipo]++;
@@ -700,8 +711,14 @@
     }
 
     function triggerGoalAnimation() {
+        // Se já houver uma animação de gol ativa, não faz nada para não reiniciar
+        if (overlayState.activeAnimation === 'goalAnimation') {
+            return;
+        }
+
         if (animationTimeoutController) {
             clearTimeout(animationTimeoutController);
+            animationTimeoutController = null;
         }
 
         overlayState.activeAnimation = 'goalAnimation';
@@ -710,8 +727,8 @@
         animationTimeoutController = setTimeout(() => {
             overlayState.activeAnimation = null; 
             saveState(); 
-        }, 1000); 
+        }, 1500); // Exibe por 1.5 segundos
     }
   </script>
 </body>
-</html>
+  </html>
