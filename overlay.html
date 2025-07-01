@@ -5,7 +5,6 @@
   <title>Aquiles Overlay PRO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* ... (seu CSS existente aqui, sem mudanças, GARANTA QUE ESTÁ COMPLETO) ... */
     :root {
       --placar-bg-rgb: 34, 34, 34;
       --placar-opacity: 0.9;
@@ -56,6 +55,11 @@
         opacity: 0 !important;
         transform: translateY(-50px) !important;
         pointer-events: none; 
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     .team {
