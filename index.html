@@ -216,6 +216,58 @@
         width: 80%;
         margin: 15px 0;
     }
+
+    /* Novo estilo para a área do link da Overlay */
+    .overlay-link-container {
+        background-color: #1a1a1a;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+        text-align: center;
+        word-break: break-all; /* Garante que URLs longas quebrem a linha */
+    }
+
+    .overlay-link-container label {
+        font-weight: bold;
+        color: var(--highlight-color);
+        font-size: 1.1em;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .overlay-link-container p {
+        font-size: 0.9em;
+        color: #bbb;
+        margin-top: 5px;
+    }
+
+    .overlay-link-container a {
+        color: #8affa1; /* Um tom de verde-claro para o link */
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 1.05em;
+        word-break: break-all; /* Garante que URLs longas quebrem a linha */
+    }
+
+    .overlay-link-container a:hover {
+        text-decoration: underline;
+    }
+
+    .overlay-link-container button {
+        margin-top: 10px;
+        padding: 8px 15px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .overlay-link-container button:hover {
+        background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
@@ -227,6 +279,14 @@
         <div class="control-group">
             <label for="narratorId_input">ID do Narrador:</label>
             <input type="text" id="narratorId_input" placeholder="ID único (ex: meu_canal_futebol)">
+            <p style="font-size: 0.8em; color: #aaa;">Use um ID diferente para cada narrador.</p>
+        </div>
+
+        <div class="overlay-link-container">
+            <label>Link da Overlay para Transmissão:</label>
+            <a id="overlayLinkDisplay" href="#" target="_blank"></a>
+            <p id="overlayLinkInstructions" style="font-size: 0.8em; color: #bbb;">Defina o ID do Narrador para gerar o link.</p>
+            <button onclick="copyOverlayLink()">Copiar Link</button>
         </div>
         <hr>
 
@@ -429,8 +489,8 @@
             setupFirebaseForNarrator(savedNarratorId);
         } else {
             // Se não houver ID salvo, define um padrão temporário e espera o usuário inserir
-            narratorIdInput.value = 'default_narrator';
-            setupFirebaseForNarrator('default_narrator');
+            narratorIdInput.value = 'default_narrator'; // Um valor padrão razoável
+            setupFirebaseForNarrator('default_narrator'); // Inicia com um narrador padrão
         }
 
         narratorIdInput.addEventListener('change', (e) => {
@@ -438,11 +498,12 @@
             if (newId) {
                 localStorage.setItem('aquilesNarratorId', newId);
                 setupFirebaseForNarrator(newId);
-                alert(`ID do Narrador definido para: ${newId}. Reinicie a Overlay!`);
+                alert(`ID do Narrador definido para: ${newId}. O link da Overlay foi atualizado.`);
             } else {
                 alert('O ID do Narrador não pode ser vazio.');
                 // Reverter para o último ID salvo ou para o padrão
                 narratorIdInput.value = localStorage.getItem('aquilesNarratorId') || 'default_narrator';
+                setupFirebaseForNarrator(narratorIdInput.value); // Recarrega com o ID válido
             }
         });
         
@@ -489,17 +550,22 @@
                     if (!data.penalties['2']) data.penalties['2'] = [];
                 }
                 
+                // CRONÔMETRO: NÃO ATUALIZAR 'seconds' AQUI SE JÁ ESTIVER RODANDO NO CONTROLE
+                // Apenas sobrescrever o estado completo, exceto o tempo local do timer
+                // O estado do timer será enviado e lido pela overlay, mas o controlador não precisa manter um timer local.
                 Object.assign(overlayState, { 
-                    placarOpacity: 90, 
+                    placarOpacity: 90, // Valor padrão se não estiver no Firebase
                     ...data 
                 });
             } else {
                 // Se o nó para o narrador não existe, inicializa o estado no Firebase
                 console.log(`Nó para narrador '${narratorId}' não encontrado. Inicializando estado.`);
                 // Copia o estado inicial padrão para o novo nó do narrador
-                overlayStateRef.set(overlayState);
+                // Inclui a propriedade 'seconds' no estado inicial
+                overlayStateRef.set({ ...overlayState, seconds: 0 }); // Garante que seconds começa em 0 no novo nó
             }
             renderControllerUI(); 
+            generateOverlayLink(narratorId); // Chama a função para gerar o link da overlay
         });
     }
 
@@ -529,6 +595,39 @@
       } else {
         if (toggleButton) toggleButton.innerText = 'Mostrar Placar na Transmissão';
       }
+    }
+
+    // Função para gerar o link da Overlay
+    function generateOverlayLink(narratorId) {
+        const currentPath = window.location.href; // Ex: http://localhost/controlador.html
+        let overlayBasePath = currentPath.substring(0, currentPath.lastIndexOf('/')); // Ex: http://localhost
+
+        // Assumimos que overlay.html está no mesmo diretório do controlador.html
+        // Se overlay.html estiver em um subdiretório ou em outro local, ajuste aqui.
+        // Ex: se overlay.html estiver em 'http://localhost/minhas_overlays/overlay.html'
+        // overlayBasePath = 'http://localhost/minhas_overlays'; 
+        
+        const overlayLink = `${overlayBasePath}/overlay.html?narratorId=${narratorId}`;
+        const overlayLinkElement = document.getElementById('overlayLinkDisplay');
+        const overlayLinkInstructions = document.getElementById('overlayLinkInstructions');
+
+        overlayLinkElement.href = overlayLink;
+        overlayLinkElement.innerText = overlayLink;
+        overlayLinkInstructions.style.display = 'none'; // Esconde a instrução depois de gerar o link
+    }
+
+    function copyOverlayLink() {
+        const overlayLinkElement = document.getElementById('overlayLinkDisplay');
+        const textToCopy = overlayLinkElement.innerText;
+
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                alert('Link da Overlay copiado para a área de transferência!');
+            })
+            .catch(err => {
+                console.error('Erro ao copiar o link: ', err);
+                alert('Erro ao copiar o link. Por favor, copie manualmente: ' + textToCopy);
+            });
     }
 
     // Função alterarPlacar modificada para disparar a animação (ORIGINALMENTE SUA)
@@ -714,4 +813,4 @@
     }
   </script>
 </body>
-              </html>
+  </html>
