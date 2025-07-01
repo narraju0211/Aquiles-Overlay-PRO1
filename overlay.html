@@ -363,7 +363,7 @@
       placar: { '1': 0, '2': 0 },
       cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
       penalties: { '1': [], '2': [] },
-      seconds: 0,
+      seconds: 0, // O estado local do cronômetro da overlay
       timerRunning: false,
       placarThemeIndex: 0,
       placarOpacity: 90, 
@@ -412,7 +412,6 @@
             setupFirebaseForNarrator(narratorId);
         } else {
             console.error("ID do Narrador não encontrado na URL. Use ?narratorId=SEU_ID");
-            // Pode exibir uma mensagem na tela ou um placar padrão de erro
             document.getElementById('placarPrincipal').innerHTML = '<div style="color: red; font-size: 24px; text-align: center; padding: 20px;">ERRO: ID do Narrador não definido na URL.<br>Ex: overlay.html?narratorId=seu_id</div>';
         }
     }
@@ -425,21 +424,41 @@
             if (snapshot.exists()) {
                 const newState = snapshot.val();
                 
+                // CORREÇÃO DO CRONÔMETRO: Gerencia o timer com base no estado do Firebase
                 if (newState.timerRunning && !overlayState.timerRunning) {
+                    // Se o timer passou a rodar e não estava rodando localmente, inicia/reinicia com o tempo do Firebase
                     startLocalTimer(newState.seconds);
                 } else if (!newState.timerRunning && overlayState.timerRunning) {
+                    // Se o timer parou no Firebase, para o timer local
                     stopLocalTimer();
+                    overlayState.seconds = newState.seconds; // Garante que o display pare no tempo correto
+                } else if (newState.timerRunning && overlayState.timerRunning) {
+                    // Se o timer continua rodando em ambos, apenas sincroniza se houver uma grande diferença
+                    // Isso pode ocorrer se o Firebase foi atualizado com um tempo manualmente
+                    if (Math.abs(newState.seconds - overlayState.seconds) > 2) { // Tolerância de 2 segundos para pequenas latências
+                         startLocalTimer(newState.seconds); // Re-sincroniza o timer local
+                    }
+                } else { // Ambos estão parados, apenas sincroniza o tempo
+                    overlayState.seconds = newState.seconds;
                 }
-                
-                // Assegura que penalties sempre é um objeto com arrays, mesmo que venha nulo/undefined do Firebase
+
+                // Assegura que 'penalties' sempre é um objeto com arrays, mesmo que venha nulo/undefined do Firebase
                 if (!newState.penalties) {
                     newState.penalties = { '1': [], '2': [] };
                 } else {
                     if (!newState.penalties['1']) newState.penalties['1'] = [];
                     if (!newState.penalties['2']) newState.penalties['2'] = [];
                 }
+                
+                // Atualiza o estado da overlay, exceto a propriedade 'seconds' para evitar zera-la.
+                // A propriedade 'seconds' é atualizada acima, de forma mais controlada.
+                // Se precisar de um reset forçado, o controlador o enviará.
+                Object.keys(newState).forEach(key => {
+                    if (key !== 'seconds') { // Não sobrescreve 'seconds' diretamente aqui
+                        overlayState[key] = newState[key];
+                    }
+                });
 
-                overlayState = newState;
                 renderUI();
             } else {
                 console.warn(`Nó para narrador '${narratorId}' não encontrado no Firebase. Aguardando dados do controlador.`);
@@ -453,8 +472,8 @@
 
 
     function startLocalTimer(initialSeconds) {
-        if (timerInterval) clearInterval(timerInterval);
-        overlayState.seconds = initialSeconds; 
+        if (timerInterval) clearInterval(timerInterval); // Garante que apenas um timer esteja rodando
+        overlayState.seconds = initialSeconds; // Define o tempo inicial
         document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds); 
 
         timerInterval = setInterval(() => {
@@ -486,6 +505,9 @@
 
       document.getElementById('logoOverlay_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('logoOverlayPenalty_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+
+      // Atualiza o tempo do cronômetro. A lógica de start/stop está em setupFirebaseForNarrator
+      document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds);
 
       renderCards('1');
       renderCards('2');
@@ -588,13 +610,12 @@
       }
     }
 
-    // CORREÇÃO DO BUG DOS PÊNALTIS AQUI
     function renderPenalties(time) {
       const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
       penaltyBallsContainer.innerHTML = ''; // Limpa TODAS as bolinhas existentes para recriá-las
 
       // Garante que overlayState.penalties[time] é um array, mesmo que venha nulo/undefined do Firebase
-      const penalties = overlayState.penalties && overlayState.penalties[time] ? overlayState.penalties[time] : []; 
+      const penalties = overlayState.penalties && Array.isArray(overlayState.penalties[time]) ? overlayState.penalties[time] : []; 
       
       for (let i = 0; i < 5; i++) { // Cria 5 espaços para as bolinhas (conforme seu design de 5)
         const ballDiv = document.createElement('div');
