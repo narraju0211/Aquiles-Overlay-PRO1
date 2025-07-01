@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
-      --placar-bg-rgb: 34, 34, 34; /* Usamos RGB para controlar a alfa separadamente */
-      --placar-opacity: 0.9; /* Valor padrão de opacidade (0 a 1) */
+      --placar-bg-rgb: 34, 34, 34; 
+      --placar-opacity: 0.9; 
       --placar-text: white;
       --placar-border: #555;
       --placar-timer-color: #0ff;
@@ -33,7 +33,7 @@
       display: flex;
       flex-direction: column; 
       align-items: center;
-      transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* Adicionado transform */
       opacity: 1;
       visibility: visible;
       background-color: transparent;
@@ -48,6 +48,7 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
+      transform: translateY(-50px); /* Move para cima ao esconder */
     }
 
     .placar {
@@ -69,13 +70,12 @@
       justify-content: center;
     }
 
-    /* Alterado para permitir que o conteúdo principal e os cartões fiquem independentes */
     .placar-content-wrapper {
         display: flex;
         flex-direction: column;
         width: 100%;
         align-items: center;
-        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        transition: opacity 0.3s ease-in-out; /* Sem transform para não conflitar com a animação GOOOL */
     }
 
     .placar-main-line {
@@ -90,14 +90,14 @@
 
     .placar-group {
       display: flex;
-      flex-direction: column; /* Alterado para empilhar nome e cartões */
+      flex-direction: column; 
       align-items: center;
-      gap: 3px; /* Espaçamento entre nome e cartões */
+      gap: 3px; 
       flex-shrink: 0; 
-      justify-content: center; /* Centraliza verticalmente o conteúdo */
+      justify-content: center; 
     }
 
-    .placar-group-score { /* Novo grupo para escudo, abreviação e placar */
+    .placar-group-score { 
       display: flex;
       align-items: center;
       gap: 5px;
@@ -166,7 +166,7 @@
         color: var(--placar-text);
     }
 
-    /* Cartões agora dentro do .placar-group */
+    /* Cartões dentro do .placar-group */
     .cards-display {
       display: flex;
       min-height: 20px;
@@ -188,16 +188,13 @@
     .card-indicator.red-card { background-color: #dc3545; } 
 
     .penalty-shootout-placar {
-        display: none; /* Inicia oculto, será exibido via JS */
+        display: none; 
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
         width: 100%;
         gap: 15px;
         padding: 10px 0; 
-    }
-    .penalty-shootout-placar.active { /* Esta classe é para controle de visibilidade via JS */
-        display: flex;
     }
     .penalty-team-display {
         display: flex;
@@ -268,7 +265,7 @@
       animation: fadeInScaleOut 2s ease-out forwards; 
     }
 
-    /* Esconde o conteúdo principal do placar */
+    /* Controla a visibilidade do conteúdo do placar durante a animação */
     .placar-content-wrapper.hidden-content {
         opacity: 0;
         pointer-events: none;
@@ -295,7 +292,8 @@
                   <span id="nomeAbbr1_display" class="team-name-abbr">T1</span>
                   <span id="placar1_display" class="placar-numero">0</span>
               </div>
-              <div id="cardsDisplay1_display" class="cards-display"></div> </div>
+              <div id="cardsDisplay1_display" class="cards-display"></div> 
+          </div>
 
           <div class="logo-central">
             <img id="logoOverlay_display" src="" alt="Sua Logo">
@@ -307,7 +305,8 @@
                   <span id="nomeAbbr2_display" class="team-name-abbr">T2</span>
                   <img id="escudo2_display" class="escudo" src="" alt="Escudo Time 2">
               </div>
-              <div id="cardsDisplay2_display" class="cards-display"></div> </div>
+              <div id="cardsDisplay2_display" class="cards-display"></div> 
+          </div>
           
           <div class="placar-group">
               <div id="periodoDisplay_display" class="periodo">1º T</div>
@@ -329,7 +328,9 @@
             <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
           </div>
         </div>
-      </div> <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
+      </div> 
+
+      <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
     </div>
   </div>
 
@@ -351,7 +352,7 @@
     // Inicialize o Firebase
     const app = firebase.initializeApp(firebaseConfig);
     let database;
-    let overlayStateRef; // Será definida dinamicamente
+    let overlayStateRef; 
 
     let overlayState = {
       placar: { '1': 0, '2': 0 },
@@ -375,6 +376,7 @@
     };
 
     let timerInterval;
+    let localSeconds = 0; // Usado para o cronômetro local para evitar bugs de sincronização
 
     const placarThemes = [
       { rgb: '34, 34, 34', text: 'white', border: '#555', timerColor: '#0ff' }, 
@@ -416,21 +418,25 @@
             if (snapshot.exists()) {
                 const newState = snapshot.val();
                 
-                // CRONÔMETRO: Gerencia o timer com base no estado do Firebase
-                // Apenas iniciar/parar o timer local e sincronizar o tempo
+                // CRONÔMETRO: Sincronização e controle local
                 if (newState.timerRunning && !overlayState.timerRunning) {
+                    // Se o timer estava parado e agora está rodando no controlador, inicia localmente
                     startLocalTimer(newState.seconds);
                 } else if (!newState.timerRunning && overlayState.timerRunning) {
+                    // Se o timer estava rodando e agora está parado, para localmente
                     stopLocalTimer();
-                    overlayState.seconds = newState.seconds; 
+                    localSeconds = newState.seconds; // Sincroniza o tempo final
                 } else if (newState.timerRunning && overlayState.timerRunning) {
-                    if (Math.abs(newState.seconds - overlayState.seconds) > 2) { 
+                    // Se ambos estão rodando, verifica se há uma grande diferença e reseta
+                    if (Math.abs(newState.seconds - localSeconds) > 2) { 
                          startLocalTimer(newState.seconds); 
                     }
-                } else { 
-                    overlayState.seconds = newState.seconds;
+                } else if (!newState.timerRunning && !overlayState.timerRunning) {
+                    // Se ambos estão parados, apenas sincroniza o tempo
+                    localSeconds = newState.seconds;
                 }
 
+                // Garante que penalties existam
                 if (!newState.penalties) {
                     newState.penalties = { '1': [], '2': [] };
                 } else {
@@ -438,7 +444,7 @@
                     if (!newState.penalties['2']) newState.penalties['2'] = [];
                 }
                 
-                // Atualiza o estado da overlay, exceto 'seconds' para evitar sobrescrever o timer local
+                // Atualiza o estado da overlay localmente (excluindo seconds para não conflitar)
                 Object.keys(newState).forEach(key => {
                     if (key !== 'seconds') { 
                         overlayState[key] = newState[key];
@@ -456,13 +462,13 @@
     }
 
     function startLocalTimer(initialSeconds) {
-        if (timerInterval) clearInterval(timerInterval); 
-        overlayState.seconds = initialSeconds; 
-        document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds); 
+        if (timerInterval) clearInterval(timerInterval); // Limpa qualquer timer anterior
+        localSeconds = initialSeconds; 
+        document.getElementById('cronometro_display').innerText = formatTime(localSeconds); 
 
         timerInterval = setInterval(() => {
-            overlayState.seconds++;
-            document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds);
+            localSeconds++;
+            document.getElementById('cronometro_display').innerText = formatTime(localSeconds);
         }, 1000);
     }
 
@@ -490,7 +496,7 @@
       document.getElementById('logoOverlay_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('logoOverlayPenalty_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
 
-      document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds);
+      document.getElementById('cronometro_display').innerText = formatTime(localSeconds); // Usa localSeconds
 
       renderCards('1');
       renderCards('2');
@@ -506,27 +512,29 @@
       const penaltyContent = document.getElementById('penaltyPlacarContent_display');
       const goalAnimation = document.getElementById('goalAnimation_display');
 
-      // Sempre remove a classe 'active' para resetar a animação CSS
+      // Sempre remove a classe 'active' da animação para que ela possa ser reativada pelo CSS
       goalAnimation.classList.remove('active'); 
 
       if (overlayState.activeAnimation === 'goalAnimation') {
-          // Se a animação de gol está ativa, esconde o wrapper do placar e mostra a animação
+          // Esconde o conteúdo do placar
           placarContentWrapper.classList.add('hidden-content');
           placarContentWrapper.classList.remove('visible-content');
+          // Mostra e ativa a animação
           goalAnimation.style.visibility = 'visible';
           goalAnimation.classList.add('active'); 
       } else {
-          // Se não há animação ativa, mostra o wrapper do placar e esconde a animação
+          // Mostra o conteúdo do placar
           placarContentWrapper.classList.remove('hidden-content');
           placarContentWrapper.classList.add('visible-content');
+          // Esconde a animação
           goalAnimation.style.visibility = 'hidden';
 
           // Decide entre placar normal e pênaltis dentro do wrapper visível
           if (overlayState.penaltyModeActive) {
               normalContent.style.display = 'none';
-              penaltyContent.style.display = 'flex'; // Torna flex para ativar layout de pênaltis
+              penaltyContent.style.display = 'flex'; 
           } else {
-              normalContent.style.display = 'flex'; // Torna flex para ativar layout normal
+              normalContent.style.display = 'flex'; 
               penaltyContent.style.display = 'none';
           }
       }
