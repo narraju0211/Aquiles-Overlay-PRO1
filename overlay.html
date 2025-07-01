@@ -23,7 +23,7 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       justify-content: center;
-      align-items: flex-start; 
+      align-items: flex-start; /* Ajustado para alinhar no topo, o wrapper controla a posição vertical */
       height: 100vh;
       width: 100vw;
       -webkit-font-smoothing: antialiased;
@@ -33,7 +33,7 @@
     /* Container principal que gerencia o placar normal, pênaltis e animação de gol */
     .main-display-wrapper {
         position: relative; /* Para posicionar placar, pênaltis, animação um sobre o outro */
-        top: 50px; 
+        top: 50px; /* Desloca o placar para baixo para não ficar colado no topo */
         width: auto; /* Ajusta à largura do conteúdo */
         height: 100px; /* Altura aproximada do placar para manter o layout */
         display: flex; /* Para centralizar o wrapper na tela */
@@ -51,6 +51,7 @@
         pointer-events: none; 
     }
 
+    /* Estilos base para todos os displays alternados (placar, pênaltis, gol) */
     .container, .penalties-container, .goal-animation-overlay {
         position: absolute; /* Todos ocupam o mesmo espaço */
         top: 0;
@@ -69,6 +70,7 @@
         transition: opacity 0.3s ease-in-out, visibility 0.3s; /* Transição para aparecer/desaparecer */
         opacity: 0; /* Por padrão, invisível */
         visibility: hidden; /* Esconde para não ser interativo */
+        text-align: center; /* Centraliza o texto GOL! */
     }
 
     /* Estilo para o placar normal */
@@ -76,7 +78,8 @@
         background-color: rgba(var(--placar-bg-rgb), var(--placar-opacity)); 
         border: 2px solid var(--placar-border);
         color: var(--placar-text);
-        z-index: 1; /* Estará abaixo da animação/pênaltis quando ativo */
+        z-index: 1; 
+        justify-content: space-between; /* Espaçamento entre os elementos do placar */
     }
 
     /* Estilo para o modo de pênaltis */
@@ -84,19 +87,21 @@
         background-color: rgba(var(--placar-bg-rgb), 0.98);
         border: 2px solid var(--placar-border);
         color: var(--placar-text);
-        z-index: 2; /* Acima do placar normal */
+        z-index: 2; 
+        flex-direction: row; /* Para os times de pênalti ficarem lado a lado */
+        gap: 40px; /* Espaço entre os dois times na tela de pênaltis */
     }
 
     /* Estilo para a animação de gol */
     .goal-animation-overlay {
-        background-color: transparent; /* Transparente, apenas o texto importa */
+        background-color: transparent; 
         border: none;
         color: var(--highlight-color);
-        font-size: 5em; /* Aumenta o tamanho para o "GOL!" */
-        text-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.7); /* Efeito neon */
-        z-index: 3; /* Mais alto de tudo */
-        pointer-events: none; /* Não deve bloquear cliques */
-        animation: goalAppear 0.5s ease-out forwards; /* Animação de entrada do texto GOL */
+        font-size: 5em; 
+        text-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.7); 
+        z-index: 3; 
+        pointer-events: none; 
+        animation: goalAppear 0.5s ease-out forwards; 
     }
 
     @keyframes goalAppear {
@@ -116,11 +121,16 @@
         to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Estilo para cada time dentro do placar normal */
     .team {
       display: flex;
       align-items: center;
       gap: 15px;
       padding: 0 10px;
+    }
+    /* Inverter ordem para o time 2 */
+    .team2 {
+        flex-direction: row-reverse;
     }
 
     .team-name-abbr {
@@ -138,12 +148,6 @@
       text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
     }
 
-    .separator {
-      margin: 0 20px;
-      font-size: 1.2em;
-      color: var(--placar-text);
-    }
-
     .logo-overlay {
       height: 80px; 
       width: auto;
@@ -151,40 +155,20 @@
       transition: opacity 0.3s ease-out;
     }
 
-    /* Cronômetro e período na mesma linha do placar */
-    .timer-period-group {
-        position: absolute; /* Posiciona relativo ao .container */
+    /* Cronômetro e Período com a mesma fonte e tamanho do placar */
+    .team-info-line {
         display: flex;
         align-items: center;
-        background-color: rgba(var(--placar-bg-rgb), 1); 
-        padding: 5px 15px;
-        border-radius: 10px;
-        border: 1px solid var(--placar-border);
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-        font-size: 0.6em; /* Relativo ao font-size do .container */
-        min-width: 120px; 
-        text-align: center;
-        letter-spacing: 1px;
+        gap: 10px; /* Espaço entre escudo, timer/period e nome/placar */
     }
-    #timer {
-        color: var(--placar-timer-color);
-        margin-right: 10px; /* Espaço entre timer e período */
+    .timer-display, .period-display {
+        font-size: 1.5em; /* Mesma fonte do .score */
+        color: var(--highlight-color);
+        text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+        white-space: nowrap;
     }
-    #period {
-        color: rgba(var(--placar-timer-color), 0.8);
-    }
-
-    /* Posição do timer/período */
-    .timer-period-group.left {
-        left: -80px; /* Ajuste para a esquerda do placar */
-        top: 50%;
-        transform: translateY(-50%);
-    }
-    .timer-period-group.right {
-        right: -80px; /* Ajuste para a direita do placar */
-        top: 50%;
-        transform: translateY(-50%);
-    }
+    .timer-display { margin-left: 10px; } /* Ajuste extra para o timer */
+    .period-display { margin-right: 10px; } /* Ajuste extra para o período */
 
 
     .escudo {
@@ -193,32 +177,34 @@
       object-fit: contain;
     }
 
-    /* Cartões agora são posicionados abaixo de seus respectivos times */
-    .cards-container {
-        position: absolute; /* Relativo ao main-display-wrapper */
-        bottom: -35px; /* Abaixo do placar */
+    /* Cartões agora são individuais e posicionados abaixo de cada time */
+    .cards-wrapper {
+        position: absolute;
+        bottom: -35px; /* Posição fixa abaixo do placar principal */
         width: 100%;
         display: flex;
-        justify-content: space-between; /* Empurra os grupos para os cantos */
-        padding: 0 20px; /* Padding para não colar nas bordas */
-        box-sizing: border-box; /* Inclui padding na largura total */
-        opacity: 0; /* Invisível por padrão */
-        visibility: hidden;
-        transition: opacity 0.3s ease-in-out, visibility 0.3s;
-    }
-    .cards-container.active {
-        opacity: 1;
-        visibility: visible;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-sizing: border-box;
+        pointer-events: none; /* Não bloqueia interação com o placar */
+        z-index: 0; /* Abaixo do placar */
     }
     .card-group {
         display: flex;
         align-items: center;
         gap: 5px; 
         background-color: rgba(var(--placar-bg-rgb), 0.95);
-        padding: 5px 15px;
         border-radius: 10px;
         border: 1px solid var(--placar-border);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        padding: 5px 15px;
+        opacity: 0; /* Invisível por padrão */
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out, visibility 0.3s;
+    }
+    .card-group.active {
+        opacity: 1;
+        visibility: visible;
     }
     .card-icon {
         width: 20px; 
@@ -240,6 +226,19 @@
         flex-direction: column;
         align-items: center;
         gap: 10px;
+    }
+    .penalty-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .penalty-team .escudo {
+        height: 60px; /* Tamanho do escudo nos pênaltis */
+    }
+    .penalty-team .team-name-abbr {
+        font-size: 0.7em; /* Nome abreviado nos pênaltis */
+        color: var(--placar-text);
     }
     .penalty-score-label {
         font-size: 0.8em; 
@@ -273,7 +272,10 @@
     
     <div class="container" id="overlayContainer">
       <div class="team team1">
-        <img src="" alt="Escudo Time 1" class="escudo" id="escudo1">
+        <div class="team-info-line">
+            <span class="timer-display" id="timer">00:00</span>
+            <img src="" alt="Escudo Time 1" class="escudo" id="escudo1">
+        </div>
         <span class="team-name-abbr" id="nomeAbbr1">T1</span>
         <span class="score" id="placar1">0</span>
       </div>
@@ -283,22 +285,28 @@
       <div class="team team2">
         <span class="score" id="placar2">0</span>
         <span class="team-name-abbr" id="nomeAbbr2">T2</span>
-        <img src="" alt="Escudo Time 2" class="escudo" id="escudo2">
-      </div>
-
-      <div class="timer-period-group left">
-        <div id="timer">00:00</div>
-        <div id="period">1º T</div>
+        <div class="team-info-line">
+            <img src="" alt="Escudo Time 2" class="escudo" id="escudo2">
+            <span class="period-display" id="period">1º T</span>
+        </div>
       </div>
     </div>
 
     <div class="penalties-container" id="penaltiesContainer">
         <div class="penalty-team team1-penalties">
+            <div class="penalty-header">
+                <img src="" alt="Escudo Time 1" class="escudo" id="penaltyEscudo1">
+                <span class="team-name-abbr" id="penaltyNomeAbbr1">T1</span>
+            </div>
             <span class="penalty-score-label" id="penaltyScore1">Pênaltis T1: 0</span>
             <div class="penalty-marks" id="penaltyMarks1">
                 </div>
         </div>
         <div class="penalty-team team2-penalties">
+            <div class="penalty-header">
+                <img src="" alt="Escudo Time 2" class="escudo" id="penaltyEscudo2">
+                <span class="team-name-abbr" id="penaltyNomeAbbr2">T2</span>
+            </div>
             <span class="penalty-score-label" id="penaltyScore2">Pênaltis T2: 0</span>
             <div class="penalty-marks" id="penaltyMarks2">
                 </div>
@@ -309,21 +317,21 @@
         GOL!
     </div>
 
-    <div class="cards-container" id="cardsContainer">
-        <div class="card-group team1-cards">
-            <div class="card-icon yellow"></div>
-            <span class="card-count" id="cards1Yellow">0</span>
-            <div class="card-icon red"></div>
-            <span class="card-count" id="cards1Red">0</span>
-        </div>
-        <div class="card-group team2-cards">
-            <div class="card-icon yellow"></div>
-            <span class="card-count" id="cards2Yellow">0</span>
-            <div class="card-icon red"></div>
-            <span class="card-count" id="cards2Red">0</span>
-        </div>
+  </div> <div class="cards-wrapper">
+    <div class="card-group team1-cards-display" id="cards1Display">
+        <div class="card-icon yellow"></div>
+        <span class="card-count" id="cards1Yellow">0</span>
+        <div class="card-icon red"></div>
+        <span class="card-count" id="cards1Red">0</span>
+    </div>
+    <div class="card-group team2-cards-display" id="cards2Display">
+        <div class="card-icon yellow"></div>
+        <span class="card-count" id="cards2Yellow">0</span>
+        <div class="card-icon red"></div>
+        <span class="card-count" id="cards2Red">0</span>
     </div>
   </div>
+
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -350,6 +358,7 @@
 
     const gameRef = database.ref('channels').child(gameId); 
 
+    // Elementos do Placar Normal
     const placar1Element = document.getElementById('placar1');
     const placar2Element = document.getElementById('placar2');
     const nomeAbbr1Element = document.getElementById('nomeAbbr1');
@@ -359,19 +368,30 @@
     const logoOverlayElement = document.getElementById('logoOverlay');
     const timerElement = document.getElementById('timer');
     const periodElement = document.getElementById('period');
-    const mainDisplayWrapper = document.getElementById('mainDisplayWrapper'); // Novo wrapper
-    const overlayContainer = document.getElementById('overlayContainer'); // O placar normal
-    const cardsContainer = document.getElementById('cardsContainer');
+    const mainDisplayWrapper = document.getElementById('mainDisplayWrapper'); 
+    const overlayContainer = document.getElementById('overlayContainer'); 
+    
+    // Elementos dos Cartões
+    const cards1Display = document.getElementById('cards1Display');
+    const cards2Display = document.getElementById('cards2Display');
     const cards1YellowElement = document.getElementById('cards1Yellow');
     const cards1RedElement = document.getElementById('cards1Red');
     const cards2YellowElement = document.getElementById('cards2Yellow');
     const cards2RedElement = document.getElementById('cards2Red');
-    const penaltiesContainer = document.getElementById('penaltiesContainer'); // Modo de pênaltis
+
+    // Elementos do Modo de Pênaltis
+    const penaltiesContainer = document.getElementById('penaltiesContainer'); 
+    const penaltyEscudo1Element = document.getElementById('penaltyEscudo1');
+    const penaltyEscudo2Element = document.getElementById('penaltyEscudo2');
+    const penaltyNomeAbbr1Element = document.getElementById('penaltyNomeAbbr1');
+    const penaltyNomeAbbr2Element = document.getElementById('penaltyNomeAbbr2');
     const penaltyScore1Element = document.getElementById('penaltyScore1');
     const penaltyScore2Element = document.getElementById('penaltyScore2');
     const penaltyMarks1Element = document.getElementById('penaltyMarks1');
     const penaltyMarks2Element = document.getElementById('penaltyMarks2');
-    const goalAnimationOverlay = document.getElementById('goalAnimationOverlay'); // Animação de gol
+
+    // Elemento da Animação de Gol
+    const goalAnimationOverlay = document.getElementById('goalAnimationOverlay'); 
 
     let currentOverlayState = {
       placar: { '1': 0, '2': 0 },
@@ -382,7 +402,7 @@
       placarThemeIndex: 0,
       placarOpacity: 90, 
       penaltyModeActive: false,
-      activeAnimation: null, // 'goalAnimation' ou null
+      activeAnimation: null, 
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -420,7 +440,6 @@
           const data = snapshot.val();
           console.log("Overlay: Dados recebidos do Firebase:", data);
           
-          // Atualiza o estado da overlay com os dados do Firebase, garantindo valores padrão
           Object.assign(currentOverlayState, { 
             placar: { '1': 0, '2': 0 },
             cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
@@ -443,20 +462,18 @@
             ...data 
           });
 
-          // Gerencia o cronômetro do display localmente
           if (currentOverlayState.timerRunning) {
-              if (!timerDisplayInterval) { // Apenas se já não estiver rodando
+              if (!timerDisplayInterval) { 
                   startTimerDisplay();
               }
           } else {
-              stopTimerDisplay(); // Garante que pare se o controlador pausou
+              stopTimerDisplay(); 
           }
 
           updateOverlay();
           applyTheme();
         } else {
           console.log(`Overlay: Nenhum dado no Firebase para o canal '${gameId}'. Exibindo padrões.`);
-          // Limpa a overlay se não houver dados no Firebase (reseta para o estado inicial)
           Object.assign(currentOverlayState, {
               placar: { '1': 0, '2': 0 },
               cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
@@ -479,7 +496,7 @@
           });
           updateOverlay();
           applyTheme();
-          stopTimerDisplay(); // Garante que o timer pare se não houver dados
+          stopTimerDisplay(); 
         }
       });
     });
@@ -514,48 +531,50 @@
       nomeAbbr1Element.textContent = currentOverlayState.nomeAbbr1 || 'T1'; 
       nomeAbbr2Element.textContent = currentOverlayState.nomeAbbr2 || 'T2'; 
 
-      // Fallback para uma imagem transparente para evitar ícones de imagem quebrada
       escudo1Element.src = currentOverlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
       escudo2Element.src = currentOverlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       logoOverlayElement.src = currentOverlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
-
       timerElement.textContent = formatTime(currentOverlayState.seconds);
       periodElement.textContent = periodNames[currentOverlayState.currentPeriod] || 'N/A';
 
+      // Atualiza os cartões (mas não a visibilidade ainda)
       cards1YellowElement.textContent = (currentOverlayState.cards['1'] && currentOverlayState.cards['1']['amarelo'] !== undefined) ? currentOverlayState.cards['1']['amarelo'] : 0;
       cards1RedElement.textContent = (currentOverlayState.cards['1'] && currentOverlayState.cards['1']['vermelho'] !== undefined) ? currentOverlayState.cards['1']['vermelho'] : 0;
       cards2YellowElement.textContent = (currentOverlayState.cards['2'] && currentOverlayState.cards['2']['amarelo'] !== undefined) ? currentOverlayState.cards['2']['amarelo'] : 0;
       cards2RedElement.textContent = (currentOverlayState.cards['2'] && currentOverlayState.cards['2']['vermelho'] !== undefined) ? currentOverlayState.cards['2']['vermelho'] : 0;
 
       // === Lógica de visibilidade dos elementos principais ===
-      // Primeiro, esconde todos os displays principais
+      // Primeiro, esconde todos os displays alternados
       overlayContainer.classList.remove('active');
       penaltiesContainer.classList.remove('active');
       goalAnimationOverlay.classList.remove('active');
-      cardsContainer.classList.remove('active'); // Assume que os cartões podem ter sua própria lógica de ativação
+      cards1Display.classList.remove('active'); // Esconde os cartões por padrão
+      cards2Display.classList.remove('active'); // Esconde os cartões por padrão
 
-      // Controla a visibilidade do mainDisplayWrapper (o placar inteiro)
+
+      // Controla a visibilidade do mainDisplayWrapper (o placar inteiro, incluindo cartões)
       if (currentOverlayState.isVisible) {
           mainDisplayWrapper.classList.remove('hidden');
       } else {
           mainDisplayWrapper.classList.add('hidden');
       }
 
-      // Decide qual display deve estar ativo
+      // Decide qual display principal deve estar ativo
       if (currentOverlayState.activeAnimation === 'goalAnimation') {
           goalAnimationOverlay.classList.add('active');
-          // No modo de gol, placar e pênaltis devem estar ocultos
       } else if (currentOverlayState.penaltyModeActive) {
           penaltiesContainer.classList.add('active');
           renderPenalties(); // Renderiza os pênaltis sempre que o modo estiver ativo
       } else {
           overlayContainer.classList.add('active'); // Exibe o placar normal
-          // Só exibe cartões se não estiver em modo de pênalti ou animação de gol E se houver algum cartão
-          const hasAnyCard = (currentOverlayState.cards['1']['amarelo'] > 0 || currentOverlayState.cards['1']['vermelho'] > 0 ||
-                              currentOverlayState.cards['2']['amarelo'] > 0 || currentOverlayState.cards['2']['vermelho'] > 0);
-          if (hasAnyCard) {
-              cardsContainer.classList.add('active');
+          
+          // Lógica para exibir os cartões se houver e não estiver em modo de pênalti/gol
+          if (currentOverlayState.cards['1']['amarelo'] > 0 || currentOverlayState.cards['1']['vermelho'] > 0) {
+              cards1Display.classList.add('active');
+          }
+          if (currentOverlayState.cards['2']['amarelo'] > 0 || currentOverlayState.cards['2']['vermelho'] > 0) {
+              cards2Display.classList.add('active');
           }
       }
     }
@@ -570,6 +589,12 @@
     }
 
     function renderPenalties() {
+        // Atualiza escudos e nomes nos pênaltis
+        penaltyEscudo1Element.src = currentOverlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+        penaltyEscudo2Element.src = currentOverlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+        penaltyNomeAbbr1Element.textContent = currentOverlayState.nomeAbbr1 || 'T1';
+        penaltyNomeAbbr2Element.textContent = currentOverlayState.nomeAbbr2 || 'T2';
+
         let converted1 = 0;
         penaltyMarks1Element.innerHTML = '';
         const team1Penalties = currentOverlayState.penalties['1'] || [];
@@ -600,4 +625,4 @@
     }
   </script>
 </body>
-              </html>
+                                                   </html>
