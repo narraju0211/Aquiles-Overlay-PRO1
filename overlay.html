@@ -69,6 +69,15 @@
       justify-content: center;
     }
 
+    /* Alterado para permitir que o conteúdo principal e os cartões fiquem independentes */
+    .placar-content-wrapper {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+
     .placar-main-line {
       display: flex;
       align-items: center;
@@ -81,9 +90,18 @@
 
     .placar-group {
       display: flex;
+      flex-direction: column; /* Alterado para empilhar nome e cartões */
       align-items: center;
-      gap: 5px; 
+      gap: 3px; /* Espaçamento entre nome e cartões */
       flex-shrink: 0; 
+      justify-content: center; /* Centraliza verticalmente o conteúdo */
+    }
+
+    .placar-group-score { /* Novo grupo para escudo, abreviação e placar */
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
     }
 
     .logo-central {
@@ -148,19 +166,7 @@
         color: var(--placar-text);
     }
 
-    .placar-cards-line {
-      display: flex;
-      align-items: center;
-      justify-content: center; 
-      width: 100%;
-      margin-top: 8px; 
-      padding-top: 8px; 
-      border-top: 1px solid rgba(255, 255, 255, 0.15); 
-      flex-wrap: nowrap;
-      gap: 40px; 
-      padding-bottom: 5px; 
-    }
-
+    /* Cartões agora dentro do .placar-group */
     .cards-display {
       display: flex;
       min-height: 20px;
@@ -262,26 +268,14 @@
       animation: fadeInScaleOut 2s ease-out forwards; 
     }
 
-    /* Adicionado para esconder o placar principal e os cards quando a animação está ativa */
-    /* Usando 'display: none' em vez de 'visibility: hidden' para remover completamente do fluxo */
-    .placar-main-line.hide-content,
-    .placar-cards-line.hide-content {
-        display: none !important;
+    /* Esconde o conteúdo principal do placar */
+    .placar-content-wrapper.hidden-content {
+        opacity: 0;
+        pointer-events: none;
     }
-
-    .penalty-shootout-placar.hide-content {
-        display: none !important;
-    }
-
-    /* Classes para exibir o conteúdo normal/penalti */
-    /* Voltando para 'display: flex' para que o flexbox funcione corretamente */
-    .placar-main-line.show-content,
-    .placar-cards-line.show-content {
-        display: flex !important;
-    }
-
-    .penalty-shootout-placar.show-content {
-        display: flex !important;
+    .placar-content-wrapper.visible-content {
+        opacity: 1;
+        pointer-events: auto;
     }
 
   </style>
@@ -289,54 +283,54 @@
 <body>
   <div class="visual-overlay-container" id="visualOverlayContainer">
     <div class="placar" id="placarPrincipal">
-      <div class="placar-main-line" id="normalPlacarContent_display">
-        <div class="placar-group">
-            <div id="cronometro_display">00:00</div>
+      <div class="placar-content-wrapper" id="placarContentWrapper">
+        <div class="placar-main-line" id="normalPlacarContent_display">
+          <div class="placar-group">
+              <div id="cronometro_display">00:00</div>
+          </div>
+
+          <div class="placar-group">
+              <div class="placar-group-score">
+                  <img id="escudo1_display" class="escudo" src="" alt="Escudo Time 1">
+                  <span id="nomeAbbr1_display" class="team-name-abbr">T1</span>
+                  <span id="placar1_display" class="placar-numero">0</span>
+              </div>
+              <div id="cardsDisplay1_display" class="cards-display"></div> </div>
+
+          <div class="logo-central">
+            <img id="logoOverlay_display" src="" alt="Sua Logo">
+          </div>
+
+          <div class="placar-group">
+              <div class="placar-group-score">
+                  <span id="placar2_display" class="placar-numero">0</span>
+                  <span id="nomeAbbr2_display" class="team-name-abbr">T2</span>
+                  <img id="escudo2_display" class="escudo" src="" alt="Escudo Time 2">
+              </div>
+              <div id="cardsDisplay2_display" class="cards-display"></div> </div>
+          
+          <div class="placar-group">
+              <div id="periodoDisplay_display" class="periodo">1º T</div>
+          </div>
         </div>
 
-        <div class="placar-group">
-            <img id="escudo1_display" class="escudo" src="" alt="Escudo Time 1">
-            <span id="nomeAbbr1_display" class="team-name-abbr">T1</span>
-            <span id="placar1_display" class="placar-numero">0</span>
+        <div class="penalty-shootout-placar" id="penaltyPlacarContent_display">
+          <div class="penalty-team-display">
+            <img id="escudoPenalty1_display" class="escudo" src="" alt="Escudo Time 1">
+            <span id="nomePenalty1_display" class="team-name-display">Time 1</span>
+            <div class="penalty-balls-container" id="penaltiesDisplay1_display"></div>
+          </div>
+          <div class="logo-central">
+            <img id="logoOverlayPenalty_display" src="" alt="Sua Logo">
+          </div>
+          <div class="penalty-team-display">
+            <img id="escudoPenalty2_display" class="escudo" src="" alt="Escudo Time 2">
+            <span id="nomePenalty2_display" class="team-name-display">Time 2</span>
+            <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
+          </div>
         </div>
-
-        <div class="logo-central">
-          <img id="logoOverlay_display" src="" alt="Sua Logo">
-        </div>
-
-        <div class="placar-group">
-            <span id="placar2_display" class="placar-numero">0</span>
-            <span id="nomeAbbr2_display" class="team-name-abbr">T2</span>
-            <img id="escudo2_display" class="escudo" src="" alt="Escudo Time 2">
-        </div>
-        
-        <div class="placar-group">
-            <div id="periodoDisplay_display" class="periodo">1º T</div>
-        </div>
-      </div>
-
-      <div class="placar-cards-line" id="placarCardsLine_display">
-        <div id="cardsDisplay1_display" class="cards-display"></div>
-        <div id="cardsDisplay2_display" class="cards-display"></div>
-      </div>
-
-      <div class="penalty-shootout-placar" id="penaltyPlacarContent_display">
-        <div class="penalty-team-display">
-          <img id="escudoPenalty1_display" class="escudo" src="" alt="Escudo Time 1">
-          <span id="nomePenalty1_display" class="team-name-display">Time 1</span>
-          <div class="penalty-balls-container" id="penaltiesDisplay1_display"></div>
-        </div>
-        <div class="logo-central">
-          <img id="logoOverlayPenalty_display" src="" alt="Sua Logo">
-        </div>
-        <div class="penalty-team-display">
-          <img id="escudoPenalty2_display" class="escudo" src="" alt="Escudo Time 2">
-          <span id="nomePenalty2_display" class="team-name-display">Time 2</span>
-          <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
-        </div>
-      </div>
+      </div> <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
     </div>
-    <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -363,12 +357,12 @@
       placar: { '1': 0, '2': 0 },
       cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
       penalties: { '1': [], '2': [] },
-      seconds: 0, // O estado local do cronômetro da overlay
+      seconds: 0, 
       timerRunning: false,
       placarThemeIndex: 0,
       placarOpacity: 90, 
       penaltyModeActive: false,
-      activeAnimation: null, // MANTIDO: Animação de gol original
+      activeAnimation: null, 
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -402,9 +396,8 @@
     document.addEventListener('DOMContentLoaded', initializeApp);
 
     function initializeApp() {
-        database = app.database(); // Inicializa o database aqui
+        database = app.database(); 
 
-        // Pega o ID do narrador da URL (ex: ?narratorId=meu_canal)
         const urlParams = new URLSearchParams(window.location.search);
         const narratorId = urlParams.get('narratorId');
 
@@ -417,32 +410,27 @@
     }
 
     function setupFirebaseForNarrator(narratorId) {
-        // Define a referência do Firebase com base no ID do narrador
         overlayStateRef = database.ref(`narrators/${narratorId}/overlayState`);
 
         overlayStateRef.on('value', (snapshot) => {
             if (snapshot.exists()) {
                 const newState = snapshot.val();
                 
-                // CORREÇÃO DO CRONÔMETRO: Gerencia o timer com base no estado do Firebase
+                // CRONÔMETRO: Gerencia o timer com base no estado do Firebase
+                // Apenas iniciar/parar o timer local e sincronizar o tempo
                 if (newState.timerRunning && !overlayState.timerRunning) {
-                    // Se o timer passou a rodar e não estava rodando localmente, inicia/reinicia com o tempo do Firebase
                     startLocalTimer(newState.seconds);
                 } else if (!newState.timerRunning && overlayState.timerRunning) {
-                    // Se o timer parou no Firebase, para o timer local
                     stopLocalTimer();
-                    overlayState.seconds = newState.seconds; // Garante que o display pare no tempo correto
+                    overlayState.seconds = newState.seconds; 
                 } else if (newState.timerRunning && overlayState.timerRunning) {
-                    // Se o timer continua rodando em ambos, apenas sincroniza se houver uma grande diferença
-                    // Isso pode ocorrer se o Firebase foi atualizado com um tempo manualmente
-                    if (Math.abs(newState.seconds - overlayState.seconds) > 2) { // Tolerância de 2 segundos para pequenas latências
-                         startLocalTimer(newState.seconds); // Re-sincroniza o timer local
+                    if (Math.abs(newState.seconds - overlayState.seconds) > 2) { 
+                         startLocalTimer(newState.seconds); 
                     }
-                } else { // Ambos estão parados, apenas sincroniza o tempo
+                } else { 
                     overlayState.seconds = newState.seconds;
                 }
 
-                // Assegura que 'penalties' sempre é um objeto com arrays, mesmo que venha nulo/undefined do Firebase
                 if (!newState.penalties) {
                     newState.penalties = { '1': [], '2': [] };
                 } else {
@@ -450,11 +438,9 @@
                     if (!newState.penalties['2']) newState.penalties['2'] = [];
                 }
                 
-                // Atualiza o estado da overlay, exceto a propriedade 'seconds' para evitar zera-la.
-                // A propriedade 'seconds' é atualizada acima, de forma mais controlada.
-                // Se precisar de um reset forçado, o controlador o enviará.
+                // Atualiza o estado da overlay, exceto 'seconds' para evitar sobrescrever o timer local
                 Object.keys(newState).forEach(key => {
-                    if (key !== 'seconds') { // Não sobrescreve 'seconds' diretamente aqui
+                    if (key !== 'seconds') { 
                         overlayState[key] = newState[key];
                     }
                 });
@@ -462,7 +448,6 @@
                 renderUI();
             } else {
                 console.warn(`Nó para narrador '${narratorId}' não encontrado no Firebase. Aguardando dados do controlador.`);
-                // Se o nó não existe, o placar ficará em branco ou com valores iniciais até o controlador enviar dados.
             }
         }, (error) => {
           console.error("Erro ao ler dados do Firebase:", error);
@@ -470,10 +455,9 @@
         });
     }
 
-
     function startLocalTimer(initialSeconds) {
-        if (timerInterval) clearInterval(timerInterval); // Garante que apenas um timer esteja rodando
-        overlayState.seconds = initialSeconds; // Define o tempo inicial
+        if (timerInterval) clearInterval(timerInterval); 
+        overlayState.seconds = initialSeconds; 
         document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds); 
 
         timerInterval = setInterval(() => {
@@ -506,64 +490,44 @@
       document.getElementById('logoOverlay_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
       document.getElementById('logoOverlayPenalty_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
 
-      // Atualiza o tempo do cronômetro. A lógica de start/stop está em setupFirebaseForNarrator
       document.getElementById('cronometro_display').innerText = formatTime(overlayState.seconds);
 
       renderCards('1');
       renderCards('2');
       document.getElementById('periodoDisplay_display').innerText = periodNames[overlayState.currentPeriod] || 'N/A';
       
-      // Chamada para renderizar os pênaltis sempre que o estado é atualizado
       renderPenalties('1');
       renderPenalties('2');
 
       applyPlacarTheme();
 
+      const placarContentWrapper = document.getElementById('placarContentWrapper');
       const normalContent = document.getElementById('normalPlacarContent_display');
-      const cardsLine = document.getElementById('placarCardsLine_display');
       const penaltyContent = document.getElementById('penaltyPlacarContent_display');
       const goalAnimation = document.getElementById('goalAnimation_display');
 
-      // ANIMAÇÃO DE GOL - MANTIDA SUA LÓGICA ORIGINAL AQUI
-      // Primeiro, sempre remove a classe 'active' da animação para que ela possa ser disparada novamente
+      // Sempre remove a classe 'active' para resetar a animação CSS
       goalAnimation.classList.remove('active'); 
-      // E esconde o texto para garantir que ele não fique visível quando não deveria
-      goalAnimation.style.opacity = '0';
-      goalAnimation.style.visibility = 'hidden';
 
-      // Gerencia a visibilidade do placar normal/pênalti vs. animação de gol
       if (overlayState.activeAnimation === 'goalAnimation') {
-          // Se a animação de gol está ativa no Firebase, esconde o placar e mostra a animação
-          normalContent.classList.add('hide-content');
-          normalContent.classList.remove('show-content');
-          cardsLine.classList.add('hide-content');
-          cardsLine.classList.remove('show-content');
-          penaltyContent.classList.add('hide-content');
-          penaltyContent.classList.remove('show-content');
-          penaltyContent.classList.remove('active'); 
-
+          // Se a animação de gol está ativa, esconde o wrapper do placar e mostra a animação
+          placarContentWrapper.classList.add('hidden-content');
+          placarContentWrapper.classList.remove('visible-content');
           goalAnimation.style.visibility = 'visible';
           goalAnimation.classList.add('active'); 
       } else {
-          // Se não há animação ativa, decide entre placar normal e pênaltis
+          // Se não há animação ativa, mostra o wrapper do placar e esconde a animação
+          placarContentWrapper.classList.remove('hidden-content');
+          placarContentWrapper.classList.add('visible-content');
+          goalAnimation.style.visibility = 'hidden';
+
+          // Decide entre placar normal e pênaltis dentro do wrapper visível
           if (overlayState.penaltyModeActive) {
-              normalContent.classList.add('hide-content');
-              normalContent.classList.remove('show-content');
-              cardsLine.classList.add('hide-content');
-              cardsLine.classList.remove('show-content');
-              
-              penaltyContent.classList.remove('hide-content');
-              penaltyContent.classList.add('show-content');
-              penaltyContent.classList.add('active'); 
+              normalContent.style.display = 'none';
+              penaltyContent.style.display = 'flex'; // Torna flex para ativar layout de pênaltis
           } else {
-              normalContent.classList.remove('hide-content');
-              normalContent.classList.add('show-content');
-              cardsLine.classList.remove('hide-content');
-              cardsLine.classList.add('show-content');
-              
-              penaltyContent.classList.add('hide-content');
-              penaltyContent.classList.remove('show-content');
-              penaltyContent.classList.remove('active');
+              normalContent.style.display = 'flex'; // Torna flex para ativar layout normal
+              penaltyContent.style.display = 'none';
           }
       }
 
@@ -594,7 +558,7 @@
 
     function renderCards(time) {
       const displayElement = document.getElementById(`cardsDisplay${time}_display`);
-      displayElement.innerHTML = ''; // Limpa antes de renderizar
+      displayElement.innerHTML = ''; 
       const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
       const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
 
@@ -612,16 +576,15 @@
 
     function renderPenalties(time) {
       const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
-      penaltyBallsContainer.innerHTML = ''; // Limpa TODAS as bolinhas existentes para recriá-las
+      penaltyBallsContainer.innerHTML = ''; 
 
-      // Garante que overlayState.penalties[time] é um array, mesmo que venha nulo/undefined do Firebase
       const penalties = overlayState.penalties && Array.isArray(overlayState.penalties[time]) ? overlayState.penalties[time] : []; 
       
-      for (let i = 0; i < 5; i++) { // Cria 5 espaços para as bolinhas (conforme seu design de 5)
+      for (let i = 0; i < 5; i++) { 
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
         if (penalties[i]) {
-          ballDiv.classList.add(penalties[i]); // Adiciona 'green' ou 'red' se houver um resultado
+          ballDiv.classList.add(penalties[i]); 
         }
         penaltyBallsContainer.appendChild(ballDiv);
       }
