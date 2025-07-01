@@ -2,837 +2,154 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Aquiles Overlay PRO - Controlador</title>
+  <title>Aquiles Overlay PRO - Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    :root {
-      --placar-bg-rgb: 34, 34, 34; /* Usamos RGB para controlar a alfa separadamente */
-      --placar-opacity: 0.9; /* Valor padrão de opacidade (0 a 1) */
-      --placar-text: white;
-      --placar-border: #555;
-      --placar-timer-color: #0ff;
-      --highlight-color: #0ff;
-      --panel-bg: #1c1c1c; 
-      --section-bg: #282828; 
-      --button-hover-brightness: 1.2; 
-    }
-
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #0d1117;
       color: white;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      padding: 15px;
-      box-sizing: border-box;
-      overflow-x: hidden;
       min-height: 100vh;
-    }
-
-    .control-panel-container {
-        width: 100%;
-        max-width: 900px;
-        margin-top: 30px;
-        z-index: 1;
-    }
-
-    .painel {
-      padding: 20px;
-      background: var(--panel-bg);
-      border-radius: 12px;
       box-sizing: border-box;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center; 
-      gap: 25px; 
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-    }
-    .painel > div {
-      flex: 1 1 calc(50% - 25px); 
-      min-width: 300px; 
-      background: var(--section-bg);
-      padding: 18px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-      border: 1px solid #3a3a3a;
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-    }
-    .painel > div.main-section {
-        flex-basis: 100%; 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 15px; 
-    }
-    .painel > div.main-section .placar-controls,
-    .painel > div.main-section .timer-controls,
-    .painel > div.main-section .goal-trigger { /* O .goal-trigger pode ser removido do CSS se o botão for removido do HTML */
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap; 
-        gap: 10px; 
-        width: 100%;
-    }
-    .painel > div.main-section .team-score-controls { /* Não usado no HTML atual, mas mantido */
-        display: flex;
-        align-items: center;
-        gap: 10px;
+      padding: 20px;
     }
 
-    @media (max-width: 768px) {
-      .painel > div {
-        flex: 1 1 100%; 
-      }
+    .login-container {
+      background: #1c1c1c;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      width: 100%;
+      max-width: 450px;
+      box-sizing: border-box;
+      border: 1px solid #3a3a3a;
+    }
+
+    .login-container h1 {
+      color: #0ff; /* Cor de destaque */
+      margin-bottom: 30px;
+      font-size: 2.2em;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+    }
+
+    .login-container p {
+      color: #bbb;
+      margin-bottom: 25px;
+      font-size: 0.95em;
+    }
+
+    .input-group {
+      margin-bottom: 25px;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #eee;
+      font-size: 1.1em;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #555;
+      background-color: #3a3a3a;
+      color: white;
+      font-size: 1.1em;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .input-group input:focus {
+      border-color: #0ff;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+      outline: none;
     }
 
     .btn {
-      padding: 10px 18px;
-      margin: 0; 
-      font-size: 18px;
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 1.2em;
+      font-weight: bold;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       background: #007bff;
       color: white;
       cursor: pointer;
       transition: background 0.3s ease, transform 0.1s ease;
-      white-space: nowrap; 
     }
-    .btn:hover { 
-      filter: brightness(var(--button-hover-brightness)); 
-      transform: translateY(-1px);
+
+    .btn:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
     }
+
     .btn:active {
-      transform: translateY(1px);
+      transform: translateY(0);
     }
-    .btn.red { background: #dc3545; }
-    .btn.red:hover { background: #c82333; }
-    .btn.yellow { background: #ffc107; color: black; }
-    .btn.yellow:hover { background: #e0a800; }
-    .btn.green { background: #28a745; }
-    .btn.green:hover { background: #218838; }
-    .btn.purple { background: #6f42c1; }
-    .btn.purple:hover { background: #5a34a0; }
-    .btn.dark-gray { background: #343a40; }
-    .btn.dark-gray:hover { background: #23272b; }
 
-    .section-title {
-      margin-top: 5px; 
-      margin-bottom: 18px;
+    .error-message {
+      color: #ff6347; /* Tomato */
+      margin-top: 15px;
       font-weight: bold;
-      color: var(--highlight-color);
-      font-size: 22px;
-      border-bottom: 2px solid var(--highlight-color);
-      padding-bottom: 8px;
-      text-align: center;
-      text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
-      width: 100%; 
-    }
-    .control-group {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px; 
-        width: 100%;
-        margin-bottom: 10px;
-    }
-    .control-group.inline-buttons {
-        flex-direction: row; 
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .control-group label {
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-    .control-group input[type="text"] {
-        width: calc(100% - 20px); 
-        padding: 8px;
-        border-radius: 6px;
-        border: 1px solid #555;
-        background-color: #3a3a3a;
-        color: white;
-        font-size: 16px;
-        text-align: center;
-    }
-    .control-group input[type="file"] {
-        width: calc(100% - 20px);
-        margin-bottom: 10px;
-        font-size: 14px;
-        color: #bbb;
-        background-color: #3a3a3a;
-        border-radius: 6px;
-        padding: 8px;
-    }
-    .control-group input[type="file"]::-webkit-file-upload-button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-right: 10px;
-      transition: background-color 0.2s ease;
-    }
-    .control-group input[type="file"]::-webkit-file-upload-button:hover {
-      background-color: #0056b3;
-    }
-    .control-group input[type="range"] {
-        width: calc(100% - 20px);
-        -webkit-appearance: none;
-        height: 8px;
-        border-radius: 5px;
-        background: #555;
-        outline: none;
-        opacity: 0.7;
-        transition: opacity .2s;
-    }
-
-    .control-group input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: var(--highlight-color);
-        cursor: pointer;
-        box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
-    }
-    .control-group input[type="range"]::-moz-range-thumb {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: var(--highlight-color);
-        cursor: pointer;
-        box-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
-    }
-
-    hr {
-        border: none;
-        border-top: 1px solid #444;
-        width: 80%;
-        margin: 15px 0;
-    }
-
-    /* Novo estilo para a área do link da Overlay */
-    .overlay-link-container {
-        background-color: #1a1a1a;
-        border: 1px solid #444;
-        border-radius: 8px;
-        padding: 15px;
-        margin-top: 20px;
-        text-align: center;
-        word-break: break-all; /* Garante que URLs longas quebrem a linha */
-    }
-
-    .overlay-link-container label {
-        font-weight: bold;
-        color: var(--highlight-color);
-        font-size: 1.1em;
-        margin-bottom: 10px;
-        display: block;
-    }
-
-    .overlay-link-container p {
-        font-size: 0.9em;
-        color: #bbb;
-        margin-top: 5px;
-    }
-
-    .overlay-link-container a {
-        color: #8affa1; /* Um tom de verde-claro para o link */
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 1.05em;
-        word-break: break-all; /* Garante que URLs longas quebrem a linha */
-    }
-
-    .overlay-link-container a:hover {
-        text-decoration: underline;
-    }
-
-    .overlay-link-container button {
-        margin-top: 10px;
-        padding: 8px 15px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .overlay-link-container button:hover {
-        background-color: #0056b3;
+      font-size: 0.95em;
     }
   </style>
 </head>
 <body>
-  <div class="control-panel-container" id="controlPanelContainer">
-    <div class="painel">
-      <div class="main-section">
-        <div class="section-title">Controle Principal</div>
+  <div class="login-container">
+    <h1>Aquiles Overlay PRO</h1>
+    <p>Insira seu ID único de narrador para acessar o painel de controle e sua overlay.</p>
 
-        <div class="control-group">
-            <label for="narratorId_input">ID do Narrador:</label>
-            <div style="display: flex; gap: 10px; width: 100%; justify-content: center;">
-                <input type="text" id="narratorId_input" placeholder="ID único (ex: meu_canal_futebol)" style="flex-grow: 1;">
-                <button class="btn green" onclick="activateNarratorId()">Entrar</button>
-            </div>
-            <p style="font-size: 0.8em; color: #aaa;">Use um ID diferente para cada narrador.</p>
-        </div>
-
-        <div class="overlay-link-container">
-            <label>Link da Overlay para Transmissão:</label>
-            <a id="overlayLinkDisplay" href="#" target="_blank"></a>
-            <p id="overlayLinkInstructions" style="font-size: 0.8em; color: #bbb;">Clique em "Entrar" para gerar o link.</p>
-            <button onclick="copyOverlayLink()">Copiar Link</button>
-        </div>
-        <hr>
-
-        <div class="control-group">
-            <label>Placar:</label>
-            <div class="placar-controls">
-                <button class="btn green" onclick="alterarPlacar('1', 1, true)">+ Time 1</button>
-                <button class="btn red" onclick="alterarPlacar('1', -1, false)">- Time 1</button>
-                <button class="btn green" onclick="alterarPlacar('2', 1, true)">+ Time 2</button>
-                <button class="btn red" onclick="alterarPlacar('2', -1, false)">- Time 2</button>
-            </div>
-        </div>
-        
-        <div class="control-group">
-            <label>Cronômetro:</label>
-            <div class="timer-controls">
-                <button class="btn green" onclick="startTimer()">Iniciar</button>
-                <button class="btn yellow" onclick="pauseTimer()">Pausar</button>
-                <button class="btn red" onclick="resetTimer()">Resetar</button>
-            </div>
-        </div>
-
-        </div>
-
-      <div>
-        <div class="section-title">Nomes e Imagens</div>
-        <div class="control-group">
-            <label for="nome1_input_panel">Nome Time 1:</label>
-            <input type="text" id="nome1_input_panel" placeholder="Nome Completo Time 1">
-        </div>
-        <div class="control-group">
-            <label for="nomeAbbr1_input_panel">Abreviação Time 1 (3 letras):</label>
-            <input type="text" id="nomeAbbr1_input_panel" maxlength="3" placeholder="Ex: CAM">
-        </div>
-        <div class="control-group">
-            <label for="uploadEscudo1">Escudo Time 1:</label>
-            <input type="file" id="uploadEscudo1" accept="image/*" onchange="loadEscudo(event, '1')">
-        </div>
-        <hr>
-        <div class="control-group">
-            <label for="nome2_input_panel">Nome Time 2:</label>
-            <input type="text" id="nome2_input_panel" placeholder="Nome Completo Time 2">
-        </div>
-        <div class="control-group">
-            <label for="nomeAbbr2_input_panel">Abreviação Time 2 (3 letras):</label>
-            <input type="text" id="nomeAbbr2_input_panel" maxlength="3" placeholder="Ex: FLA">
-        </div>
-        <div class="control-group">
-            <label for="uploadEscudo2">Escudo Time 2:</label>
-            <input type="file" id="uploadEscudo2" accept="image/*" onchange="loadEscudo(event, '2')">
-        </div>
-        <hr>
-        <div class="control-group">
-            <label for="uploadLogoOverlay">Sua Logo (aparece no meio do placar):</label>
-            <input type="file" id="uploadLogoOverlay" accept="image/*" onchange="loadLogo(event)">
-        </div>
-      </div>
-
-      <div>
-        <div class="section-title">Controle de Período</div>
-        <div class="control-group inline-buttons">
-            <button class="btn green" onclick="nextPeriod()">Próximo</button>
-            <button class="btn yellow" onclick="setPeriod(1)">1º Tempo</button>
-            <button class="btn yellow" onclick="setPeriod(2)">2º Tempo</button>
-            <button class="btn yellow" onclick="setPeriod(3)">Prorrogação</button>
-            <button class="btn yellow" onclick="setPeriod(4)">Intervalo</button>
-            <button class="btn red" onclick="setPeriod(0)">Resetar</button>
-        </div>
-      </div>
-
-      <div>
-        <div class="section-title">Cartões</div>
-        <div class="control-group inline-buttons">
-            <button class="btn yellow" onclick="addCartao('1', 'amarelo')">Amarelo T1</button>
-            <button class="btn red" onclick="addCartao('1', 'vermelho')">Vermelho T1</button>
-        </div>
-        <div class="control-group inline-buttons">
-            <button class="btn yellow" onclick="addCartao('2', 'amarelo')">Amarelo T2</button>
-            <button class="btn red" onclick="addCartao('2', 'vermelho')">Vermelho T2</button>
-        </div>
-        <hr>
-        <div class="control-group inline-buttons">
-            <button class="btn dark-gray" onclick="resetCards('1', 'amarelo')">Limpar Amarelo T1</button>
-            <button class="btn dark-gray" onclick="resetCards('1', 'vermelho')">Limpar Vermelho T1</button>
-        </div>
-        <div class="control-group inline-buttons">
-            <button class="btn dark-gray" onclick="resetCards('2', 'amarelo')">Limpar Amarelo T2</button>
-            <button class="btn dark-gray" onclick="resetCards('2', 'vermelho')">Limpar Vermelho T2</button>
-        </div>
-      </div>
-
-      <div style="flex-basis: 100%;">
-        <div class="section-title">Disputa de Pênaltis</div>
-        <div class="control-group inline-buttons">
-          <button class="btn purple" onclick="togglePenaltyMode(true)">Ativar Modo Pênaltis</button>
-          <button class="btn dark-gray" onclick="togglePenaltyMode(false)">Desativar Modo Pênaltis</button>
-        </div>
-        <hr>
-        <div class="control-group inline-buttons">
-            <button class="btn green" onclick="addPenalty('1', 'convertido')">Pênalti T1 GOL</button>
-            <button class="btn red" onclick="addPenalty('1', 'perdido')">Pênalti T1 PERD</button>
-        </div>
-        <div class="control-group inline-buttons">
-            <button class="btn green" onclick="addPenalty('2', 'convertido')">Pênalti T2 GOL</button>
-            <button class="btn red" onclick="addPenalty('2', 'perdido')">Pênalti T2 PERD</button>
-        </div>
-        <div class="control-group inline-buttons" style="margin-top: 15px;">
-            <button class="btn dark-gray" onclick="resetPenalties()">Resetar Pênaltis</button>
-        </div>
-      </div>
-
-      <div>
-        <div class="section-title">Controles Globais</div>
-        <div class="control-group">
-            <label for="placarOpacitySlider">Transparência do Placar:</label>
-            <input type="range" id="placarOpacitySlider" min="0" max="100" value="90" 
-                   oninput="updatePlacarOpacity(this.value)">
-        </div>
-        <div class="control-group inline-buttons">
-            <button class="btn purple" onclick="togglePlacarTheme()">Alternar Cor Placar</button>
-            <button class="btn dark-gray" onclick="toggleOverlayVisibility()">Ocultar/Mostrar Placar</button>
-        </div>
-      </div>
-
+    <div class="input-group">
+      <label for="narratorIdInput">ID do Narrador:</label>
+      <input type="text" id="narratorIdInput" placeholder="Ex: meu_canal_esportes" autocomplete="off">
     </div>
+
+    <button class="btn" onclick="login()">Entrar</button>
+    <p class="error-message" id="errorMessage"></p>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
   <script>
-    // ** SEU FIREBASE CONFIG ESTÁ AQUI **
-    const firebaseConfig = {
-      apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
-      authDomain: "aquilesplacarpro.firebaseapp.com",
-      databaseURL: "https://aquilesplacarpro-default-rtdb.firebaseio.com",
-      projectId: "aquilesplacarpro",
-      storageBucket: "aquilesplacarpro.firebasestorage.app",
-      messagingSenderId: "922321609151",
-      appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
-    };
-
-    // Inicialize o Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    let database;
-    let overlayStateRef;
-
-    let overlayState = {
-      placar: { '1': 0, '2': 0 },
-      cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
-      penalties: { '1': [], '2': [] },
-      seconds: 0,
-      timerRunning: false,
-      placarThemeIndex: 0,
-      placarOpacity: 90, 
-      penaltyModeActive: false,
-      activeAnimation: null, 
-      currentPeriod: 1,
-      nome1: '',
-      nome2: '',
-      nomeAbbr1: 'T1', 
-      nomeAbbr2: 'T2', 
-      escudo1: '',
-      escudo2: '',
-      logoOverlay: '', 
-      isVisible: true
-    };
-
-    let timerInterval;
-    let animationTimeoutController; 
-
-    const placarThemes = [
-      { rgb: '34, 34, 34', text: 'white', border: '#555', timerColor: '#0ff' }, 
-      { rgb: '0, 123, 255', text: 'white', border: '#0056b3', timerColor: '#fff' },
-      { rgb: '40, 167, 69', text: 'white', border: '#218838', timerColor: '#fff' },
-      { rgb: '220, 53, 69', text: 'white', border: '#c82333', timerColor: '#fff' },
-      { rgb: '255, 193, 7', text: 'black', border: '#e0a800', timerColor: '#333' }
-    ];
-
-    const periodNames = {
-        0: 'Parado',
-        1: '1º T', 
-        2: '2º T',
-        3: 'Prorrog', 
-        4: 'Int', 
-        5: 'T. Extra' 
-    };
-
-    document.addEventListener('DOMContentLoaded', initializeApp);
-
-    function initializeApp() {
-        database = app.database(); 
-        
-        const narratorIdInput = document.getElementById('narratorId_input');
-        
-        // Tenta carregar o ID do narrador do localStorage, se existir
-        const savedNarratorId = localStorage.getItem('aquilesNarratorId');
-        if (savedNarratorId) {
-            narratorIdInput.value = savedNarratorId;
-            activateNarratorId(); // Ativa o ID salvo ao carregar
-        } else {
-            narratorIdInput.value = ''; // Começa vazio se não houver ID salvo
-            document.getElementById('overlayLinkDisplay').innerText = '';
-            document.getElementById('overlayLinkInstructions').style.display = 'block';
-        }
-
-        // Demais listeners de input (mantidos)
-        document.getElementById('nome1_input_panel').addEventListener('input', (e) => {
-            overlayState.nome1 = e.target.value;
-            saveState();
-        });
-        document.getElementById('nome2_input_panel').addEventListener('input', (e) => {
-            overlayState.nome2 = e.target.value;
-            saveState();
-        });
-
-        document.getElementById('nomeAbbr1_input_panel').addEventListener('input', (e) => {
-            overlayState.nomeAbbr1 = e.target.value.toUpperCase().substring(0, 3);
-            saveState();
-        });
-        document.getElementById('nomeAbbr2_input_panel').addEventListener('input', (e) => {
-            overlayState.nomeAbbr2 = e.target.value.toUpperCase().substring(0, 3);
-            saveState();
-        });
-
-        document.getElementById('placarOpacitySlider').addEventListener('input', (e) => {
-            updatePlacarOpacity(e.target.value);
-        });
-    }
-
-    // NOVA FUNÇÃO: Ativar Narrador (Chamada pelo botão "Entrar")
-    function activateNarratorId() {
-        const narratorIdInput = document.getElementById('narratorId_input');
-        const newId = narratorIdInput.value.trim();
-
-        if (newId) {
-            localStorage.setItem('aquilesNarratorId', newId);
-            setupFirebaseForNarrator(newId);
-            alert(`ID do Narrador definido para: ${newId}. O link da Overlay foi atualizado.`);
-        } else {
-            alert('Por favor, insira um ID para o Narrador.');
-            // Opcional: Reverter para o último ID salvo ou para o padrão se o campo for esvaziado
-            narratorIdInput.value = localStorage.getItem('aquilesNarratorId') || '';
-            // Se o campo estiver vazio e não houver ID salvo, não faz setup do Firebase.
-            if (!narratorIdInput.value) {
-                if (overlayStateRef) overlayStateRef.off(); // Desconecta qualquer listener anterior
-                document.getElementById('overlayLinkDisplay').innerText = '';
-                document.getElementById('overlayLinkInstructions').style.display = 'block';
-                return;
-            }
-            // Se houver um ID salvo, mas o usuário tentou entrar com vazio, usa o salvo
-            setupFirebaseForNarrator(narratorIdInput.value);
-        }
-    }
-
-
-    function setupFirebaseForNarrator(narratorId) {
-        if (overlayStateRef) {
-            overlayStateRef.off();
-        }
-        overlayStateRef = database.ref(`narrators/${narratorId}/overlayState`);
-
-        overlayStateRef.on('value', (snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                if (!data.penalties) {
-                    data.penalties = { '1': [], '2': [] };
-                } else {
-                    if (!data.penalties['1']) data.penalties['1'] = [];
-                    if (!data.penalties['2']) data.penalties['2'] = [];
-                }
-                
-                Object.assign(overlayState, { 
-                    placarOpacity: 90, 
-                    ...data 
-                });
-            } else {
-                console.log(`Nó para narrador '${narratorId}' não encontrado. Inicializando estado.`);
-                overlayStateRef.set({ ...overlayState, seconds: 0 }); 
-            }
-            renderControllerUI(); 
-            generateOverlayLink(narratorId); 
-        });
-    }
-
-    function saveState() {
-      if (!overlayStateRef) {
-          console.error("overlayStateRef não está definido. Por favor, ative um ID de Narrador primeiro.");
-          alert("Por favor, ative um ID de Narrador antes de controlar o placar.");
-          return;
-      }
-      overlayStateRef.set(overlayState)
-        .then(() => {
-        })
-        .catch((error) => {
-          console.error("Erro ao salvar no Firebase: ", error);
-        });
-    }
-
-    function renderControllerUI() {
-      document.getElementById('nome1_input_panel').value = overlayState.nome1;
-      document.getElementById('nome2_input_panel').value = overlayState.nome2;
-      document.getElementById('nomeAbbr1_input_panel').value = overlayState.nomeAbbr1;
-      document.getElementById('nomeAbbr2_input_panel').value = overlayState.nomeAbbr2;
-      document.getElementById('placarOpacitySlider').value = overlayState.placarOpacity;
-
-      const toggleButton = document.querySelector('.btn.dark-gray[onclick="toggleOverlayVisibility()"]');
-      if (overlayState.isVisible) {
-        if (toggleButton) toggleButton.innerText = 'Ocultar Placar na Transmissão';
-      } else {
-        if (toggleButton) toggleButton.innerText = 'Mostrar Placar na Transmissão';
-      }
-    }
-
-    function generateOverlayLink(narratorId) {
-        const currentPath = window.location.href; 
-        let overlayBasePath = currentPath.substring(0, currentPath.lastIndexOf('/')); 
-        
-        const overlayLink = `${overlayBasePath}/overlay.html?narratorId=${narratorId}`;
-        const overlayLinkElement = document.getElementById('overlayLinkDisplay');
-        const overlayLinkInstructions = document.getElementById('overlayLinkInstructions');
-
-        overlayLinkElement.href = overlayLink;
-        overlayLinkElement.innerText = overlayLink;
-        overlayLinkInstructions.style.display = 'none'; 
-    }
-
-    function copyOverlayLink() {
-        const overlayLinkElement = document.getElementById('overlayLinkDisplay');
-        const textToCopy = overlayLinkElement.innerText;
-
-        if (!textToCopy) {
-            alert('Não há link para copiar. Defina o ID do Narrador primeiro.');
-            return;
-        }
-
-        navigator.clipboard.writeText(textToCopy)
-            .then(() => {
-                alert('Link da Overlay copiado para a área de transferência!');
-            })
-            .catch(err => {
-                console.error('Erro ao copiar o link: ', err);
-                alert('Erro ao copiar o link. Por favor, copie manualmente: ' + textToCopy);
-            });
-    }
-
-    function alterarPlacar(time, valor, triggerAnimation = false) {
-      if (!overlayStateRef) {
-          console.error("overlayStateRef não está definido. Por favor, ative um ID de Narrador primeiro.");
-          alert("Por favor, ative um ID de Narrador antes de controlar o placar.");
-          return;
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedNarratorId = localStorage.getItem('aquilesNarratorId');
+      if (savedNarratorId) {
+        document.getElementById('narratorIdInput').value = savedNarratorId;
       }
 
-      overlayState.placar[time] += valor;
-      if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
-      
-      if (valor > 0 && triggerAnimation) {
-          triggerGoalAnimation();
-      } else {
-          saveState(); 
+      document.getElementById('narratorIdInput').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+          login();
+        }
+      });
+    });
+
+    function login() {
+      const narratorId = document.getElementById('narratorIdInput').value.trim();
+      const errorMessageElement = document.getElementById('errorMessage');
+
+      if (!narratorId) {
+        errorMessageElement.innerText = 'Por favor, insira um ID de narrador.';
+        return;
       }
-    }
 
-    function togglePlacarTheme() {
-      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-      overlayState.placarThemeIndex = (overlayState.placarThemeIndex + 1) % placarThemes.length;
-      saveState();
-    }
-
-    function updatePlacarOpacity(value) {
-        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-        overlayState.placarOpacity = parseInt(value, 10);
-        saveState();
-    }
-
-    function loadEscudo(event, time) {
-      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = function() {
-            const MAX_DIMENSION = 200; 
-            let width = img.width;
-            let height = img.height;
-
-            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-              if (width > height) {
-                height = Math.round(height * (MAX_DIMENSION / width));
-                width = MAX_DIMENSION;
-              } else {
-                width = Math.round(width * (MAX_DIMENSION / height));
-                height = MAX_DIMENSION;
-              }
-            }
-
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-
-            overlayState['escudo' + time] = canvas.toDataURL('image/png');
-            saveState();
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
+      // Validação básica para evitar IDs com caracteres especiais que poderiam causar problemas no Firebase
+      if (!/^[a-zA-Z0-9_-]+$/.test(narratorId)) {
+        errorMessageElement.innerText = 'O ID deve conter apenas letras, números, hífens (-) e underscores (_).';
+        return;
       }
-    }
 
-    function loadLogo(event) {
-      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const img = new Image();
-          img.onload = function() {
-            const MAX_DIMENSION = 200; 
-            let width = img.width;
-            let height = img.height;
-
-            if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-              if (width > height) {
-                height = Math.round(height * (MAX_DIMENSION / width));
-                width = MAX_DIMENSION;
-              } else {
-                width = Math.round(width * (MAX_DIMENSION / height));
-                height = MAX_DIMENSION;
-              }
-            }
-
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = width;
-            canvas.height = height;
-            ctx.drawImage(img, 0, 0, width, height);
-
-            overlayState.logoOverlay = canvas.toDataURL('image/png');
-            saveState();
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function startTimer() {
-      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-      overlayState.timerRunning = true;
-      saveState();
-    }
-
-    function pauseTimer() {
-      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-      overlayState.timerRunning = false;
-      saveState();
-    }
-
-    function resetTimer() {
-      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-      overlayState.seconds = 0;
-      overlayState.timerRunning = false;
-      saveState();
-    }
-
-    function nextPeriod() {
-        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1; // Assuming 5 is max period 
-        saveState();
-    }
-
-    function setPeriod(period) {
-        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-        overlayState.currentPeriod = period;
-        saveState();
-    }
-
-    function addCartao(time, tipo) {
-        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-        if (!overlayState.cards[time]) overlayState.cards[time] = {};
-        if (!overlayState.cards[time][tipo]) overlayState.cards[time][tipo] = 0;
-        overlayState.cards[time][tipo]++;
-        saveState();
-    }
-
-    function resetCards(time, tipo) {
-        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-        if (overlayState.cards[time] && overlayState.cards[time][tipo] !== undefined) {
-            overlayState.cards[time][tipo] = 0;
-            saveState();
-        }
-    }
-
-    function togglePenaltyMode(active) {
-        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-        overlayState.penaltyModeActive = active;
-        saveState();
-    }
-
-    function addPenalty(team, result) {
-        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-        if (!overlayState.penalties[team]) {
-            overlayState.penalties[team] = [];
-        }
-        
-        if (overlayState.penalties[team].length < 5) { 
-            overlayState.penalties[team].push(result === 'convertido' ? 'green' : 'red');
-            saveState();
-        } else {
-            console.warn(`Limite de 5 pênaltis para o Time ${team} atingido.`);
-        }
-    }
-
-    function resetPenalties() {
-        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-        overlayState.penalties['1'] = [];
-        overlayState.penalties['2'] = [];
-        saveState();
-    }
-
-    function toggleOverlayVisibility() {
-      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-      overlayState.isVisible = !overlayState.isVisible;
-      saveState();
-    }
-
-    function triggerGoalAnimation() {
-        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
-        if (animationTimeoutController) {
-            clearTimeout(animationTimeoutController);
-        }
-
-        overlayState.activeAnimation = 'goalAnimation';
-        saveState(); 
-
-        animationTimeoutController = setTimeout(() => {
-            overlayState.activeAnimation = null; 
-            saveState(); 
-        }, 2000); 
+      localStorage.setItem('aquilesNarratorId', narratorId);
+      window.location.href = `controlador.html?narratorId=${narratorId}`;
     }
   </script>
 </body>
-  </html>
+</html>
