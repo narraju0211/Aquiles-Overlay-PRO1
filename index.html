@@ -278,14 +278,17 @@
 
         <div class="control-group">
             <label for="narratorId_input">ID do Narrador:</label>
-            <input type="text" id="narratorId_input" placeholder="ID único (ex: meu_canal_futebol)">
+            <div style="display: flex; gap: 10px; width: 100%; justify-content: center;">
+                <input type="text" id="narratorId_input" placeholder="ID único (ex: meu_canal_futebol)" style="flex-grow: 1;">
+                <button class="btn green" onclick="activateNarratorId()">Entrar</button>
+            </div>
             <p style="font-size: 0.8em; color: #aaa;">Use um ID diferente para cada narrador.</p>
         </div>
 
         <div class="overlay-link-container">
             <label>Link da Overlay para Transmissão:</label>
             <a id="overlayLinkDisplay" href="#" target="_blank"></a>
-            <p id="overlayLinkInstructions" style="font-size: 0.8em; color: #bbb;">Defina o ID do Narrador para gerar o link.</p>
+            <p id="overlayLinkInstructions" style="font-size: 0.8em; color: #bbb;">Clique em "Entrar" para gerar o link.</p>
             <button onclick="copyOverlayLink()">Copiar Link</button>
         </div>
         <hr>
@@ -443,7 +446,7 @@
       placarThemeIndex: 0,
       placarOpacity: 90, 
       penaltyModeActive: false,
-      activeAnimation: null, // MANTIDO: Animação de gol original
+      activeAnimation: null, 
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -478,7 +481,7 @@
     document.addEventListener('DOMContentLoaded', initializeApp);
 
     function initializeApp() {
-        database = app.database(); // Inicializa o database aqui
+        database = app.database(); 
         
         const narratorIdInput = document.getElementById('narratorId_input');
         
@@ -486,28 +489,14 @@
         const savedNarratorId = localStorage.getItem('aquilesNarratorId');
         if (savedNarratorId) {
             narratorIdInput.value = savedNarratorId;
-            setupFirebaseForNarrator(savedNarratorId);
+            activateNarratorId(); // Ativa o ID salvo ao carregar
         } else {
-            // Se não houver ID salvo, define um padrão temporário e espera o usuário inserir
-            narratorIdInput.value = 'default_narrator'; // Um valor padrão razoável
-            setupFirebaseForNarrator('default_narrator'); // Inicia com um narrador padrão
+            narratorIdInput.value = ''; // Começa vazio se não houver ID salvo
+            document.getElementById('overlayLinkDisplay').innerText = '';
+            document.getElementById('overlayLinkInstructions').style.display = 'block';
         }
 
-        narratorIdInput.addEventListener('change', (e) => {
-            const newId = e.target.value.trim();
-            if (newId) {
-                localStorage.setItem('aquilesNarratorId', newId);
-                setupFirebaseForNarrator(newId);
-                alert(`ID do Narrador definido para: ${newId}. O link da Overlay foi atualizado.`);
-            } else {
-                alert('O ID do Narrador não pode ser vazio.');
-                // Reverter para o último ID salvo ou para o padrão
-                narratorIdInput.value = localStorage.getItem('aquilesNarratorId') || 'default_narrator';
-                setupFirebaseForNarrator(narratorIdInput.value); // Recarrega com o ID válido
-            }
-        });
-        
-        // Demais listeners de input
+        // Demais listeners de input (mantidos)
         document.getElementById('nome1_input_panel').addEventListener('input', (e) => {
             overlayState.nome1 = e.target.value;
             saveState();
@@ -531,18 +520,41 @@
         });
     }
 
+    // NOVA FUNÇÃO: Ativar Narrador (Chamada pelo botão "Entrar")
+    function activateNarratorId() {
+        const narratorIdInput = document.getElementById('narratorId_input');
+        const newId = narratorIdInput.value.trim();
+
+        if (newId) {
+            localStorage.setItem('aquilesNarratorId', newId);
+            setupFirebaseForNarrator(newId);
+            alert(`ID do Narrador definido para: ${newId}. O link da Overlay foi atualizado.`);
+        } else {
+            alert('Por favor, insira um ID para o Narrador.');
+            // Opcional: Reverter para o último ID salvo ou para o padrão se o campo for esvaziado
+            narratorIdInput.value = localStorage.getItem('aquilesNarratorId') || '';
+            // Se o campo estiver vazio e não houver ID salvo, não faz setup do Firebase.
+            if (!narratorIdInput.value) {
+                if (overlayStateRef) overlayStateRef.off(); // Desconecta qualquer listener anterior
+                document.getElementById('overlayLinkDisplay').innerText = '';
+                document.getElementById('overlayLinkInstructions').style.display = 'block';
+                return;
+            }
+            // Se houver um ID salvo, mas o usuário tentou entrar com vazio, usa o salvo
+            setupFirebaseForNarrator(narratorIdInput.value);
+        }
+    }
+
+
     function setupFirebaseForNarrator(narratorId) {
-        // Desconecta o listener anterior se houver
         if (overlayStateRef) {
             overlayStateRef.off();
         }
-        // Define a nova referência com base no ID do narrador
         overlayStateRef = database.ref(`narrators/${narratorId}/overlayState`);
 
         overlayStateRef.on('value', (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                // Garante que 'penalties' é um objeto com arrays, mesmo que não venha do Firebase
                 if (!data.penalties) {
                     data.penalties = { '1': [], '2': [] };
                 } else {
@@ -550,28 +562,23 @@
                     if (!data.penalties['2']) data.penalties['2'] = [];
                 }
                 
-                // CRONÔMETRO: NÃO ATUALIZAR 'seconds' AQUI SE JÁ ESTIVER RODANDO NO CONTROLE
-                // Apenas sobrescrever o estado completo, exceto o tempo local do timer
-                // O estado do timer será enviado e lido pela overlay, mas o controlador não precisa manter um timer local.
                 Object.assign(overlayState, { 
-                    placarOpacity: 90, // Valor padrão se não estiver no Firebase
+                    placarOpacity: 90, 
                     ...data 
                 });
             } else {
-                // Se o nó para o narrador não existe, inicializa o estado no Firebase
                 console.log(`Nó para narrador '${narratorId}' não encontrado. Inicializando estado.`);
-                // Copia o estado inicial padrão para o novo nó do narrador
-                // Inclui a propriedade 'seconds' no estado inicial
-                overlayStateRef.set({ ...overlayState, seconds: 0 }); // Garante que seconds começa em 0 no novo nó
+                overlayStateRef.set({ ...overlayState, seconds: 0 }); 
             }
             renderControllerUI(); 
-            generateOverlayLink(narratorId); // Chama a função para gerar o link da overlay
+            generateOverlayLink(narratorId); 
         });
     }
 
     function saveState() {
       if (!overlayStateRef) {
-          console.error("overlayStateRef não está definido. Insira um ID de Narrador.");
+          console.error("overlayStateRef não está definido. Por favor, ative um ID de Narrador primeiro.");
+          alert("Por favor, ative um ID de Narrador antes de controlar o placar.");
           return;
       }
       overlayStateRef.set(overlayState)
@@ -597,15 +604,9 @@
       }
     }
 
-    // Função para gerar o link da Overlay
     function generateOverlayLink(narratorId) {
-        const currentPath = window.location.href; // Ex: http://localhost/controlador.html
-        let overlayBasePath = currentPath.substring(0, currentPath.lastIndexOf('/')); // Ex: http://localhost
-
-        // Assumimos que overlay.html está no mesmo diretório do controlador.html
-        // Se overlay.html estiver em um subdiretório ou em outro local, ajuste aqui.
-        // Ex: se overlay.html estiver em 'http://localhost/minhas_overlays/overlay.html'
-        // overlayBasePath = 'http://localhost/minhas_overlays'; 
+        const currentPath = window.location.href; 
+        let overlayBasePath = currentPath.substring(0, currentPath.lastIndexOf('/')); 
         
         const overlayLink = `${overlayBasePath}/overlay.html?narratorId=${narratorId}`;
         const overlayLinkElement = document.getElementById('overlayLinkDisplay');
@@ -613,12 +614,17 @@
 
         overlayLinkElement.href = overlayLink;
         overlayLinkElement.innerText = overlayLink;
-        overlayLinkInstructions.style.display = 'none'; // Esconde a instrução depois de gerar o link
+        overlayLinkInstructions.style.display = 'none'; 
     }
 
     function copyOverlayLink() {
         const overlayLinkElement = document.getElementById('overlayLinkDisplay');
         const textToCopy = overlayLinkElement.innerText;
+
+        if (!textToCopy) {
+            alert('Não há link para copiar. Defina o ID do Narrador primeiro.');
+            return;
+        }
 
         navigator.clipboard.writeText(textToCopy)
             .then(() => {
@@ -630,30 +636,37 @@
             });
     }
 
-    // Função alterarPlacar modificada para disparar a animação (ORIGINALMENTE SUA)
     function alterarPlacar(time, valor, triggerAnimation = false) {
+      if (!overlayStateRef) {
+          console.error("overlayStateRef não está definido. Por favor, ative um ID de Narrador primeiro.");
+          alert("Por favor, ative um ID de Narrador antes de controlar o placar.");
+          return;
+      }
+
       overlayState.placar[time] += valor;
       if (overlayState.placar[time] < 0) overlayState.placar[time] = 0;
       
-      // Dispara a animação APENAS se triggerAnimation for verdadeiro (botões de +1)
       if (valor > 0 && triggerAnimation) {
           triggerGoalAnimation();
       } else {
-          saveState(); // Salva o estado se não for disparar animação (ex: botão de -1)
+          saveState(); 
       }
     }
 
     function togglePlacarTheme() {
+      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
       overlayState.placarThemeIndex = (overlayState.placarThemeIndex + 1) % placarThemes.length;
       saveState();
     }
 
     function updatePlacarOpacity(value) {
+        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
         overlayState.placarOpacity = parseInt(value, 10);
         saveState();
     }
 
     function loadEscudo(event, time) {
+      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -690,6 +703,7 @@
     }
 
     function loadLogo(event) {
+      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -726,32 +740,38 @@
     }
 
     function startTimer() {
+      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
       overlayState.timerRunning = true;
       saveState();
     }
 
     function pauseTimer() {
+      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
       overlayState.timerRunning = false;
       saveState();
     }
 
     function resetTimer() {
+      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
       overlayState.seconds = 0;
       overlayState.timerRunning = false;
       saveState();
     }
 
     function nextPeriod() {
-        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1;
+        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
+        overlayState.currentPeriod = (overlayState.currentPeriod % 5) + 1; // Assuming 5 is max period 
         saveState();
     }
 
     function setPeriod(period) {
+        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
         overlayState.currentPeriod = period;
         saveState();
     }
 
     function addCartao(time, tipo) {
+        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
         if (!overlayState.cards[time]) overlayState.cards[time] = {};
         if (!overlayState.cards[time][tipo]) overlayState.cards[time][tipo] = 0;
         overlayState.cards[time][tipo]++;
@@ -759,6 +779,7 @@
     }
 
     function resetCards(time, tipo) {
+        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
         if (overlayState.cards[time] && overlayState.cards[time][tipo] !== undefined) {
             overlayState.cards[time][tipo] = 0;
             saveState();
@@ -766,17 +787,17 @@
     }
 
     function togglePenaltyMode(active) {
+        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
         overlayState.penaltyModeActive = active;
         saveState();
     }
 
     function addPenalty(team, result) {
-        // Garante que o array de pênaltis exista antes de adicionar
+        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
         if (!overlayState.penalties[team]) {
             overlayState.penalties[team] = [];
         }
         
-        // Garante que o array tenha no máximo 5 elementos antes de adicionar
         if (overlayState.penalties[team].length < 5) { 
             overlayState.penalties[team].push(result === 'convertido' ? 'green' : 'red');
             saveState();
@@ -786,19 +807,20 @@
     }
 
     function resetPenalties() {
-        // Limpa os arrays para ambos os times
+        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
         overlayState.penalties['1'] = [];
         overlayState.penalties['2'] = [];
-        saveState(); // Salva o estado atualizado (arrays vazios) para o Firebase
+        saveState();
     }
 
     function toggleOverlayVisibility() {
+      if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
       overlayState.isVisible = !overlayState.isVisible;
       saveState();
     }
 
-    // ANIMAÇÃO DE GOL - REVERTIDA PARA A SUA LÓGICA ORIGINAL
     function triggerGoalAnimation() {
+        if (!overlayStateRef) { alert("Ative um ID de Narrador."); return; }
         if (animationTimeoutController) {
             clearTimeout(animationTimeoutController);
         }
@@ -809,7 +831,7 @@
         animationTimeoutController = setTimeout(() => {
             overlayState.activeAnimation = null; 
             saveState(); 
-        }, 2000); // Duração da animação em milissegundos
+        }, 2000); 
     }
   </script>
 </body>
