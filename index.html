@@ -353,19 +353,19 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <script>
-        // ** SEU FIREBASE CONFIG ESTÁ AQUI **
+        // ** SUAS CONFIGURAÇÕES DO FIREBASE ESTÃO AQUI **
         const firebaseConfig = {
-            apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
-            authDomain: "aquilesplacarpro.firebaseapp.com",
-            databaseURL: "https://aquilesplacarpro-default-rtdb.firebaseio.com",
-            projectId: "aquilesplacarpro",
-            storageBucket: "aquilesplacarpro.firebasestorage.app",
-            messagingSenderId: "922321609151",
-            appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
+          apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
+          authDomain: "aquilesplacarpro.firebaseapp.com",
+          databaseURL: "https://aquilesplacarpro-default-rtdb.firebaseio.com",
+          projectId: "aquilesplacarpro",
+          storageBucket: "aquilesplacarpro.firebasestorage.app",
+          messagingSenderId: "922321609151",
+          appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
         };
 
-        // ** ID DO NARRADOR (DEFINA O MESMO ID USADO NA OVERLAY) **
-        const NARRATOR_ID = "exemploNarrador123"; // <-- MUDAR PARA O SEU ID DE NARRADOR
+        // ** ID DO NARRADOR - MUDE ESTE VALOR PARA UM ID ÚNICO SEU **
+        const NARRATOR_ID = "SEU_ID_UNICO_AQUI"; // <-- MUDE AQUI! Ex: "narradorAquilesLiveFut"
 
         // Inicializa o Firebase
         const app = firebase.initializeApp(firebaseConfig);
@@ -406,6 +406,7 @@
         }
 
         // Listener para atualizar a UI do controlador com base no Firebase
+        // Isso garante que se você abrir o controlador em outro lugar, ele sincronize.
         overlayStateRef.on('value', (snapshot) => {
             if (snapshot.exists()) {
                 currentState = snapshot.val();
@@ -426,13 +427,15 @@
 
             document.getElementById('team1Name').value = currentState.nome1;
             document.getElementById('team1Abbr').value = currentState.nomeAbbr1;
+            // Carrega o preview se a URL já existe
             document.getElementById('previewEscudo1').src = currentState.escudo1 || '';
 
             document.getElementById('team2Name').value = currentState.nome2;
             document.getElementById('team2Abbr').value = currentState.nomeAbbr2;
+            // Carrega o preview se a URL já existe
             document.getElementById('previewEscudo2').src = currentState.escudo2 || '';
             
-            document.getElementById('overlayLogo').src = currentState.logoOverlay || '';
+            // Carrega o preview se a URL já existe
             document.getElementById('previewLogoOverlay').src = currentState.logoOverlay || '';
 
 
@@ -456,12 +459,20 @@
         };
 
         async function uploadImage(file, path) {
-            if (!file) return null;
+            if (!file) {
+                console.warn("Nenhum arquivo selecionado para upload.");
+                return null;
+            }
             const storageRef = storage.ref();
-            const imageRef = storageRef.child(`${NARRATOR_ID}/${path}/${file.name}`);
+            // Para garantir nomes únicos e evitar cache, adicione um timestamp
+            const uniqueFileName = `${Date.now()}-${file.name}`;
+            const imageRef = storageRef.child(`${NARRATOR_ID}/${path}/${uniqueFileName}`);
             try {
                 const snapshot = await imageRef.put(file);
-                return await snapshot.ref.getDownloadURL();
+                const downloadURL = await snapshot.ref.getDownloadURL();
+                console.log(`Imagem '${file.name}' enviada com sucesso! URL: ${downloadURL}`);
+                alert(`Imagem '${file.name}' enviada com sucesso!`);
+                return downloadURL;
             } catch (error) {
                 console.error("Erro ao fazer upload da imagem:", error);
                 alert("Erro ao fazer upload da imagem. Verifique o console para detalhes.");
@@ -619,9 +630,8 @@
             } else if (resultType === 'clear') {
                 currentState.penalties[teamId] = []; // Limpa tudo
             } else {
-                if (currentState.penalties[teamId].length < 5) { // Limita a 5 pênaltis
-                    currentState.penalties[teamId].push(resultType); // 'green' ou 'red'
-                }
+                // Não há mais limite de 5 pênaltis
+                currentState.penalties[teamId].push(resultType); // 'green' ou 'red'
             }
             writeStateToFirebase(currentState);
         }
@@ -655,4 +665,4 @@
         });
     </script>
 </body>
-  </html>
+        </html>
