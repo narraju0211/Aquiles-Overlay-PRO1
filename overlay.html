@@ -4,69 +4,71 @@
   <meta charset="UTF-8">
   <title>Aquiles Overlay PRO - Placar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
   <style>
+    /* Variáveis CSS para customização fácil */
     :root {
-      --placar-bg-rgb: 34, 34, 34; 
-      --placar-opacity: 0.9; 
-      --placar-text: white;
-      --placar-border: #555;
-      --placar-timer-color: #0ff;
-      --highlight-color: #0ff;
+      --placar-bg-rgb: 34, 34, 34; /* Cor de fundo do placar (RGB) */
+      --placar-opacity: 0.9; /* Opacidade do fundo do placar */
+      --placar-text: white; /* Cor do texto principal do placar */
+      --placar-border: #555; /* Cor da borda do placar */
+      --placar-timer-color: #0ff; /* Cor do texto do cronômetro */
+      --highlight-color: var(--placar-text); /* Cor para animações de destaque (agora usa a mesma cor do texto principal) */
     }
 
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: transparent;
-      overflow: hidden;
-      height: 100vh;
+      font-family: 'Montserrat', sans-serif;
+      background-color: transparent; /* Fundo transparente para uso como overlay */
+      overflow: hidden; /* Esconde qualquer conteúdo que exceda a tela */
+      height: 100vh; /* Ocupa 100% da altura da viewport */
       display: flex;
-      justify-content: center;
-      align-items: flex-start; 
-      padding-top: 15px; 
-      box-sizing: border-box;
+      justify-content: center; /* Centraliza o conteúdo horizontalmente */
+      align-items: flex-start; /* Alinha o conteúdo ao topo (com padding) */
+      padding-top: 15px; /* Espaçamento do topo */
+      box-sizing: border-box; /* Inclui padding e borda no tamanho total do elemento */
     }
 
     .visual-overlay-container {
       width: 100%;
-      max-width: 900px;
+      max-width: 900px; /* Largura máxima para o container do overlay */
       display: flex;
-      flex-direction: column; 
-      align-items: center;
-      transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* Adicionado transform */
+      flex-direction: column; /* Organiza os itens em coluna */
+      align-items: center; /* Centraliza os itens da coluna */
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* Transição suave para mostrar/esconder */
       opacity: 1;
       visibility: visible;
       background-color: transparent;
-      position: relative; 
-      z-index: 2;
-      height: fit-content; 
-      min-height: 120px; 
-      justify-content: flex-start; 
+      position: relative;
+      z-index: 2; /* Garante que esteja acima de outros elementos */
+      height: fit-content; /* Altura se ajusta ao conteúdo */
+      min-height: 120px; /* Altura mínima */
+      justify-content: flex-start; /* Alinha o conteúdo ao topo dentro do container */
     }
 
     .visual-overlay-container.hidden-display {
       opacity: 0;
       visibility: hidden;
-      pointer-events: none;
-      transform: translateY(-50px); /* Move para cima ao esconder */
+      pointer-events: none; /* Desativa interações do mouse quando oculto */
+      transform: translateY(-50px); /* Move para cima ao ocultar */
     }
 
     .placar {
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: rgba(var(--placar-bg-rgb), var(--placar-opacity)); 
-      padding: 5px 15px; 
-      border-radius: 12px;
+      background: rgba(var(--placar-bg-rgb), var(--placar-opacity)); /* Fundo com cor e opacidade das variáveis */
+      padding: 5px 15px; /* Preenchimento interno */
+      border-radius: 12px; /* Cantos arredondados */
       width: 100%;
       box-sizing: border-box;
-      border: 1px solid var(--placar-border);
-      color: var(--placar-text);
-      position: relative; 
-      overflow: hidden; 
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      min-height: unset; 
-      height: fit-content; 
+      border: 1px solid var(--placar-border); /* Borda com cor da variável */
+      color: var(--placar-text); /* Cor do texto do placar */
+      position: relative;
+      overflow: hidden; /* Esconde conteúdo que transborda (útil para animações internas) */
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Sombra para profundidade */
+      min-height: unset;
+      height: fit-content;
       justify-content: center;
     }
 
@@ -75,95 +77,114 @@
         flex-direction: column;
         width: 100%;
         align-items: center;
-        transition: opacity 0.3s ease-in-out; /* Sem transform para não conflitar com a animação GOOOL */
+        transition: opacity 0.3s ease-in-out; /* Transição suave para a opacidade */
+    }
+
+    .placar-content-wrapper.hidden-content {
+        opacity: 0;
+        pointer-events: none; /* Desabilita eventos de mouse quando oculto */
+    }
+    .placar-content-wrapper.visible-content {
+        opacity: 1;
+        pointer-events: auto; /* Reabilita eventos de mouse quando visível */
     }
 
     .placar-main-line {
       display: flex;
-      align-items: center;
-      justify-content: center; 
+      align-items: center; /* Centraliza verticalmente os blocos principais */
+      justify-content: center; /* Centraliza horizontalmente os elementos principais */
       width: 100%;
-      gap: 5px; 
-      flex-wrap: nowrap;
-      padding: 5px 0; 
+      gap: 5px; /* Espaçamento entre os itens */
+      flex-wrap: nowrap; /* Impede quebras de linha */
+      padding: 5px 0; /* Preenchimento vertical */
     }
 
     .placar-group {
       display: flex;
-      flex-direction: column; 
-      align-items: center;
-      gap: 3px; 
-      flex-shrink: 0; 
-      justify-content: center; 
+      flex-direction: column; /* Itens em coluna (ex: cronômetro e cards) */
+      align-items: center; /* Centraliza horizontalmente o conteúdo do grupo */
+      justify-content: center; /* Centraliza verticalmente o conteúdo do grupo */
+      gap: 3px; /* Espaçamento entre os itens do grupo */
+      flex-shrink: 0; /* Não permite que o grupo encolha */
+      min-height: 90px; /* Garante altura mínima para alinhamento vertical uniforme */
+      box-sizing: border-box;
     }
 
-    .placar-group-score { 
+    .placar-group-score {
       display: flex;
       align-items: center;
       gap: 5px;
       flex-shrink: 0;
+      justify-content: center; /* Centraliza elementos dentro do grupo de score */
     }
 
     .logo-central {
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0; 
-      padding: 0 10px; 
-      min-width: 60px; 
+      flex-shrink: 0;
+      padding: 0 10px;
+      min-width: 60px;
+      min-height: 90px; /* Alinha com a altura dos grupos */
+      box-sizing: border-box;
     }
     .logo-central img {
-      width: 60px; 
+      width: 60px;
       height: 60px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
+      object-fit: contain; /* Redimensiona a imagem para caber, mantendo proporção */
+      filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6)); /* Sombra na logo */
     }
 
     .escudo {
-      width: 45px; 
+      width: 45px;
       height: 45px;
       object-fit: contain;
       flex-shrink: 0;
-      filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+      filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5)); /* Sombra no escudo */
+      transition: transform 0.2s ease-out; /* Adiciona transição para o pulo */
     }
     .placar-numero {
-      font-size: 42px; 
-      font-weight: bold;
-      margin: 0 3px; 
-      min-width: 50px; 
+      font-size: 42px;
+      font-weight: 800;
+      margin: 0 3px;
+      min-width: 50px;
       text-align: center;
       flex-shrink: 0;
-      text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+      text-shadow: 0 0 5px rgba(0, 0, 0, 0.6); /* Sombra no número do placar */
+      font-family: 'Roboto Mono', monospace; /* Fonte monoespaçada para números */
+      color: var(--placar-text); /* Usa a cor de texto global */
     }
 
     .team-name-abbr {
-      font-size: 28px; 
-      font-weight: bold;
-      color: var(--placar-text);
-      background: rgba(0, 0, 0, 0.4);
+      font-size: 28px;
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.4); /* Fundo semi-transparente para abreviação */
       padding: 4px 8px;
       border-radius: 4px;
-      text-transform: uppercase; 
+      text-transform: uppercase; /* Texto em maiúsculas */
       flex-shrink: 0;
-      white-space: nowrap;
+      white-space: nowrap; /* Impede quebra de linha */
+      color: var(--placar-text); /* Usa a cor de texto global */
     }
 
     #cronometro_display,
     #periodoDisplay_display {
-      font-size: 24px; 
-      font-weight: bold;
-      color: var(--placar-timer-color);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--placar-timer-color); /* Cor específica para o cronômetro */
       background: rgba(0, 0, 0, 0.6);
       padding: 4px 10px;
       border-radius: 6px;
       white-space: nowrap;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
       flex-shrink: 0;
+      font-family: 'Roboto Mono', monospace;
     }
     #periodoDisplay_display {
-        font-size: 20px; 
+        font-size: 20px;
         background: rgba(0, 0, 0, 0.4);
-        color: var(--placar-text);
+        color: var(--placar-text); /* Usa a cor de texto global */
+        font-family: 'Montserrat', sans-serif;
     }
 
     /* Cartões dentro do .placar-group */
@@ -174,27 +195,27 @@
       justify-content: center;
       width: unset;
       flex-shrink: 0;
-      gap: 5px; 
+      gap: 5px;
     }
     .card-indicator {
-      width: 20px; 
+      width: 20px;
       height: 20px;
-      border-radius: 4px; 
+      border-radius: 4px;
       margin: 0;
       border: 1px solid #777;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
-    .card-indicator.red-card { background-color: #dc3545; } 
+    .card-indicator.red-card { background-color: #dc3545; }
 
     .penalty-shootout-placar {
-        display: none; 
+        display: none; /* Escondido por padrão, mostrado via JS */
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
         width: 100%;
         gap: 15px;
-        padding: 10px 0; 
+        padding: 10px 0;
     }
     .penalty-team-display {
         display: flex;
@@ -203,19 +224,20 @@
         gap: 5px;
         min-width: 150px;
         justify-content: center;
-        flex-grow: 1;
+        flex-grow: 1; /* Permite que ocupe ocupe o espaço disponível */
     }
     .penalty-team-display .team-name-display {
-        font-size: 18px; 
-        font-weight: bold;
+        font-size: 18px;
+        font-weight: 600;
         margin-top: 5px;
         background: rgba(0, 0, 0, 0.4);
         padding: 4px 10px;
         border-radius: 5px;
         white-space: nowrap;
+        color: var(--placar-text); /* Usa a cor de texto global */
     }
     .penalty-team-display .escudo {
-        width: 55px; 
+        width: 55px;
         height: 55px;
     }
     .penalty-balls-container {
@@ -224,57 +246,73 @@
         margin-top: 5px;
     }
     .penalty-ball {
-        width: 28px; 
-        height: 28px;
-        border-radius: 50%;
-        border: 2px solid white;
-        background-color: transparent;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        width: 20px; /* Tamanho inicial menor */
+        height: 20px; /* Tamanho inicial menor */
+        border-radius: 50%; /* Bolinhas arredondadas */
+        border: 1px solid white; /* Borda inicial mais fina */
+        background-color: transparent; /* Fundo transparente inicialmente */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Sombra para profundidade */
+        /* Transição para animar mudanças de tamanho, borda e cor */
+        transition: width 0.3s ease, height 0.3s ease, border-width 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
     }
-    .penalty-ball.green { background-color: #28a745; border-color: #28a745; }
-    .penalty-ball.red { background-color: #dc3545; border-color: #dc3545; }
+    .penalty-ball.green {
+        background-color: #28a745; /* Cor verde quando acerto */
+        border-color: #28a745; /* Borda verde quando acerto */
+        width: 28px; /* Tamanho maior quando preenchida */
+        height: 28px; /* Tamanho maior quando preenchida */
+        border-width: 2px; /* Borda mais grossa quando preenchida */
+    }
+    .penalty-ball.red {
+        background-color: #dc3545; /* Cor vermelha quando erro */
+        border-color: #dc3545; /* Borda vermelha quando erro */
+        width: 28px; /* Tamanho maior quando preenchida */
+        height: 28px; /* Tamanho maior quando preenchida */
+        border-width: 2px; /* Borda mais grossa quando preenchida */
+    }
 
+    /* ANIMAÇÃO DO ESCUDO DE PULO */
+    @keyframes jumpAndBounce {
+      0% { transform: translateY(0) scale(1); }
+      25% { transform: translateY(-25px) scale(1.1); /* Pula mais alto e cresce um pouco */ }
+      50% { transform: translateY(0) scale(1.05); /* Volta para baixo com um pequeno quique */ }
+      75% { transform: translateY(-10px) scale(1.02); /* Pequeno recoil para cima */ }
+      100% { transform: translateY(0) scale(1); } /* Retorna à posição original */
+    }
+
+    .escudo.jump-animation {
+      animation: jumpAndBounce 0.7s ease-out forwards; /* Aplica a animação com duração de 0.7s */
+    }
 
     .animated-text {
-      position: absolute; 
-      top: 50%; 
+      position: absolute;
+      top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%); 
-      font-size: 80px; 
+      transform: translate(-50%, -50%) scale(0.5); /* Começa menor */
+      font-size: 80px;
       font-weight: 900;
-      color: var(--highlight-color); 
-      text-shadow: 0 0 15px rgba(0, 255, 255, 0.9), 0 0 8px rgba(0, 255, 255, 0.6);
+      color: var(--highlight-color); /* Usa a cor de destaque (agora igual à cor do texto) */
+      text-shadow: 0 0 15px var(--highlight-color), 0 0 8px rgba(0, 0, 0, 0.6); /* Sombra também usa highlight-color */
       opacity: 0;
       visibility: hidden;
-      animation-fill-mode: forwards;
-      z-index: 1000;
-      pointer-events: none;
-      white-space: nowrap;
+      animation-fill-mode: forwards; /* Mantém o estado final da animação */
+      z-index: 1000; /* Garante que esteja na frente */
+      pointer-events: none; /* Não interfere com cliques */
+      white-space: nowrap; /* Não quebra a linha do texto */
+      font-family: 'Montserrat', sans-serif;
     }
 
     @keyframes fadeInScaleOut {
       0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); visibility: hidden; }
-      1% { visibility: visible; }
-      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } 
-      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      99% { opacity: 0; visibility: visible; } 
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); visibility: hidden;} 
+      1% { visibility: visible; } /* Torna visível bem no início */
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } /* Aumenta um pouco mais do que o final */
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); } /* Volta ao tamanho normal */
+      99% { opacity: 0; visibility: visible; } /* Permanece visível (mas desaparecendo) quase até o fim */
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); visibility: hidden;} /* Desaparece e fica oculto */
     }
 
     .animated-text.active {
-      animation: fadeInScaleOut 2s ease-out forwards; 
+      animation: fadeInScaleOut 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Curva de animação mais suave */
     }
-
-    /* Controla a visibilidade do conteúdo do placar durante a animação */
-    .placar-content-wrapper.hidden-content {
-        opacity: 0;
-        pointer-events: none;
-    }
-    .placar-content-wrapper.visible-content {
-        opacity: 1;
-        pointer-events: auto;
-    }
-
   </style>
 </head>
 <body>
@@ -292,7 +330,7 @@
                   <span id="nomeAbbr1_display" class="team-name-abbr">T1</span>
                   <span id="placar1_display" class="placar-numero">0</span>
               </div>
-              <div id="cardsDisplay1_display" class="cards-display"></div> 
+              <div id="cardsDisplay1_display" class="cards-display"></div>
           </div>
 
           <div class="logo-central">
@@ -305,9 +343,9 @@
                   <span id="nomeAbbr2_display" class="team-name-abbr">T2</span>
                   <img id="escudo2_display" class="escudo" src="" alt="Escudo Time 2">
               </div>
-              <div id="cardsDisplay2_display" class="cards-display"></div> 
+              <div id="cardsDisplay2_display" class="cards-display"></div>
           </div>
-          
+
           <div class="placar-group">
               <div id="periodoDisplay_display" class="periodo">1º T</div>
           </div>
@@ -328,7 +366,7 @@
             <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
           </div>
         </div>
-      </div> 
+      </div>
 
       <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
     </div>
@@ -338,7 +376,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    // ** SEU FIREBASE CONFIG ESTÁ AQUI **
+    // ** SEU FIREBASE CONFIG ESTÁ AQUI (HARDCODED) **
     const firebaseConfig = {
       apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
       authDomain: "aquilesplacarpro.firebaseapp.com",
@@ -349,21 +387,26 @@
       appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
     };
 
+    // ** ID DO NARRADOR (DEFINA O MESMO ID USADO NO CONTROLADOR) **
+    const NARRATOR_ID = "exemploNarrador123"; // <-- MUDAR PARA O SEU ID DE NARRADOR
+
     // Inicialize o Firebase
     const app = firebase.initializeApp(firebaseConfig);
     let database;
-    let overlayStateRef; 
+    let overlayStateRef;
 
+    // Estado local da overlay (refletirá o Firebase, mas o cronômetro é local)
     let overlayState = {
       placar: { '1': 0, '2': 0 },
       cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
       penalties: { '1': [], '2': [] },
-      seconds: 0, 
+      seconds: 0,
       timerRunning: false,
       placarThemeIndex: 0,
-      placarOpacity: 90, 
+      placarOpacity: 90,
+      fontColor: '#E0E0E0',
       penaltyModeActive: false,
-      activeAnimation: null, 
+      activeAnimation: null,
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -375,17 +418,19 @@
       isVisible: true
     };
 
-    let timerInterval;
-    let localSeconds = 0; // Usado para o cronômetro local para evitar bugs de sincronização
+    let timerInterval = null; // Para o setInterval local
+    let localSeconds = 0; // O tempo que a overlay realmente exibe e avança
 
+    // Temas de placar pré-definidos
     const placarThemes = [
-      { rgb: '34, 34, 34', text: 'white', border: '#555', timerColor: '#0ff' }, 
-      { rgb: '0, 123, 255', text: 'white', border: '#0056b3', timerColor: '#fff' },
-      { rgb: '40, 167, 69', text: 'white', border: '#218838', timerColor: '#fff' },
-      { rgb: '220, 53, 69', text: 'white', border: '#c82333', timerColor: '#fff' },
-      { rgb: '255, 193, 7', text: 'black', border: '#e0a800', timerColor: '#333' }
+      { rgb: '34, 34, 34', text: 'white', border: '#555', timerColor: '#0ff' }, /* Default (Escuro) */
+      { rgb: '0, 123, 255', text: 'white', border: '#0056b3', timerColor: '#fff' }, /* Azul */
+      { rgb: '40, 167, 69', text: 'white', border: '#218838', timerColor: '#fff' }, /* Verde */
+      { rgb: '220, 53, 69', text: 'white', border: '#c82333', timerColor: '#fff' }, /* Vermelho */
+      { rgb: '255, 193, 7', text: 'black', border: '#e0a800', timerColor: '#333' } /* Amarelo (texto escuro) */
     ];
 
+    // Nomes dos períodos do jogo
     const periodNames = {
         0: 'Parado',
         1: '1º T',
@@ -398,18 +443,26 @@
     document.addEventListener('DOMContentLoaded', initializeApp);
 
     function initializeApp() {
-        database = app.database(); 
+        database = app.database();
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const narratorId = urlParams.get('narratorId');
-
-        if (narratorId) {
-            setupFirebaseForNarrator(narratorId);
-        } else {
-            console.error("ID do Narrador não encontrado na URL. Use ?narratorId=SEU_ID");
-            document.getElementById('placarPrincipal').innerHTML = '<div style="color: red; font-size: 24px; text-align: center; padding: 20px;">ERRO: ID do Narrador não definido na URL.<br>Ex: overlay.html?narratorId=seu_id</div>';
-        }
+        // Configura a leitura do Firebase para o ID do narrador especificado
+        setupFirebaseForNarrator(NARRATOR_ID);
+        
+        const goalAnimationElement = document.getElementById('goalAnimation_display');
+        goalAnimationElement.addEventListener('animationend', (event) => {
+            if (event.animationName === 'fadeInScaleOut') {
+                // Ao final da animação, garante que ela esteja oculta e o placar visível
+                goalAnimationElement.style.visibility = 'hidden';
+                goalAnimationElement.classList.remove('active');
+                document.getElementById('placarContentWrapper').classList.remove('hidden-content');
+                document.getElementById('placarContentWrapper').classList.add('visible-content');
+            }
+        });
     }
+
+    // Variáveis para guardar o placar anterior e detectar gol
+    let previousPlacar1 = 0;
+    let previousPlacar2 = 0;
 
     function setupFirebaseForNarrator(narratorId) {
         overlayStateRef = database.ref(`narrators/${narratorId}/overlayState`);
@@ -417,54 +470,77 @@
         overlayStateRef.on('value', (snapshot) => {
             if (snapshot.exists()) {
                 const newState = snapshot.val();
-                
-                // CRONÔMETRO: Sincronização e controle local
-                if (newState.timerRunning && !overlayState.timerRunning) {
-                    // Se o timer estava parado e agora está rodando no controlador, inicia localmente
-                    startLocalTimer(newState.seconds);
-                } else if (!newState.timerRunning && overlayState.timerRunning) {
-                    // Se o timer estava rodando e agora está parado, para localmente
+
+                // Guarda o placar atual ANTES de atualizar o estado para detectar mudanças
+                previousPlacar1 = overlayState.placar['1'];
+                previousPlacar2 = overlayState.placar['2'];
+
+                // Mapeia os dados do Firebase para o estado local, garantindo valores padrão
+                overlayState.placar = newState.placar || { '1': 0, '2': 0 };
+                overlayState.cards = newState.cards || { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
+                overlayState.penalties = newState.penalties || { '1': [], '2': [] };
+                overlayState.placarThemeIndex = newState.placarThemeIndex !== undefined ? newState.placarThemeIndex : 0;
+                overlayState.placarOpacity = newState.placarOpacity !== undefined ? newState.placarOpacity : 90;
+                overlayState.fontColor = newState.fontColor || '#E0E0E0';
+                overlayState.penaltyModeActive = newState.penaltyModeActive !== undefined ? newState.penaltyModeActive : false;
+                overlayState.activeAnimation = newState.activeAnimation || null;
+                overlayState.currentPeriod = newState.currentPeriod !== undefined ? newState.currentPeriod : 1;
+                overlayState.nome1 = newState.nome1 || '';
+                overlayState.nome2 = newState.nome2 || '';
+                overlayState.nomeAbbr1 = newState.nomeAbbr1 || 'T1';
+                overlayState.nomeAbbr2 = newState.nomeAbbr2 || 'T2';
+                overlayState.escudo1 = newState.escudo1 || '';
+                overlayState.escudo2 = newState.escudo2 || '';
+                overlayState.logoOverlay = newState.logoOverlay || '';
+                overlayState.isVisible = newState.isVisible !== undefined ? newState.isVisible : true;
+
+                // *** LÓGICA DO CRONÔMETRO: Sincronização e controle local ***
+                const firebaseSeconds = newState.seconds !== undefined ? newState.seconds : 0;
+                const firebaseTimerRunning = newState.timerRunning !== undefined ? newState.timerRunning : false;
+
+                if (firebaseTimerRunning && !overlayState.timerRunning) {
+                    // Comando para INICIAR o timer veio do Firebase
+                    startLocalTimer(firebaseSeconds);
+                } else if (!firebaseTimerRunning && overlayState.timerRunning) {
+                    // Comando para PAUSAR o timer veio do Firebase
                     stopLocalTimer();
-                    localSeconds = newState.seconds; // Sincroniza o tempo final
-                } else if (newState.timerRunning && overlayState.timerRunning) {
-                    // Se ambos estão rodando, verifica se há uma grande diferença e reseta
-                    if (Math.abs(newState.seconds - localSeconds) > 2) { 
-                         startLocalTimer(newState.seconds); 
-                    }
-                } else if (!newState.timerRunning && !overlayState.timerRunning) {
-                    // Se ambos estão parados, apenas sincroniza o tempo
-                    localSeconds = newState.seconds;
+                    localSeconds = firebaseSeconds; // Sincroniza o tempo finalizado
+                } else if (!firebaseTimerRunning && !overlayState.timerRunning && localSeconds !== firebaseSeconds) {
+                    // Timer PARADO no Firebase e o tempo foi RESETADO ou AJUSTADO no controlador
+                    localSeconds = firebaseSeconds;
                 }
+                overlayState.timerRunning = firebaseTimerRunning; // Atualiza o estado para o próximo ciclo
 
-                // Garante que penalties existam
-                if (!newState.penalties) {
-                    newState.penalties = { '1': [], '2': [] };
-                } else {
-                    if (!newState.penalties['1']) newState.penalties['1'] = [];
-                    if (!newState.penalties['2']) newState.penalties['2'] = [];
-                }
-                
-                // Atualiza o estado da overlay localmente (excluindo seconds para não conflitar)
-                Object.keys(newState).forEach(key => {
-                    if (key !== 'seconds') { 
-                        overlayState[key] = newState[key];
-                    }
-                });
-
+                // RENDERIZA A INTERFACE
                 renderUI();
+
+                // LÓGICA PARA DETECTAR GOL E ANIMAR O ESCUDO
+                // Verifica se o placar de um time aumentou após a atualização do Firebase
+                if (overlayState.placar['1'] > previousPlacar1) {
+                    triggerShieldJump('1'); // Time 1 marcou
+                } else if (overlayState.placar['2'] > previousPlacar2) {
+                    triggerShieldJump('2'); // Time 2 marcou
+                }
+
             } else {
                 console.warn(`Nó para narrador '${narratorId}' não encontrado no Firebase. Aguardando dados do controlador.`);
+                // Mensagem para o usuário final caso não haja dados no Firebase para o ID especificado
+                document.getElementById('placarPrincipal').innerHTML = `<div style="color: red; font-size: 20px; text-align: center; padding: 20px;">
+                    Nenhum dado encontrado para o ID "${narratorId}".<br>
+                    Verifique se o ID está correto ou se o controlador está ativo.
+                </div>`;
             }
         }, (error) => {
           console.error("Erro ao ler dados do Firebase:", error);
-          document.getElementById('placarPrincipal').innerHTML = '<div style="color: red; font-size: 24px; text-align: center; padding: 20px;">ERRO DE FIREBASE.<br>Verifique sua configuração ou conexão.</div>';
+          document.getElementById('placarPrincipal').innerHTML = '<div style="color: red; font-size: 24px; text-align: center; padding: 20px;">ERRO DE CONEXÃO COM FIREBASE.<br>Verifique sua configuração ou conexão com a internet.</div>';
         });
     }
 
+    // Função para iniciar o cronômetro localmente
     function startLocalTimer(initialSeconds) {
         if (timerInterval) clearInterval(timerInterval); // Limpa qualquer timer anterior
-        localSeconds = initialSeconds; 
-        document.getElementById('cronometro_display').innerText = formatTime(localSeconds); 
+        localSeconds = initialSeconds;
+        document.getElementById('cronometro_display').innerText = formatTime(localSeconds); // Atualiza imediatamente
 
         timerInterval = setInterval(() => {
             localSeconds++;
@@ -472,6 +548,7 @@
         }, 1000);
     }
 
+    // Função para parar o cronômetro localmente
     function stopLocalTimer() {
         if (timerInterval) {
             clearInterval(timerInterval);
@@ -479,62 +556,102 @@
         }
     }
 
+    // Função para animar o escudo do time
+    function triggerShieldJump(teamId) {
+        // Escudo do placar principal
+        const escudoElement = document.getElementById(`escudo${teamId}_display`);
+        // Escudo do modo pênalti (se aplicável)
+        const escudoPenaltyElement = document.getElementById(`escudoPenalty${teamId}_display`);
+
+        if (escudoElement) {
+            escudoElement.classList.remove('jump-animation');
+            // Força o "reflow" para reiniciar a animação se ela já estava em andamento
+            void escudoElement.offsetWidth;
+            escudoElement.classList.add('jump-animation');
+
+            // Remove a classe após a duração da animação para permitir um novo pulo
+            setTimeout(() => {
+                escudoElement.classList.remove('jump-animation');
+            }, 700); // Deve ser igual à duração da animação 'jumpAndBounce' no CSS
+        }
+
+        if (escudoPenaltyElement) {
+            escudoPenaltyElement.classList.remove('jump-animation');
+            void escudoPenaltyElement.offsetWidth;
+            escudoPenaltyElement.classList.add('jump-animation');
+            setTimeout(() => {
+                escudoPenaltyElement.classList.remove('jump-animation');
+            }, 700);
+        }
+    }
+
+
+    // Renderiza a interface do usuário com base no estado `overlayState`
     function renderUI() {
-      // Atualiza os dados do placar
+      // Atualiza os elementos de placar, nomes e escudos
       document.getElementById('placar1_display').innerText = overlayState.placar['1'];
       document.getElementById('placar2_display').innerText = overlayState.placar['2'];
-      document.getElementById('nomeAbbr1_display').innerText = overlayState.nomeAbbr1 || 'T1'; 
-      document.getElementById('nomeAbbr2_display').innerText = overlayState.nomeAbbr2 || 'T2'; 
+      document.getElementById('nomeAbbr1_display').innerText = overlayState.nomeAbbr1 || 'T1';
+      document.getElementById('nomeAbbr2_display').innerText = overlayState.nomeAbbr2 || 'T2';
       document.getElementById('nomePenalty1_display').innerText = overlayState.nome1 || 'Time 1';
       document.getElementById('nomePenalty2_display').innerText = overlayState.nome2 || 'Time 2';
 
-      document.getElementById('escudo1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      // Define as fontes dos escudos e logos, com fallback para um gif transparente
+      document.getElementById('escudo1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
       document.getElementById('escudoPenalty1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
       document.getElementById('escudo2_display').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
       document.getElementById('escudoPenalty2_display').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
 
-      document.getElementById('logoOverlay_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+      document.getElementById('logoOverlay_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
       document.getElementById('logoOverlayPenalty_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
 
-      document.getElementById('cronometro_display').innerText = formatTime(localSeconds); // Usa localSeconds
+      // Atualiza o display do cronômetro
+      document.getElementById('cronometro_display').innerText = formatTime(localSeconds);
 
+      // Renderiza os cartões para ambos os times
       renderCards('1');
       renderCards('2');
+      // Atualiza o display do período
       document.getElementById('periodoDisplay_display').innerText = periodNames[overlayState.currentPeriod] || 'N/A';
-      
+
+      // Renderiza as bolinhas de pênalti
       renderPenalties('1');
       renderPenalties('2');
 
+      // Aplica o tema de placar (cores de fundo, borda, etc.)
       applyPlacarTheme();
+
+      // Aplica a cor da fonte geral e a cor da animação GOOOL
+      document.documentElement.style.setProperty('--placar-text', overlayState.fontColor);
+      document.documentElement.style.setProperty('--highlight-color', overlayState.fontColor); /* AGORA A ANIMAÇÃO USA A MESMA COR DA FONTE */
+
 
       const placarContentWrapper = document.getElementById('placarContentWrapper');
       const normalContent = document.getElementById('normalPlacarContent_display');
       const penaltyContent = document.getElementById('penaltyPlacarContent_display');
       const goalAnimation = document.getElementById('goalAnimation_display');
 
-      // Sempre remove a classe 'active' da animação para que ela possa ser reativada pelo CSS
-      goalAnimation.classList.remove('active'); 
-
+      // Gerencia a animação "GOOOOL!" e a visibilidade do placar
       if (overlayState.activeAnimation === 'goalAnimation') {
-          // Esconde o conteúdo do placar
+          // Esconde o conteúdo do placar e mostra a animação
           placarContentWrapper.classList.add('hidden-content');
           placarContentWrapper.classList.remove('visible-content');
-          // Mostra e ativa a animação
           goalAnimation.style.visibility = 'visible';
-          goalAnimation.classList.add('active'); 
+          goalAnimation.classList.add('active');
       } else {
-          // Mostra o conteúdo do placar
+          // Garante que a animação esteja parada e oculta
+          goalAnimation.style.visibility = 'hidden';
+          goalAnimation.classList.remove('active');
+
+          // Mostra o conteúdo do placar e decide qual modo (normal/pênalti)
           placarContentWrapper.classList.remove('hidden-content');
           placarContentWrapper.classList.add('visible-content');
-          // Esconde a animação
-          goalAnimation.style.visibility = 'hidden';
 
-          // Decide entre placar normal e pênaltis dentro do wrapper visível
           if (overlayState.penaltyModeActive) {
               normalContent.style.display = 'none';
-              penaltyContent.style.display = 'flex'; 
+              penaltyContent.style.display = 'flex';
           } else {
-              normalContent.style.display = 'flex'; 
+              normalContent.style.display = 'flex';
               penaltyContent.style.display = 'none';
           }
       }
@@ -548,25 +665,28 @@
       }
     }
 
+    // Formata o tempo de segundos para MM:SS
     function formatTime(s) {
       const min = String(Math.floor(s / 60)).padStart(2, '0');
       const sec = String(s % 60).padStart(2, '0');
       return `${min}:${sec}`;
     }
 
+    // Aplica o tema de cores selecionado
     function applyPlacarTheme() {
       const theme = placarThemes[overlayState.placarThemeIndex];
       document.documentElement.style.setProperty('--placar-bg-rgb', theme.rgb);
       document.documentElement.style.setProperty('--placar-opacity', (overlayState.placarOpacity / 100).toFixed(2));
-      document.documentElement.style.setProperty('--placar-text', theme.text);
       document.documentElement.style.setProperty('--placar-border', theme.border);
       document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
-      document.documentElement.style.setProperty('--highlight-color', theme.timerColor);
+      // '--highlight-color' é definido em renderUI, sincronizado com '--placar-text'
     }
 
+    // Renderiza os cartões amarelos e vermelhos para um time
     function renderCards(time) {
       const displayElement = document.getElementById(`cardsDisplay${time}_display`);
-      displayElement.innerHTML = ''; 
+      displayElement.innerHTML = ''; // Limpa os cartões existentes
+      // Garante que os valores são números, com fallback para 0
       const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
       const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
 
@@ -577,26 +697,29 @@
       }
       for (let i = 0; i < vermelhos; i++) {
         const cardDiv = document.createElement('div');
-        cardDiv.className = 'card-indicator red-card'; 
+        cardDiv.className = 'card-indicator red-card';
         displayElement.appendChild(cardDiv);
       }
     }
 
+    // Renderiza as bolinhas de pênalti para um time (acertos/erros)
     function renderPenalties(time) {
       const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
-      penaltyBallsContainer.innerHTML = ''; 
+      penaltyBallsContainer.innerHTML = ''; // Limpa as bolinhas existentes
 
-      const penalties = overlayState.penalties && Array.isArray(overlayState.penalties[time]) ? overlayState.penalties[time] : []; 
-      
-      for (let i = 0; i < 5; i++) { 
+      // Garante que a lista de pênaltis é um array, com fallback para vazio
+      const penalties = overlayState.penalties && Array.isArray(overlayState.penalties[time]) ? overlayState.penalties[time] : [];
+
+      // Cria 5 bolinhas de pênalti. Se houver um resultado no array, aplica a classe de cor.
+      for (let i = 0; i < 5; i++) {
         const ballDiv = document.createElement('div');
         ballDiv.className = 'penalty-ball';
         if (penalties[i]) {
-          ballDiv.classList.add(penalties[i]); 
+          ballDiv.classList.add(penalties[i]); // Adiciona 'green' ou 'red'
         }
         penaltyBallsContainer.appendChild(ballDiv);
       }
     }
   </script>
 </body>
-</html>
+            </html>
