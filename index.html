@@ -66,7 +66,37 @@
             min-width: 150px;
         }
         
-        /* Removido .file-upload-wrapper, .upload-button, etc. */
+        .file-upload-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .file-upload-wrapper label {
+            flex-basis: 100%;
+            text-align: left;
+        }
+        .file-upload-wrapper input[type="file"] {
+            flex-grow: 1;
+            min-width: 150px;
+            border: 1px solid #7f8c8d;
+            border-radius: 5px;
+            padding: 8px 10px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            cursor: pointer;
+        }
+        /* O botão "Upload" foi removido pois o upload é direto ao selecionar a imagem */
+        .file-upload-wrapper img {
+            height: 50px;
+            width: 50px;
+            object-fit: contain;
+            background: #eee;
+            border-radius: 5px;
+        }
+
 
         .button {
             background-color: #27ae60;
@@ -160,29 +190,6 @@
             text-align: right;
         }
 
-        .image-url-group {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .image-url-group label {
-            flex-basis: 100%; /* Força a label para a própria linha em telas menores */
-            text-align: left;
-        }
-        .image-url-group input[type="text"] {
-            flex-grow: 1;
-            min-width: 250px; /* Garante largura mínima para o campo URL */
-        }
-        .image-url-group img {
-            height: 50px;
-            width: 50px;
-            object-fit: contain;
-            background: #eee;
-            border-radius: 5px;
-        }
     </style>
 </head>
 <body>
@@ -211,10 +218,10 @@
             <label for="team1Abbr">Time 1 (Abreviatura):</label>
             <input type="text" id="team1Abbr" class="input-field" placeholder="Ex: GRE" maxlength="4">
         </div>
-        <div class="image-url-group">
-            <label for="team1EscudoURL">URL do Escudo 1:</label>
-            <input type="text" id="team1EscudoURL" class="input-field" placeholder="Cole a URL direta da imagem (ex: .png, .jpg)">
-            <img id="previewEscudo1" src="" alt="Preview Escudo 1" style="height: 50px; width: 50px; object-fit: contain; background: #eee; border-radius: 5px;">
+        <div class="file-upload-wrapper">
+            <label>Escudo 1:</label>
+            <input type="file" id="team1Escudo" accept="image/*">
+            <img id="previewEscudo1" src="" alt="Preview Escudo 1">
         </div>
 
         <div class="team-input-group">
@@ -223,19 +230,17 @@
             <label for="team2Abbr">Time 2 (Abreviatura):</label>
             <input type="text" id="team2Abbr" class="input-field" placeholder="Ex: INT" maxlength="4">
         </div>
-        <div class="image-url-group">
-            <label for="team2EscudoURL">URL do Escudo 2:</label>
-            <input type="text" id="team2EscudoURL" class="input-field" placeholder="Cole a URL direta da imagem (ex: .png, .jpg)">
-            <img id="previewEscudo2" src="" alt="Preview Escudo 2" style="height: 50px; width: 50px; object-fit: contain; background: #eee; border-radius: 5px;">
+        <div class="file-upload-wrapper">
+            <label>Escudo 2:</label>
+            <input type="file" id="team2Escudo" accept="image/*">
+            <img id="previewEscudo2" src="" alt="Preview Escudo 2">
         </div>
 
-        <div class="image-url-group">
-            <label for="overlayLogoURL">URL da Logo Central (Overlay):</label>
-            <input type="text" id="overlayLogoURL" class="input-field" placeholder="Cole a URL direta da imagem da logo">
-            <img id="previewLogoOverlay" src="" alt="Preview Logo" style="height: 50px; width: 50px; object-fit: contain; background: #eee; border-radius: 5px;">
+        <div class="file-upload-wrapper">
+            <label>Logo Central (Overlay):</label>
+            <input type="file" id="overlayLogo" accept="image/*">
+            <img id="previewLogoOverlay" src="" alt="Preview Logo">
         </div>
-        
-        <button class="button blue" id="updateTeamNamesLogosBtn">Atualizar Nomes e Logos</button>
     </div>
 
     <div class="container">
@@ -266,7 +271,7 @@
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 
     <div class="container">
         <h2 class="section-title">Cronômetro e Período</h2>
@@ -348,6 +353,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
     <script>
         // ** SUAS CONFIGURAÇÕES DO FIREBASE ESTÃO AQUI **
         const firebaseConfig = {
@@ -355,7 +361,7 @@
           authDomain: "aquilesplacarpro.firebaseapp.com",
           databaseURL: "https://aquilesplacarpro-default-rtdb.firebaseio.com",
           projectId: "aquilesplacarpro",
-          // storageBucket: "aquilesplacarpro.firebasestorage.app", // REMOVIDO OU COMENTADO
+          // storageBucket: "aquilesplacarpro.appspot.com", // REMOVIDO
           messagingSenderId: "922321609151",
           appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
         };
@@ -366,7 +372,6 @@
         // Inicializa o Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = app.database();
-        // REMOVIDO: const storage = app.storage();
         const overlayStateRef = database.ref(`narrators/${NARRATOR_ID}/overlayState`);
 
         document.getElementById('displayNarratorId').innerText = NARRATOR_ID;
@@ -382,15 +387,15 @@
             placarOpacity: 90,
             fontColor: '#E0E0E0',
             penaltyModeActive: false,
-            activeAnimation: null, // Para a animação de gol
+            activeAnimation: null,
             currentPeriod: 1,
             nome1: '',
             nome2: '',
             nomeAbbr1: 'T1',
             nomeAbbr2: 'T2',
-            escudo1: '', // Será uma URL direta
-            escudo2: '', // Será uma URL direta
-            logoOverlay: '', // Será uma URL direta
+            escudo1: '', // Será a string Base64
+            escudo2: '', // Será a string Base64
+            logoOverlay: '', // Será a string Base64
             isVisible: true
         };
 
@@ -399,6 +404,20 @@
             overlayStateRef.set(newState)
                 .then(() => console.log("Estado atualizado no Firebase!"))
                 .catch(error => console.error("Erro ao escrever no Firebase:", error));
+        }
+
+        // Função para ler arquivo e converter para Base64
+        function fileToBase64(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                callback(e.target.result);
+            };
+            reader.onerror = function(error) {
+                console.error("Erro ao ler arquivo:", error);
+                alert("Erro ao carregar a imagem. Por favor, tente novamente com um arquivo menor.");
+                callback(''); // Retorna string vazia em caso de erro
+            };
+            reader.readAsDataURL(file);
         }
 
         // Listener para atualizar a UI do controlador com base no Firebase
@@ -422,15 +441,12 @@
 
             document.getElementById('team1Name').value = currentState.nome1;
             document.getElementById('team1Abbr').value = currentState.nomeAbbr1;
-            document.getElementById('team1EscudoURL').value = currentState.escudo1; // Atualiza o campo URL
             document.getElementById('previewEscudo1').src = currentState.escudo1 || '';
 
             document.getElementById('team2Name').value = currentState.nome2;
             document.getElementById('team2Abbr').value = currentState.nomeAbbr2;
-            document.getElementById('team2EscudoURL').value = currentState.escudo2; // Atualiza o campo URL
             document.getElementById('previewEscudo2').src = currentState.escudo2 || '';
             
-            document.getElementById('overlayLogoURL').value = currentState.logoOverlay; // Atualiza o campo URL
             document.getElementById('previewLogoOverlay').src = currentState.logoOverlay || '';
 
             document.getElementById('periodSelect').value = currentState.currentPeriod;
@@ -454,36 +470,75 @@
 
         // --- Event Listeners ---
 
+        // Atualização em tempo real de nomes
+        document.getElementById('team1Name').addEventListener('input', () => {
+            currentState.nome1 = document.getElementById('team1Name').value;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('team1Abbr').addEventListener('input', () => {
+            currentState.nomeAbbr1 = document.getElementById('team1Abbr').value;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('team2Name').addEventListener('input', () => {
+            currentState.nome2 = document.getElementById('team2Name').value;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('team2Abbr').addEventListener('input', () => {
+            currentState.nomeAbbr2 = document.getElementById('team2Abbr').value;
+            writeStateToFirebase(currentState);
+        });
+
+
         // Visibilidade
         document.getElementById('toggleVisibilityBtn').addEventListener('click', () => {
             currentState.isVisible = !currentState.isVisible;
             writeStateToFirebase(currentState);
         });
 
-        // Atualizar Nomes e Logos (agora pegando URLs de campos de texto)
-        document.getElementById('updateTeamNamesLogosBtn').addEventListener('click', async () => {
-            currentState.nome1 = document.getElementById('team1Name').value;
-            currentState.nomeAbbr1 = document.getElementById('team1Abbr').value;
-            currentState.nome2 = document.getElementById('team2Name').value;
-            currentState.nomeAbbr2 = document.getElementById('team2Abbr').value;
-
-            // Pega as URLs dos campos de texto
-            currentState.escudo1 = document.getElementById('team1EscudoURL').value;
-            currentState.escudo2 = document.getElementById('team2EscudoURL').value;
-            currentState.logoOverlay = document.getElementById('overlayLogoURL').value;
-            
-            writeStateToFirebase(currentState);
+        // Upload de Escudos (agora via Base64)
+        document.getElementById('team1Escudo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileToBase64(file, (base64String) => {
+                    currentState.escudo1 = base64String;
+                    document.getElementById('previewEscudo1').src = base64String; // Atualiza preview
+                    writeStateToFirebase(currentState);
+                });
+            } else {
+                currentState.escudo1 = '';
+                document.getElementById('previewEscudo1').src = '';
+                writeStateToFirebase(currentState);
+            }
         });
 
-        // Previews de Imagem ao colar URL
-        document.getElementById('team1EscudoURL').addEventListener('input', (e) => {
-            document.getElementById('previewEscudo1').src = e.target.value;
+        document.getElementById('team2Escudo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileToBase64(file, (base64String) => {
+                    currentState.escudo2 = base64String;
+                    document.getElementById('previewEscudo2').src = base64String; // Atualiza preview
+                    writeStateToFirebase(currentState);
+                });
+            } else {
+                currentState.escudo2 = '';
+                document.getElementById('previewEscudo2').src = '';
+                writeStateToFirebase(currentState);
+            }
         });
-        document.getElementById('team2EscudoURL').addEventListener('input', (e) => {
-            document.getElementById('previewEscudo2').src = e.target.value;
-        });
-        document.getElementById('overlayLogoURL').addEventListener('input', (e) => {
-            document.getElementById('previewLogoOverlay').src = e.target.value;
+
+        document.getElementById('overlayLogo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileToBase64(file, (base64String) => {
+                    currentState.logoOverlay = base64String;
+                    document.getElementById('previewLogoOverlay').src = base64String; // Atualiza preview
+                    writeStateToFirebase(currentState);
+                });
+            } else {
+                currentState.logoOverlay = '';
+                document.getElementById('previewLogoOverlay').src = '';
+                writeStateToFirebase(currentState);
+            }
         });
 
         // Placar - Agora com animação de gol
@@ -491,8 +546,8 @@
             currentState.placar['1']++;
             currentState.activeAnimation = 'goalAnimation'; // Ativa animação
             writeStateToFirebase(currentState);
-            // Reseta a animação após um tempo (um pouco mais que a duração da animação no CSS)
             setTimeout(() => {
+                // Só reseta se a animação atual ainda for 'goalAnimation'
                 if (currentState.activeAnimation === 'goalAnimation') {
                     currentState.activeAnimation = null;
                     writeStateToFirebase(currentState);
@@ -507,8 +562,8 @@
             currentState.placar['2']++;
             currentState.activeAnimation = 'goalAnimation'; // Ativa animação
             writeStateToFirebase(currentState);
-            // Reseta a animação após um tempo (um pouco mais que a duração da animação no CSS)
             setTimeout(() => {
+                // Só reseta se a animação atual ainda for 'goalAnimation'
                 if (currentState.activeAnimation === 'goalAnimation') {
                     currentState.activeAnimation = null;
                     writeStateToFirebase(currentState);
@@ -519,8 +574,6 @@
             currentState.placar['2'] = Math.max(0, currentState.placar['2'] - 1);
             writeStateToFirebase(currentState);
         });
-
-        // REMOVIDO: document.getElementById('playGoalAnimationBtn').addEventListener('click', ...);
 
         // Cartões
         document.getElementById('card1Yellow').addEventListener('click', () => {
@@ -590,11 +643,11 @@
                 currentState.penalties[teamId] = [];
             }
             if (resultType === 'undo') {
-                currentState.penalties[teamId].pop(); // Remove o último elemento
+                currentState.penalties[teamId].pop();
             } else if (resultType === 'clear') {
-                currentState.penalties[teamId] = []; // Limpa tudo
+                currentState.penalties[teamId] = [];
             } else {
-                currentState.penalties[teamId].push(resultType); // 'green' ou 'red'
+                currentState.penalties[teamId].push(resultType);
             }
             writeStateToFirebase(currentState);
         }
@@ -627,4 +680,4 @@
         });
     </script>
 </body>
-</html>
+    </html>
