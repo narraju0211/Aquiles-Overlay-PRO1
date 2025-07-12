@@ -676,7 +676,7 @@
       if (overlayState.activeAnimation === 'goalAnimation') {
           // Oculta o placar principal (normal ou pênaltis)
           placarContentWrapper.classList.add('hidden-content');
-          placarContentWrapper.classList.remove('visible-content');
+          placarContentWrapper.classList.remove('visible-content'); // (garante a remoção caso esteja lá)
           
           // Mostra e ativa a animação de gol
           goalAnimationOverlay.style.visibility = 'visible';
@@ -691,16 +691,21 @@
 
       } else if (overlayState.penaltyModeActive) {
           // Mostra o placar de pênaltis e oculta o normal
-          placarContentWrapper.classList.remove('hidden-content');
+          placarContentWrapper.classList.remove('hidden-content'); // Garante que o placarWrapper esteja visível
           placarContentWrapper.classList.add('visible-content');
           normalContent.style.display = 'none';
           penaltyContent.style.display = 'flex';
+          goalAnimationOverlay.style.visibility = 'hidden'; // Garante que a animação de gol esteja oculta
+          goalAnimationOverlay.classList.remove('active');
+
       } else {
           // Nenhuma animação de gol ou modo pênalti ativo, mostra o placar normal
-          placarContentWrapper.classList.remove('hidden-content');
+          placarContentWrapper.classList.remove('hidden-content'); // Garante que o placarWrapper esteja visível
           placarContentWrapper.classList.add('visible-content');
           normalContent.style.display = 'flex';
           penaltyContent.style.display = 'none';
+          goalAnimationOverlay.style.visibility = 'hidden'; // Garante que a animação de gol esteja oculta
+          goalAnimationOverlay.classList.remove('active');
       }
 
       const visualContainer = document.getElementById('visualOverlayContainer');
@@ -757,4 +762,4 @@
     }
   </script>
 </body>
-</html>
+                </html>
