@@ -313,28 +313,18 @@
       pointer-events: none;
       white-space: nowrap;
       font-family: 'Montserrat', sans-serif;
-      /* Ajuste aqui para o escudo na frente */
-      display: block; /* Para que os elementos se empilhem */
-      text-align: center; /* Para centralizar o texto */
-      position: relative; /* Para posicionar os escudos absolutamente dentro dele */
-    }
-
-    .animated-text .goal-text {
-        position: relative;
-        z-index: 9; /* Z-index menor para o texto ficar atrás */
+      display: flex; /* Mudei para flex para alinhar lado a lado */
+      align-items: center; /* Alinha verticalmente */
+      justify-content: center; /* Centraliza horizontalmente */
+      gap: 20px; /* Espaçamento entre texto e escudo - AUMENTADO PARA 20px */
     }
 
     .animated-text .goal-shield {
-        height: 100px; /* Tamanho maior do escudo na animação */
-        width: 100px;
+        height: 70px; /* Tamanho do escudo na animação */
+        width: 70px;
         object-fit: contain;
         display: none; /* Escondido por padrão, será exibido via JS */
         filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
-        position: absolute; /* Posição absoluta para sobrepor */
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%); /* Centraliza o escudo */
-        z-index: 10; /* Z-index maior para o escudo ficar na frente */
     }
 
     @keyframes fadeInScaleOut {
@@ -347,18 +337,18 @@
     }
 
     .animated-text.active {
-      animation: fadeInScaleOut 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      animation: fadeInScaleOut 4.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* TEMPO DE ANIMAÇÃO AUMENTADO PARA 4.2s */
     }
 
     /* Media query para telas menores (celulares) para tentar manter o layout responsivo */
     @media (max-width: 768px) {
         .placar-main-line {
-            flex-wrap: wrap; /* Permite que os grupos quebrem a linha se necessário */
+            flex-wrap: wrap;
             justify-content: center;
         }
         .placar-group, .logo-central {
-            min-width: unset; /* Permite que encolha mais */
-            flex-basis: auto; /* Reajusta base */
+            min-width: unset;
+            flex-basis: auto;
             padding: 0 2px;
         }
         .placar-numero {
@@ -371,11 +361,11 @@
         #cronometro_display, #periodoDisplay_display {
             font-size: 16px;
         }
-        .escudo { /* Ajusta o escudo dos times para mobile */
+        .escudo {
             width: 40px;
             height: 40px;
         }
-        .logo-central img { /* Ajusta a logo central para mobile */
+        .logo-central img {
             width: 50px;
             height: 50px;
         }
@@ -383,11 +373,12 @@
             min-width: unset;
         }
         .animated-text {
-            font-size: 50px; /* Reduz o tamanho do texto do gol */
+            font-size: 50px;
+            gap: 10px; /* Reduz o espaçamento para mobile */
         }
         .animated-text .goal-shield {
-            height: 70px; /* Ajusta o tamanho do escudo para mobile */
-            width: 70px;
+            height: 50px;
+            width: 50px;
         }
     }
 
@@ -398,7 +389,8 @@
     <div class="placar" id="placarPrincipal">
       <div class="placar-content-wrapper" id="placarContentWrapper">
         <div class="placar-main-line" id="normalPlacarContent_display">
-          <div class="placar-group timer-period-group"> <div id="cronometro_display">00:00</div>
+          <div class="placar-group timer-period-group">
+              <div id="cronometro_display">00:00</div>
           </div>
 
           <div class="placar-group">
@@ -423,7 +415,8 @@
               <div id="cardsDisplay2_display" class="cards-display"></div>
           </div>
 
-          <div class="placar-group timer-period-group"> <div id="periodoDisplay_display" class="periodo">1º T</div>
+          <div class="placar-group timer-period-group">
+              <div id="periodoDisplay_display" class="periodo">1º T</div>
           </div>
         </div>
 
@@ -446,8 +439,8 @@
 
       <div class="animated-text" id="goalAnimation_display">
         <img id="goalShield1_display" class="goal-shield" src="" alt="Escudo Time 1">
+        GOOOOL!
         <img id="goalShield2_display" class="goal-shield" src="" alt="Escudo Time 2">
-        <span class="goal-text">GOOOOL!</span>
       </div>
     </div>
   </div>
@@ -573,9 +566,9 @@
                 overlayState.nome2 = newState.nome2 || '';
                 overlayState.nomeAbbr1 = newState.nomeAbbr1 || 'T1';
                 overlayState.nomeAbbr2 = newState.nomeAbbr2 || 'T2';
-                overlayState.escudo1 = newState.escudo1 || ''; // Agora é Base64
-                overlayState.escudo2 = newState.escudo2 || ''; // Agora é Base64
-                overlayState.logoOverlay = newState.logoOverlay || ''; // Agora é Base64
+                overlayState.escudo1 = newState.escudo1 || ''; // Será a string Base64
+                overlayState.escudo2 = newState.escudo2 || ''; // Será a string Base64
+                overlayState.logoOverlay = newState.logoOverlay || ''; // Será a string Base64
                 overlayState.isVisible = newState.isVisible !== undefined ? newState.isVisible : true;
 
                 // *** LÓGICA DO CRONÔMETRO: Sincronização e controle local ***
@@ -690,7 +683,6 @@
       const goalAnimation = document.getElementById('goalAnimation_display');
       const goalShield1 = document.getElementById('goalShield1_display');
       const goalShield2 = document.getElementById('goalShield2_display');
-      const goalText = goalAnimation.querySelector('.goal-text'); // Seleciona o span do texto GOOOOL!
 
       if (overlayState.activeAnimation === 'goalAnimation') {
           placarContentWrapper.classList.add('hidden-content');
