@@ -64,7 +64,7 @@
       box-sizing: border-box;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
-      position: relative; /* FUNDAMENTAL para que a animação de gol seja posicionada ABSOLUTAMENTE dentro dele */
+      position: relative;
       overflow: hidden;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
       min-height: unset;
@@ -83,19 +83,10 @@
     .placar-content-wrapper.hidden-content {
         opacity: 0;
         pointer-events: none;
-        /* IMPORTANTE: Coloca o conteúdo do placar em um estado que não interfere na animação */
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        visibility: hidden;
     }
     .placar-content-wrapper.visible-content {
         opacity: 1;
         pointer-events: auto;
-        position: relative; /* Volta ao posicionamento normal */
-        visibility: visible;
     }
 
     .placar-main-line {
@@ -121,7 +112,6 @@
       flex-grow: 0;
       flex-basis: auto;
       padding-bottom: 5px; /* Adiciona um pequeno padding na parte inferior */
-      position: relative; /* Importante para posicionar a animação de gol */
     }
 
     /* Especificamente para o grupo do cronômetro/período */
@@ -164,6 +154,7 @@
       object-fit: contain;
       flex-shrink: 0;
       filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+      transition: transform 0.2s ease-out;
     }
     .placar-numero {
       font-size: 38px;
@@ -292,60 +283,61 @@
         border-width: 2px;
     }
 
-    /* ESTILOS PARA A ANIMAÇÃO DE GOOOOL! */
-    .goal-animation-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: rgba(var(--placar-bg-rgb), 0.95); /* Fundo semi-transparente para cobrir o placar */
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        z-index: 1000; /* Acima do placar principal */
-        font-size: 80px;
-        font-weight: 900;
-        color: var(--highlight-color);
-        text-shadow: 0 0 15px var(--highlight-color), 0 0 8px rgba(0, 0, 0, 0.6);
-        font-family: 'Montserrat', sans-serif;
-        box-sizing: border-box; /* Garante que padding/border não empurre o elemento para fora */
-        overflow: hidden;
+    /* ANIMAÇÃO DO ESCUDO DE PULO (no placar) */
+    @keyframes jumpAndBounce {
+      0% { transform: translateY(0) scale(1); }
+      25% { transform: translateY(-25px) scale(1.1); }
+      50% { transform: translateY(0) scale(1.05); }
+      75% { transform: translateY(-10px) scale(1.02); }
+      100% { transform: translateY(0) scale(1); }
     }
 
-    .goal-animation-overlay .goal-content {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 20px; /* Espaçamento entre escudo e texto GOOOOL! */
-        padding: 20px; /* Adiciona um pouco de padding interno para o conteúdo */
-        transform: scale(0.5); /* Começa menor */
-        opacity: 0; /* Começa invisível */
+    .escudo.jump-animation {
+      animation: jumpAndBounce 0.7s ease-out forwards;
     }
 
-    .goal-animation-overlay .goal-shield {
-        height: 100px; /* Tamanho maior para o escudo na animação */
-        width: 100px;
+    /* ESTILOS PARA A ANIMAÇÃO DE GOOOOL e ESCUDO (central) */
+    .animated-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      font-size: 80px;
+      font-weight: 900;
+      color: var(--highlight-color);
+      text-shadow: 0 0 15px var(--highlight-color), 0 0 8px rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      visibility: hidden;
+      animation-fill-mode: forwards;
+      z-index: 1000;
+      pointer-events: none;
+      white-space: nowrap;
+      font-family: 'Montserrat', sans-serif;
+      display: flex; /* Mudei para flex para alinhar lado a lado */
+      align-items: center; /* Alinha verticalmente */
+      justify-content: center; /* Centraliza horizontalmente */
+      gap: 20px; /* Espaçamento entre texto e escudo - AUMENTADO PARA 20px */
+    }
+
+    .animated-text .goal-shield {
+        height: 70px; /* Tamanho do escudo na animação */
+        width: 70px;
         object-fit: contain;
-        filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.8));
+        display: none; /* Escondido por padrão, será exibido via JS */
+        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
     }
 
-    /* Animação de entrada e saída para a overlay de GOOOOL! */
-    @keyframes fadeInScaleAndFadeOutFull {
-      0% { opacity: 0; visibility: hidden; }
+    @keyframes fadeInScaleOut {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); visibility: hidden; }
       1% { visibility: visible; }
-      10% { opacity: 1; transform: scale(1); } /* Escala para 100% mais rápido */
-      80% { opacity: 1; transform: scale(1); } /* Mantém a escala */
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
       99% { opacity: 0; visibility: visible; }
-      100% { opacity: 0; visibility: hidden; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); visibility: hidden;}
     }
 
-    .goal-animation-overlay.active {
-      animation: fadeInScaleAndFadeOutFull 4.0s ease-in-out forwards; /* Duração ajustada */
+    .animated-text.active {
+      animation: fadeInScaleOut 4.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* TEMPO DE ANIMAÇÃO AUMENTADO PARA 4.2s */
     }
 
     /* Media query para telas menores (celulares) para tentar manter o layout responsivo */
@@ -380,16 +372,13 @@
         .penalty-team-display {
             min-width: unset;
         }
-        .goal-animation-overlay {
+        .animated-text {
             font-size: 50px;
+            gap: 10px; /* Reduz o espaçamento para mobile */
         }
-        .goal-animation-overlay .goal-content {
-            gap: 10px;
-            padding: 10px;
-        }
-        .goal-animation-overlay .goal-shield {
-            height: 60px;
-            width: 60px;
+        .animated-text .goal-shield {
+            height: 50px;
+            width: 50px;
         }
     }
 
@@ -404,7 +393,7 @@
               <div id="cronometro_display">00:00</div>
           </div>
 
-          <div class="placar-group" id="team1Group">
+          <div class="placar-group">
               <div class="placar-group-score">
                   <img id="escudo1_display" class="escudo" src="" alt="Escudo Time 1">
                   <span id="nomeAbbr1_display" class="team-name-abbr">T1</span>
@@ -417,7 +406,7 @@
             <img id="logoOverlay_display" src="" alt="Sua Logo">
           </div>
 
-          <div class="placar-group" id="team2Group">
+          <div class="placar-group">
               <div class="placar-group-score">
                   <span id="placar2_display" class="placar-numero">0</span>
                   <span id="nomeAbbr2_display" class="team-name-abbr">T2</span>
@@ -448,13 +437,11 @@
         </div>
       </div>
 
-      <div class="goal-animation-overlay" id="goalAnimationOverlay_display">
-        <div class="goal-content">
-            <img id="goalShield_display" class="goal-shield" src="" alt="Escudo Time que marcou">
-            GOOOOL!
-        </div>
+      <div class="animated-text" id="goalAnimation_display">
+        <img id="goalShield1_display" class="goal-shield" src="" alt="Escudo Time 1">
+        GOOOOL!
+        <img id="goalShield2_display" class="goal-shield" src="" alt="Escudo Time 2">
       </div>
-
     </div>
   </div>
 
@@ -491,7 +478,7 @@
       placarOpacity: 90,
       fontColor: '#E0E0E0',
       penaltyModeActive: false,
-      activeAnimation: null, // Pode ser 'goalAnimation', null (para o placar normal) ou 'penaltyMode' (para o placar de pênaltis)
+      activeAnimation: null, // Pode ser 'goalAnimation', null
       lastGoalScoredBy: null, // Novo campo para identificar quem marcou o último gol
       currentPeriod: 1,
       nome1: '',
@@ -532,21 +519,26 @@
         database = app.database();
         setupFirebaseForNarrator(NARRATOR_ID);
         
-        // Listener para a única animação de gol
-        const goalAnimationOverlay = document.getElementById('goalAnimationOverlay_display');
-        if (goalAnimationOverlay) {
-            goalAnimationOverlay.addEventListener('animationend', (event) => {
-                if (event.animationName === 'fadeInScaleAndFadeOutFull') {
-                    // Após a animação, garante que ela está oculta e remove a classe active
-                    goalAnimationOverlay.style.visibility = 'hidden';
-                    goalAnimationOverlay.classList.remove('active');
-                    // E reexibe o placar principal
-                    document.getElementById('placarContentWrapper').classList.remove('hidden-content');
-                    document.getElementById('placarContentWrapper').classList.add('visible-content');
-                }
-            });
-        }
+        const goalAnimationElement = document.getElementById('goalAnimation_display');
+        goalAnimationElement.addEventListener('animationend', (event) => {
+            if (event.animationName === 'fadeInScaleOut') {
+                goalAnimationElement.style.visibility = 'hidden';
+                goalAnimationElement.classList.remove('active');
+                
+                // Esconde os escudos após a animação
+                document.getElementById('goalShield1_display').style.display = 'none';
+                document.getElementById('goalShield2_display').style.display = 'none';
+
+                // Mostra o placar novamente
+                document.getElementById('placarContentWrapper').classList.remove('hidden-content');
+                document.getElementById('placarContentWrapper').classList.add('visible-content');
+            }
+        });
     }
+
+    // Variáveis para guardar o placar anterior e detectar gol
+    let previousPlacar1 = 0;
+    let previousPlacar2 = 0;
 
     function setupFirebaseForNarrator(narratorId) {
         overlayStateRef = database.ref(`narrators/${narratorId}/overlayState`);
@@ -555,7 +547,11 @@
             if (snapshot.exists()) {
                 const newState = snapshot.val();
 
-                // Atualiza o estado local, garantindo valores padrão
+                // Guarda o placar atual ANTES de atualizar o estado para detectar mudanças
+                previousPlacar1 = overlayState.placar['1'];
+                previousPlacar2 = overlayState.placar['2'];
+
+                // Mapeia os dados do Firebase para o estado local, garantindo valores padrão
                 overlayState.placar = newState.placar || { '1': 0, '2': 0 };
                 overlayState.cards = newState.cards || { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
                 overlayState.penalties = newState.penalties || { '1': [], '2': [] };
@@ -563,15 +559,7 @@
                 overlayState.placarOpacity = newState.placarOpacity !== undefined ? newState.placarOpacity : 90;
                 overlayState.fontColor = newState.fontColor || '#E0E0E0';
                 overlayState.penaltyModeActive = newState.penaltyModeActive !== undefined ? newState.penaltyModeActive : false;
-                
-                // IMPORTANT: activeAnimation agora é 'goalAnimation' ou null (ou 'penaltyMode' via penaltyModeActive)
-                // Se activeAnimation do Firebase for 'goalAnimation1' ou 'goalAnimation2', traduz para 'goalAnimation'
-                if (newState.activeAnimation === 'goalAnimation1' || newState.activeAnimation === 'goalAnimation2') {
-                    overlayState.activeAnimation = 'goalAnimation';
-                } else {
-                    overlayState.activeAnimation = newState.activeAnimation || null;
-                }
-                
+                overlayState.activeAnimation = newState.activeAnimation || null;
                 overlayState.lastGoalScoredBy = newState.lastGoalScoredBy || null; // Atualiza o último time a marcar
                 overlayState.currentPeriod = newState.currentPeriod !== undefined ? newState.currentPeriod : 1;
                 overlayState.nome1 = newState.nome1 || '';
@@ -599,6 +587,13 @@
 
                 // RENDERIZA A INTERFACE
                 renderUI();
+
+                // LÓGICA PARA DETECTAR GOL E ANIMAR O ESCUDO NO PLACAR
+                if (overlayState.placar['1'] > previousPlacar1) {
+                    triggerShieldJump('1');
+                } else if (overlayState.placar['2'] > previousPlacar2) {
+                    triggerShieldJump('2');
+                }
 
             } else {
                 console.warn(`Nó para narrador '${narratorId}' não encontrado no Firebase. Aguardando dados do controlador.`);
@@ -630,6 +625,26 @@
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
+        }
+    }
+
+    // Função para animar o escudo do time no placar principal/pênaltis
+    function triggerShieldJump(teamId) {
+        const escudoElement = document.getElementById(`escudo${teamId}_display`);
+        const escudoPenaltyElement = document.getElementById(`escudoPenalty${teamId}_display`);
+
+        if (escudoElement) {
+            escudoElement.classList.remove('jump-animation');
+            // Força o reflow para reiniciar a animação
+            void escudoElement.offsetWidth; 
+            escudoElement.classList.add('jump-animation');
+        }
+
+        if (escudoPenaltyElement) {
+            escudoPenaltyElement.classList.remove('jump-animation');
+            // Força o reflow para reiniciar a animação
+            void escudoPenaltyElement.offsetWidth;
+            escudoPenaltyElement.classList.add('jump-animation');
         }
     }
 
@@ -665,47 +680,48 @@
       const placarContentWrapper = document.getElementById('placarContentWrapper');
       const normalContent = document.getElementById('normalPlacarContent_display');
       const penaltyContent = document.getElementById('penaltyPlacarContent_display');
-      const goalAnimationOverlay = document.getElementById('goalAnimationOverlay_display');
-      const goalShield = document.getElementById('goalShield_display');
-
-      // Reseta a animação de gol para garantir que ela comece do zero
-      goalAnimationOverlay.style.visibility = 'hidden';
-      goalAnimationOverlay.classList.remove('active');
-      goalShield.src = 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Reseta a imagem do escudo da animação
+      const goalAnimation = document.getElementById('goalAnimation_display');
+      const goalShield1 = document.getElementById('goalShield1_display');
+      const goalShield2 = document.getElementById('goalShield2_display');
 
       if (overlayState.activeAnimation === 'goalAnimation') {
-          // Oculta o placar principal (normal ou pênaltis)
           placarContentWrapper.classList.add('hidden-content');
-          placarContentWrapper.classList.remove('visible-content'); // (garante a remoção caso esteja lá)
+          placarContentWrapper.classList.remove('visible-content');
           
-          // Mostra e ativa a animação de gol
-          goalAnimationOverlay.style.visibility = 'visible';
-          goalAnimationOverlay.classList.add('active');
+          goalAnimation.style.visibility = 'visible';
+          goalAnimation.classList.add('active');
 
-          // Define o escudo correto para a animação de gol
+          // Lógica para mostrar o escudo certo na animação de gol
           if (overlayState.lastGoalScoredBy === '1') {
-              goalShield.src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+              goalShield1.src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+              goalShield1.style.display = 'block'; // Mostra o escudo do Time 1
+              goalShield2.style.display = 'none'; // Esconde o escudo do Time 2
           } else if (overlayState.lastGoalScoredBy === '2') {
-              goalShield.src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+              goalShield2.src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+              goalShield2.style.display = 'block'; // Mostra o escudo do Time 2
+              goalShield1.style.display = 'none'; // Esconde o escudo do Time 1
+          } else {
+              // Se não soubermos quem marcou, escondemos ambos para o texto puro "GOOOOL!"
+              goalShield1.style.display = 'none';
+              goalShield2.style.display = 'none';
           }
 
-      } else if (overlayState.penaltyModeActive) {
-          // Mostra o placar de pênaltis e oculta o normal
-          placarContentWrapper.classList.remove('hidden-content'); // Garante que o placarWrapper esteja visível
-          placarContentWrapper.classList.add('visible-content');
-          normalContent.style.display = 'none';
-          penaltyContent.style.display = 'flex';
-          goalAnimationOverlay.style.visibility = 'hidden'; // Garante que a animação de gol esteja oculta
-          goalAnimationOverlay.classList.remove('active');
-
       } else {
-          // Nenhuma animação de gol ou modo pênalti ativo, mostra o placar normal
-          placarContentWrapper.classList.remove('hidden-content'); // Garante que o placarWrapper esteja visível
+          goalAnimation.style.visibility = 'hidden';
+          goalAnimation.classList.remove('active');
+          goalShield1.style.display = 'none'; // Garante que os escudos estejam escondidos
+          goalShield2.style.display = 'none'; // Garante que os escudos estejam escondidos
+
+          placarContentWrapper.classList.remove('hidden-content');
           placarContentWrapper.classList.add('visible-content');
-          normalContent.style.display = 'flex';
-          penaltyContent.style.display = 'none';
-          goalAnimationOverlay.style.visibility = 'hidden'; // Garante que a animação de gol esteja oculta
-          goalAnimationOverlay.classList.remove('active');
+
+          if (overlayState.penaltyModeActive) {
+              normalContent.style.display = 'none';
+              penaltyContent.style.display = 'flex';
+          } else {
+              normalContent.style.display = 'flex';
+              penaltyContent.style.display = 'none';
+          }
       }
 
       const visualContainer = document.getElementById('visualOverlayContainer');
@@ -762,4 +778,4 @@
     }
   </script>
 </body>
-                </html>
+              </html>
