@@ -600,20 +600,16 @@
 
         if (escudoElement) {
             escudoElement.classList.remove('jump-animation');
-            void escudoElement.offsetWidth;
+            // Força o reflow para reiniciar a animação
+            void escudoElement.offsetWidth; 
             escudoElement.classList.add('jump-animation');
-            setTimeout(() => {
-                escudoElement.classList.remove('jump-animation');
-            }, 700);
         }
 
         if (escudoPenaltyElement) {
             escudoPenaltyElement.classList.remove('jump-animation');
+            // Força o reflow para reiniciar a animação
             void escudoPenaltyElement.offsetWidth;
             escudoPenaltyElement.classList.add('jump-animation');
-            setTimeout(() => {
-                escudoPenaltyElement.classList.remove('jump-animation');
-            }, 700);
         }
     }
 
@@ -726,4 +722,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
