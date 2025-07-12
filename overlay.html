@@ -25,7 +25,7 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding-top: 15px;
+      padding-top: 15px; /* Mantém um pequeno padding superior para a overlay */
       box-sizing: border-box;
     }
 
@@ -42,7 +42,7 @@
       position: relative;
       z-index: 2;
       height: fit-content;
-      min-height: 100px; /* Ajustado para ser mais compacto */
+      min-height: 100px;
       justify-content: flex-start;
     }
 
@@ -55,10 +55,10 @@
 
     .placar {
       display: flex;
-      flex-direction: column; /* Manter em coluna para placar principal e pênaltis */
+      flex-direction: column;
       align-items: center;
       background: rgba(var(--placar-bg-rgb), var(--placar-opacity));
-      padding: 5px 10px; /* Reduzido padding */
+      padding: 5px 10px;
       border-radius: 12px;
       width: 100%;
       box-sizing: border-box;
@@ -92,25 +92,35 @@
     .placar-main-line {
       display: flex;
       align-items: center;
-      justify-content: center; /* Centraliza horizontalmente o conteúdo principal */
+      justify-content: center;
       width: 100%;
-      gap: 5px; /* Espaçamento entre os itens */
-      flex-wrap: nowrap; /* Tenta manter tudo na mesma linha */
+      gap: 5px;
+      flex-wrap: nowrap;
       padding: 5px 0;
     }
 
-    /* Reduzimos o flex-grow para evitar que os grupos ocupem muito espaço */
+    /* Ajustes para alinhar cronômetro/período mais acima */
     .placar-group {
       display: flex;
-      flex-direction: column; /* Cronômetro/Período e cartões em coluna */
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-end; /* Alinha o conteúdo ao fundo do grupo */
       gap: 3px;
       flex-shrink: 0;
       min-height: 80px; /* Altura mínima ajustada */
       box-sizing: border-box;
-      flex-grow: 0; /* Desativa o crescimento */
-      flex-basis: auto; /* Permite que o tamanho seja natural */
+      flex-grow: 0;
+      flex-basis: auto;
+      padding-bottom: 5px; /* Adiciona um pequeno padding na parte inferior */
+    }
+
+    /* Especificamente para o grupo do cronômetro/período */
+    .placar-group.timer-period-group {
+        justify-content: center; /* Centraliza o conteúdo (cronômetro/período) */
+        padding-bottom: 0; /* Remove padding inferior extra se houver */
+        align-self: center; /* Garante que ele se alinhe ao centro da linha principal */
+        position: relative; /* Para possível ajuste fino */
+        top: -5px; /* Ajuste manual para subir um pouco mais */
     }
 
     .placar-group-score {
@@ -126,20 +136,20 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      padding: 0 5px; /* Reduzido padding */
-      min-width: 50px; /* Reduzido min-width */
-      min-height: 80px; /* Ajustado para alinhar com outros grupos */
+      padding: 0 5px;
+      min-width: 50px;
+      min-height: 80px;
       box-sizing: border-box;
     }
     .logo-central img {
-      width: 50px; /* Reduzido o tamanho da logo */
+      width: 50px;
       height: 50px;
       object-fit: contain;
       filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
     }
 
     .escudo {
-      width: 40px; /* Reduzido o tamanho do escudo */
+      width: 40px;
       height: 40px;
       object-fit: contain;
       flex-shrink: 0;
@@ -147,10 +157,10 @@
       transition: transform 0.2s ease-out;
     }
     .placar-numero {
-      font-size: 38px; /* Reduzido o tamanho do placar */
+      font-size: 38px;
       font-weight: 800;
       margin: 0 3px;
-      min-width: 45px; /* Ajustado min-width */
+      min-width: 45px;
       text-align: center;
       flex-shrink: 0;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
@@ -159,10 +169,10 @@
     }
 
     .team-name-abbr {
-      font-size: 24px; /* Reduzido o tamanho da abreviação */
+      font-size: 24px;
       font-weight: 600;
       background: rgba(0, 0, 0, 0.4);
-      padding: 3px 6px; /* Reduzido padding */
+      padding: 3px 6px;
       border-radius: 4px;
       text-transform: uppercase;
       flex-shrink: 0;
@@ -172,11 +182,11 @@
 
     #cronometro_display,
     #periodoDisplay_display {
-      font-size: 20px; /* Reduzido o tamanho do cronômetro */
+      font-size: 20px;
       font-weight: 700;
       color: var(--placar-timer-color);
       background: rgba(0, 0, 0, 0.6);
-      padding: 3px 8px; /* Reduzido padding */
+      padding: 3px 8px;
       border-radius: 6px;
       white-space: nowrap;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
@@ -184,7 +194,7 @@
       font-family: 'Roboto Mono', monospace;
     }
     #periodoDisplay_display {
-        font-size: 18px; /* Reduzido o tamanho do período */
+        font-size: 18px;
         background: rgba(0, 0, 0, 0.4);
         color: var(--placar-text);
         font-family: 'Montserrat', sans-serif;
@@ -197,10 +207,10 @@
       justify-content: center;
       width: unset;
       flex-shrink: 0;
-      gap: 3px; /* Reduzido gap */
+      gap: 3px;
     }
     .card-indicator {
-      width: 18px; /* Reduzido o tamanho dos cartões */
+      width: 18px;
       height: 18px;
       border-radius: 4px;
       margin: 0;
@@ -216,20 +226,20 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        gap: 10px; /* Reduzido gap */
-        padding: 5px 0; /* Reduzido padding */
+        gap: 10px;
+        padding: 5px 0;
     }
     .penalty-team-display {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 3px; /* Reduzido gap */
-        min-width: 120px; /* Reduzido min-width */
+        gap: 3px;
+        min-width: 120px;
         justify-content: center;
         flex-grow: 1;
     }
     .penalty-team-display .team-name-display {
-        font-size: 16px; /* Reduzido o tamanho do nome do time */
+        font-size: 16px;
         font-weight: 600;
         margin-top: 3px;
         background: rgba(0, 0, 0, 0.4);
@@ -239,19 +249,19 @@
         color: var(--placar-text);
     }
     .penalty-team-display .escudo {
-        width: 45px; /* Reduzido o tamanho do escudo */
+        width: 45px;
         height: 45px;
     }
     .penalty-balls-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px; /* Reduzido gap */
+        gap: 6px;
         margin-top: 3px;
         justify-content: center;
     }
     .penalty-ball {
-        width: 18px; /* Reduzido tamanho */
-        height: 18px; /* Reduzido tamanho */
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
         border: 1px solid white;
         background-color: transparent;
@@ -261,14 +271,14 @@
     .penalty-ball.green {
         background-color: #28a745;
         border-color: #28a745;
-        width: 24px; /* Ajustado tamanho preenchida */
+        width: 24px;
         height: 24px;
         border-width: 2px;
     }
     .penalty-ball.red {
         background-color: #dc3545;
         border-color: #dc3545;
-        width: 24px; /* Ajustado tamanho preenchida */
+        width: 24px;
         height: 24px;
         border-width: 2px;
     }
@@ -354,8 +364,7 @@
     <div class="placar" id="placarPrincipal">
       <div class="placar-content-wrapper" id="placarContentWrapper">
         <div class="placar-main-line" id="normalPlacarContent_display">
-          <div class="placar-group">
-              <div id="cronometro_display">00:00</div>
+          <div class="placar-group timer-period-group"> <div id="cronometro_display">00:00</div>
           </div>
 
           <div class="placar-group">
@@ -380,8 +389,7 @@
               <div id="cardsDisplay2_display" class="cards-display"></div>
           </div>
 
-          <div class="placar-group">
-              <div id="periodoDisplay_display" class="periodo">1º T</div>
+          <div class="placar-group timer-period-group"> <div id="periodoDisplay_display" class="periodo">1º T</div>
           </div>
         </div>
 
@@ -416,7 +424,7 @@
       authDomain: "aquilesplacarpro.firebaseapp.com",
       databaseURL: "https://aquilesplacarpro-default-rtdb.firebaseio.com",
       projectId: "aquilesplacarpro",
-      // storageBucket: "aquilesplacarpro.firebasestorage.app", // REMOVIDO OU COMENTADO
+      // storageBucket: "aquilesplacarpro.appspot.com", // REMOVIDO
       messagingSenderId: "922321609151",
       appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
     };
@@ -440,20 +448,20 @@
       placarOpacity: 90,
       fontColor: '#E0E0E0',
       penaltyModeActive: false,
-      activeAnimation: null, // Para a animação de gol
+      activeAnimation: null,
       currentPeriod: 1,
       nome1: '',
       nome2: '',
       nomeAbbr1: 'T1',
       nomeAbbr2: 'T2',
-      escudo1: '', // Será uma URL direta
-      escudo2: '', // Será uma URL direta
-      logoOverlay: '', // Será uma URL direta
+      escudo1: '', // Será a string Base64
+      escudo2: '', // Será a string Base64
+      logoOverlay: '', // Será a string Base64
       isVisible: true
     };
 
-    let timerInterval = null; // Para o setInterval local
-    let localSeconds = 0; // O tempo que a overlay realmente exibe e avança
+    let timerInterval = null;
+    let localSeconds = 0;
 
     // Temas de placar pré-definidos
     const placarThemes = [
@@ -520,9 +528,9 @@
                 overlayState.nome2 = newState.nome2 || '';
                 overlayState.nomeAbbr1 = newState.nomeAbbr1 || 'T1';
                 overlayState.nomeAbbr2 = newState.nomeAbbr2 || 'T2';
-                overlayState.escudo1 = newState.escudo1 || ''; // Agora é uma URL direta
-                overlayState.escudo2 = newState.escudo2 || ''; // Agora é uma URL direta
-                overlayState.logoOverlay = newState.logoOverlay || ''; // Agora é uma URL direta
+                overlayState.escudo1 = newState.escudo1 || ''; // Agora é Base64
+                overlayState.escudo2 = newState.escudo2 || ''; // Agora é Base64
+                overlayState.logoOverlay = newState.logoOverlay || ''; // Agora é Base64
                 overlayState.isVisible = newState.isVisible !== undefined ? newState.isVisible : true;
 
                 // *** LÓGICA DO CRONÔMETRO: Sincronização e controle local ***
@@ -615,7 +623,7 @@
       document.getElementById('nomePenalty1_display').innerText = overlayState.nome1 || 'Time 1';
       document.getElementById('nomePenalty2_display').innerText = overlayState.nome2 || 'Time 2';
 
-      // Define as fontes dos escudos e logos usando as URLs diretas
+      // Define as fontes dos escudos e logos usando as strings Base64
       document.getElementById('escudo1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
       document.getElementById('escudoPenalty1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
       document.getElementById('escudo2_display').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
@@ -715,4 +723,4 @@
     }
   </script>
 </body>
-  </html>
+              </html>
