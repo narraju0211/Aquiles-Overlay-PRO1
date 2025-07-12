@@ -284,17 +284,18 @@
         border-width: 2px;
     }
 
-    /* ANIMAÇÃO DO ESCUDO DE PULO (no placar) */
+    /* ANIMAÇÃO DO ESCUDO DE PULO (no placar) - ATUALIZADO */
     @keyframes jumpAndBounce {
       0% { transform: translateY(0) scale(1); }
-      25% { transform: translateY(-25px) scale(1.1); }
-      50% { transform: translateY(0) scale(1.05); }
-      75% { transform: translateY(-10px) scale(1.02); }
+      20% { transform: translateY(-30px) scale(1.15); /* Sobe mais, aumenta mais */ }
+      40% { transform: translateY(0) scale(1.08); /* Desce e expande um pouco no impacto */ }
+      60% { transform: translateY(-15px) scale(1.05); /* Pequeno salto secundário */ }
+      80% { transform: translateY(0) scale(1.02); /* Amortecimento final */ }
       100% { transform: translateY(0) scale(1); }
     }
 
     .escudo.jump-animation {
-      animation: jumpAndBounce 0.7s ease-out forwards;
+      animation: jumpAndBounce 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; /* Duração ajustada e curva de animação mais elástica */
     }
 
     /* ESTILOS PARA AS ANIMAÇÕES DE GOOOOL! (posicionadas por time) */
@@ -326,7 +327,7 @@
         width: 70px;
         object-fit: contain;
         display: block; /* O escudo sempre será exibido quando a animação estiver ativa */
-        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
+        filter: drop_shadow(0 0 8px rgba(0, 0, 0, 0.8)); /* Corrigido: drop-shadow */
     }
 
     /* Animação de entrada e saída, ajustada para a nova posição */
@@ -703,11 +704,15 @@
       const goalShield1 = document.getElementById('goalShield1_display');
       const goalShield2 = document.getElementById('goalShield2_display');
 
-      // Reseta todas as animações de gol
+      // Reseta todas as animações de gol e esconde seus escudos
       goalAnimation1.style.visibility = 'hidden';
       goalAnimation1.classList.remove('active');
+      goalShield1.src = 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Reseta a imagem
+      
       goalAnimation2.style.visibility = 'hidden';
       goalAnimation2.classList.remove('active');
+      goalShield2.src = 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Reseta a imagem
+
 
       if (overlayState.activeAnimation === 'goalAnimation1') {
           placarContentWrapper.classList.add('hidden-content');
@@ -790,4 +795,4 @@
     }
   </script>
 </body>
-                </html>
+</html>
