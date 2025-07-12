@@ -283,7 +283,7 @@
         border-width: 2px;
     }
 
-    /* ANIMAÇÃO DO ESCUDO DE PULO (no placar) */
+    /* ANIMAÇÃO DO ESCUDO DE PULO */
     @keyframes jumpAndBounce {
       0% { transform: translateY(0) scale(1); }
       25% { transform: translateY(-25px) scale(1.1); }
@@ -296,7 +296,6 @@
       animation: jumpAndBounce 0.7s ease-out forwards;
     }
 
-    /* ESTILOS PARA A ANIMAÇÃO DE GOOOOL e ESCUDO (central) */
     .animated-text {
       position: absolute;
       top: 50%;
@@ -313,18 +312,6 @@
       pointer-events: none;
       white-space: nowrap;
       font-family: 'Montserrat', sans-serif;
-      display: flex; /* Mudei para flex para alinhar lado a lado */
-      align-items: center; /* Alinha verticalmente */
-      justify-content: center; /* Centraliza horizontalmente */
-      gap: 20px; /* Espaçamento entre texto e escudo - AUMENTADO PARA 20px */
-    }
-
-    .animated-text .goal-shield {
-        height: 70px; /* Tamanho do escudo na animação */
-        width: 70px;
-        object-fit: contain;
-        display: none; /* Escondido por padrão, será exibido via JS */
-        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
     }
 
     @keyframes fadeInScaleOut {
@@ -337,18 +324,18 @@
     }
 
     .animated-text.active {
-      animation: fadeInScaleOut 4.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* TEMPO DE ANIMAÇÃO AUMENTADO PARA 4.2s */
+      animation: fadeInScaleOut 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
     }
 
     /* Media query para telas menores (celulares) para tentar manter o layout responsivo */
     @media (max-width: 768px) {
         .placar-main-line {
-            flex-wrap: wrap;
+            flex-wrap: wrap; /* Permite que os grupos quebrem a linha se necessário */
             justify-content: center;
         }
         .placar-group, .logo-central {
-            min-width: unset;
-            flex-basis: auto;
+            min-width: unset; /* Permite que encolha mais */
+            flex-basis: auto; /* Reajusta base */
             padding: 0 2px;
         }
         .placar-numero {
@@ -361,24 +348,16 @@
         #cronometro_display, #periodoDisplay_display {
             font-size: 16px;
         }
-        .escudo {
+        .escudo { /* Ajusta o escudo dos times para mobile */
             width: 40px;
             height: 40px;
         }
-        .logo-central img {
+        .logo-central img { /* Ajusta a logo central para mobile */
             width: 50px;
             height: 50px;
         }
         .penalty-team-display {
             min-width: unset;
-        }
-        .animated-text {
-            font-size: 50px;
-            gap: 10px; /* Reduz o espaçamento para mobile */
-        }
-        .animated-text .goal-shield {
-            height: 50px;
-            width: 50px;
         }
     }
 
@@ -389,8 +368,7 @@
     <div class="placar" id="placarPrincipal">
       <div class="placar-content-wrapper" id="placarContentWrapper">
         <div class="placar-main-line" id="normalPlacarContent_display">
-          <div class="placar-group timer-period-group">
-              <div id="cronometro_display">00:00</div>
+          <div class="placar-group timer-period-group"> <div id="cronometro_display">00:00</div>
           </div>
 
           <div class="placar-group">
@@ -415,8 +393,7 @@
               <div id="cardsDisplay2_display" class="cards-display"></div>
           </div>
 
-          <div class="placar-group timer-period-group">
-              <div id="periodoDisplay_display" class="periodo">1º T</div>
+          <div class="placar-group timer-period-group"> <div id="periodoDisplay_display" class="periodo">1º T</div>
           </div>
         </div>
 
@@ -437,11 +414,7 @@
         </div>
       </div>
 
-      <div class="animated-text" id="goalAnimation_display">
-        <img id="goalShield1_display" class="goal-shield" src="" alt="Escudo Time 1">
-        GOOOOL!
-        <img id="goalShield2_display" class="goal-shield" src="" alt="Escudo Time 2">
-      </div>
+      <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
     </div>
   </div>
 
@@ -478,8 +451,7 @@
       placarOpacity: 90,
       fontColor: '#E0E0E0',
       penaltyModeActive: false,
-      activeAnimation: null, // Pode ser 'goalAnimation', null
-      lastGoalScoredBy: null, // Novo campo para identificar quem marcou o último gol
+      activeAnimation: null,
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -524,12 +496,6 @@
             if (event.animationName === 'fadeInScaleOut') {
                 goalAnimationElement.style.visibility = 'hidden';
                 goalAnimationElement.classList.remove('active');
-                
-                // Esconde os escudos após a animação
-                document.getElementById('goalShield1_display').style.display = 'none';
-                document.getElementById('goalShield2_display').style.display = 'none';
-
-                // Mostra o placar novamente
                 document.getElementById('placarContentWrapper').classList.remove('hidden-content');
                 document.getElementById('placarContentWrapper').classList.add('visible-content');
             }
@@ -560,15 +526,14 @@
                 overlayState.fontColor = newState.fontColor || '#E0E0E0';
                 overlayState.penaltyModeActive = newState.penaltyModeActive !== undefined ? newState.penaltyModeActive : false;
                 overlayState.activeAnimation = newState.activeAnimation || null;
-                overlayState.lastGoalScoredBy = newState.lastGoalScoredBy || null; // Atualiza o último time a marcar
                 overlayState.currentPeriod = newState.currentPeriod !== undefined ? newState.currentPeriod : 1;
                 overlayState.nome1 = newState.nome1 || '';
                 overlayState.nome2 = newState.nome2 || '';
                 overlayState.nomeAbbr1 = newState.nomeAbbr1 || 'T1';
                 overlayState.nomeAbbr2 = newState.nomeAbbr2 || 'T2';
-                overlayState.escudo1 = newState.escudo1 || ''; // Será a string Base64
-                overlayState.escudo2 = newState.escudo2 || ''; // Será a string Base64
-                overlayState.logoOverlay = newState.logoOverlay || ''; // Será a string Base64
+                overlayState.escudo1 = newState.escudo1 || ''; // Agora é Base64
+                overlayState.escudo2 = newState.escudo2 || ''; // Agora é Base64
+                overlayState.logoOverlay = newState.logoOverlay || ''; // Agora é Base64
                 overlayState.isVisible = newState.isVisible !== undefined ? newState.isVisible : true;
 
                 // *** LÓGICA DO CRONÔMETRO: Sincronização e controle local ***
@@ -588,7 +553,7 @@
                 // RENDERIZA A INTERFACE
                 renderUI();
 
-                // LÓGICA PARA DETECTAR GOL E ANIMAR O ESCUDO NO PLACAR
+                // LÓGICA PARA DETECTAR GOL E ANIMAR O ESCUDO
                 if (overlayState.placar['1'] > previousPlacar1) {
                     triggerShieldJump('1');
                 } else if (overlayState.placar['2'] > previousPlacar2) {
@@ -628,23 +593,27 @@
         }
     }
 
-    // Função para animar o escudo do time no placar principal/pênaltis
+    // Função para animar o escudo do time
     function triggerShieldJump(teamId) {
         const escudoElement = document.getElementById(`escudo${teamId}_display`);
         const escudoPenaltyElement = document.getElementById(`escudoPenalty${teamId}_display`);
 
         if (escudoElement) {
             escudoElement.classList.remove('jump-animation');
-            // Força o reflow para reiniciar a animação
-            void escudoElement.offsetWidth; 
+            void escudoElement.offsetWidth;
             escudoElement.classList.add('jump-animation');
+            setTimeout(() => {
+                escudoElement.classList.remove('jump-animation');
+            }, 700);
         }
 
         if (escudoPenaltyElement) {
             escudoPenaltyElement.classList.remove('jump-animation');
-            // Força o reflow para reiniciar a animação
             void escudoPenaltyElement.offsetWidth;
             escudoPenaltyElement.classList.add('jump-animation');
+            setTimeout(() => {
+                escudoPenaltyElement.classList.remove('jump-animation');
+            }, 700);
         }
     }
 
@@ -681,36 +650,15 @@
       const normalContent = document.getElementById('normalPlacarContent_display');
       const penaltyContent = document.getElementById('penaltyPlacarContent_display');
       const goalAnimation = document.getElementById('goalAnimation_display');
-      const goalShield1 = document.getElementById('goalShield1_display');
-      const goalShield2 = document.getElementById('goalShield2_display');
 
       if (overlayState.activeAnimation === 'goalAnimation') {
           placarContentWrapper.classList.add('hidden-content');
           placarContentWrapper.classList.remove('visible-content');
-          
           goalAnimation.style.visibility = 'visible';
           goalAnimation.classList.add('active');
-
-          // Lógica para mostrar o escudo certo na animação de gol
-          if (overlayState.lastGoalScoredBy === '1') {
-              goalShield1.src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
-              goalShield1.style.display = 'block'; // Mostra o escudo do Time 1
-              goalShield2.style.display = 'none'; // Esconde o escudo do Time 2
-          } else if (overlayState.lastGoalScoredBy === '2') {
-              goalShield2.src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
-              goalShield2.style.display = 'block'; // Mostra o escudo do Time 2
-              goalShield1.style.display = 'none'; // Esconde o escudo do Time 1
-          } else {
-              // Se não soubermos quem marcou, escondemos ambos para o texto puro "GOOOOL!"
-              goalShield1.style.display = 'none';
-              goalShield2.style.display = 'none';
-          }
-
       } else {
           goalAnimation.style.visibility = 'hidden';
           goalAnimation.classList.remove('active');
-          goalShield1.style.display = 'none'; // Garante que os escudos estejam escondidos
-          goalShield2.style.display = 'none'; // Garante que os escudos estejam escondidos
 
           placarContentWrapper.classList.remove('hidden-content');
           placarContentWrapper.classList.add('visible-content');
@@ -778,4 +726,4 @@
     }
   </script>
 </body>
-              </html>
+  </html>
