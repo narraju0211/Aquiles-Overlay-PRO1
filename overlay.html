@@ -313,18 +313,28 @@
       pointer-events: none;
       white-space: nowrap;
       font-family: 'Montserrat', sans-serif;
-      display: flex; /* Para alinhar o texto e o escudo */
-      align-items: center;
-      justify-content: center;
-      gap: 15px; /* Espaçamento entre texto e escudo */
+      /* Ajuste aqui para o escudo na frente */
+      display: block; /* Para que os elementos se empilhem */
+      text-align: center; /* Para centralizar o texto */
+      position: relative; /* Para posicionar os escudos absolutamente dentro dele */
+    }
+
+    .animated-text .goal-text {
+        position: relative;
+        z-index: 9; /* Z-index menor para o texto ficar atrás */
     }
 
     .animated-text .goal-shield {
-        height: 70px; /* Tamanho do escudo na animação */
-        width: 70px;
+        height: 100px; /* Tamanho maior do escudo na animação */
+        width: 100px;
         object-fit: contain;
         display: none; /* Escondido por padrão, será exibido via JS */
         filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
+        position: absolute; /* Posição absoluta para sobrepor */
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Centraliza o escudo */
+        z-index: 10; /* Z-index maior para o escudo ficar na frente */
     }
 
     @keyframes fadeInScaleOut {
@@ -374,11 +384,10 @@
         }
         .animated-text {
             font-size: 50px; /* Reduz o tamanho do texto do gol */
-            gap: 10px;
         }
         .animated-text .goal-shield {
-            height: 50px;
-            width: 50px;
+            height: 70px; /* Ajusta o tamanho do escudo para mobile */
+            width: 70px;
         }
     }
 
@@ -437,8 +446,8 @@
 
       <div class="animated-text" id="goalAnimation_display">
         <img id="goalShield1_display" class="goal-shield" src="" alt="Escudo Time 1">
-        GOOOOL!
         <img id="goalShield2_display" class="goal-shield" src="" alt="Escudo Time 2">
+        <span class="goal-text">GOOOOL!</span>
       </div>
     </div>
   </div>
@@ -681,6 +690,7 @@
       const goalAnimation = document.getElementById('goalAnimation_display');
       const goalShield1 = document.getElementById('goalShield1_display');
       const goalShield2 = document.getElementById('goalShield2_display');
+      const goalText = goalAnimation.querySelector('.goal-text'); // Seleciona o span do texto GOOOOL!
 
       if (overlayState.activeAnimation === 'goalAnimation') {
           placarContentWrapper.classList.add('hidden-content');
