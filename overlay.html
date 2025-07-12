@@ -390,4 +390,340 @@
                   <span id="nomeAbbr2_display" class="team-name-abbr">T2</span>
                   <img id="escudo2_display" class="escudo" src="" alt="Escudo Time 2">
               </div>
-              <div id="cardsDisplay2_display
+              <div id="cardsDisplay2_display" class="cards-display"></div>
+          </div>
+
+          <div class="placar-group timer-period-group"> <div id="periodoDisplay_display" class="periodo">1º T</div>
+          </div>
+        </div>
+
+        <div class="penalty-shootout-placar" id="penaltyPlacarContent_display">
+          <div class="penalty-team-display">
+            <img id="escudoPenalty1_display" class="escudo" src="" alt="Escudo Time 1">
+            <span id="nomePenalty1_display" class="team-name-display">Time 1</span>
+            <div class="penalty-balls-container" id="penaltiesDisplay1_display"></div>
+          </div>
+          <div class="logo-central">
+            <img id="logoOverlayPenalty_display" src="" alt="Sua Logo">
+          </div>
+          <div class="penalty-team-display">
+            <img id="escudoPenalty2_display" class="escudo" src="" alt="Escudo Time 2">
+            <span id="nomePenalty2_display" class="team-name-display">Time 2</span>
+            <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <script>
+    // ** SUAS CONFIGURAÇÕES DO FIREBASE ESTÃO AQUI **
+    const firebaseConfig = {
+      apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
+      authDomain: "aquilesplacarpro.firebaseapp.com",
+      databaseURL: "https://aquilesplacarpro-default-rtdb.firebaseio.com",
+      projectId: "aquilesplacarpro",
+      messagingSenderId: "922321609151",
+      appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
+    };
+
+    // ** ID DO NARRADOR - MUDE ESTE VALOR PARA O MESMO ID USADO NO CONTROLADOR **
+    const NARRATOR_ID = "SEU_ID_UNICO_AQUI"; // <-- MUDE AQUI! Ex: "narradorAquilesLiveFut"
+
+    // Inicialize o Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    let database;
+    let overlayStateRef;
+
+    // Estado local da overlay (refletirá o Firebase, mas o cronômetro é local)
+    let overlayState = {
+      placar: { '1': 0, '2': 0 },
+      cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
+      penalties: { '1': [], '2': [] },
+      seconds: 0,
+      timerRunning: false,
+      placarThemeIndex: 0,
+      placarOpacity: 90,
+      fontColor: '#E0E0E0',
+      penaltyModeActive: false,
+      activeAnimation: null,
+      currentPeriod: 1,
+      nome1: '',
+      nome2: '',
+      nomeAbbr1: 'T1',
+      nomeAbbr2: 'T2',
+      escudo1: '', // Será a string Base64
+      escudo2: '', // Será a string Base64
+      logoOverlay: '', // Será a string Base64
+      isVisible: true
+    };
+
+    let timerInterval = null;
+    let localSeconds = 0;
+
+    // Temas de placar pré-definidos
+    const placarThemes = [
+      { rgb: '34, 34, 34', text: 'white', border: '#555', timerColor: '#0ff' }, /* Default (Escuro) */
+      { rgb: '0, 123, 255', text: 'white', border: '#0056b3', timerColor: '#fff' }, /* Azul */
+      { rgb: '40, 167, 69', text: 'white', border: '#218838', timerColor: '#fff' }, /* Verde */
+      { rgb: '220, 53, 69', text: 'white', border: '#c82333', timerColor: '#fff' }, /* Vermelho */
+      { rgb: '255, 193, 7', text: 'black', border: '#e0a800', timerColor: '#333' } /* Amarelo (texto escuro) */
+    ];
+
+    // Nomes dos períodos do jogo
+    const periodNames = {
+        0: 'Parado',
+        1: '1º T',
+        2: '2º T',
+        3: 'Prorrog',
+        4: 'Int',
+        5: 'T. Extra'
+    };
+
+    document.addEventListener('DOMContentLoaded', initializeApp);
+
+    function initializeApp() {
+        database = app.database();
+        setupFirebaseForNarrator(NARRATOR_ID);
+        
+        const goalAnimationElement = document.getElementById('goalAnimation_display');
+        goalAnimationElement.addEventListener('animationend', (event) => {
+            if (event.animationName === 'fadeInScaleOut') {
+                goalAnimationElement.style.visibility = 'hidden';
+                goalAnimationElement.classList.remove('active');
+                document.getElementById('placarContentWrapper').classList.remove('hidden-content');
+                document.getElementById('placarContentWrapper').classList.add('visible-content');
+            }
+        });
+    }
+
+    // Variáveis para guardar o placar anterior e detectar gol
+    let previousPlacar1 = 0;
+    let previousPlacar2 = 0;
+
+    function setupFirebaseForNarrator(narratorId) {
+        overlayStateRef = database.ref(`narrators/${narratorId}/overlayState`);
+
+        overlayStateRef.on('value', (snapshot) => {
+            if (snapshot.exists()) {
+                const newState = snapshot.val();
+
+                // Guarda o placar atual ANTES de atualizar o estado para detectar mudanças
+                previousPlacar1 = overlayState.placar['1'];
+                previousPlacar2 = overlayState.placar['2'];
+
+                // Mapeia os dados do Firebase para o estado local, garantindo valores padrão
+                overlayState.placar = newState.placar || { '1': 0, '2': 0 };
+                overlayState.cards = newState.cards || { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
+                overlayState.penalties = newState.penalties || { '1': [], '2': [] };
+                overlayState.placarThemeIndex = newState.placarThemeIndex !== undefined ? newState.placarThemeIndex : 0;
+                overlayState.placarOpacity = newState.placarOpacity !== undefined ? newState.placarOpacity : 90;
+                overlayState.fontColor = newState.fontColor || '#E0E0E0';
+                overlayState.penaltyModeActive = newState.penaltyModeActive !== undefined ? newState.penaltyModeActive : false;
+                overlayState.activeAnimation = newState.activeAnimation || null;
+                overlayState.currentPeriod = newState.currentPeriod !== undefined ? newState.currentPeriod : 1;
+                overlayState.nome1 = newState.nome1 || '';
+                overlayState.nome2 = newState.nome2 || '';
+                overlayState.nomeAbbr1 = newState.nomeAbbr1 || 'T1';
+                overlayState.nomeAbbr2 = newState.nomeAbbr2 || 'T2';
+                overlayState.escudo1 = newState.escudo1 || ''; // Agora é Base64
+                overlayState.escudo2 = newState.escudo2 || ''; // Agora é Base64
+                overlayState.logoOverlay = newState.logoOverlay || ''; // Agora é Base64
+                overlayState.isVisible = newState.isVisible !== undefined ? newState.isVisible : true;
+
+                // *** LÓGICA DO CRONÔMETRO: Sincronização e controle local ***
+                const firebaseSeconds = newState.seconds !== undefined ? newState.seconds : 0;
+                const firebaseTimerRunning = newState.timerRunning !== undefined ? newState.timerRunning : false;
+
+                if (firebaseTimerRunning && !overlayState.timerRunning) {
+                    startLocalTimer(firebaseSeconds);
+                } else if (!firebaseTimerRunning && overlayState.timerRunning) {
+                    stopLocalTimer();
+                    localSeconds = firebaseSeconds;
+                } else if (!firebaseTimerRunning && !overlayState.timerRunning && localSeconds !== firebaseSeconds) {
+                    localSeconds = firebaseSeconds;
+                }
+                overlayState.timerRunning = firebaseTimerRunning;
+
+                // RENDERIZA A INTERFACE
+                renderUI();
+
+                // LÓGICA PARA DETECTAR GOL E ANIMAR O ESCUDO
+                if (overlayState.placar['1'] > previousPlacar1) {
+                    triggerShieldJump('1');
+                } else if (overlayState.placar['2'] > previousPlacar2) {
+                    triggerShieldJump('2');
+                }
+
+            } else {
+                console.warn(`Nó para narrador '${narratorId}' não encontrado no Firebase. Aguardando dados do controlador.`);
+                document.getElementById('placarPrincipal').innerHTML = `<div style="color: red; font-size: 20px; text-align: center; padding: 20px;">
+                    Nenhum dado encontrado para o ID "${narratorId}".<br>
+                    Verifique se o ID está correto ou se o controlador está ativo.
+                </div>`;
+            }
+        }, (error) => {
+          console.error("Erro ao ler dados do Firebase:", error);
+          document.getElementById('placarPrincipal').innerHTML = '<div style="color: red; font-size: 24px; text-align: center; padding: 20px;">ERRO DE CONEXÃO COM FIREBASE.<br>Verifique sua configuração ou conexão com a internet.</div>';
+        });
+    }
+
+    // Função para iniciar o cronômetro localmente
+    function startLocalTimer(initialSeconds) {
+        if (timerInterval) clearInterval(timerInterval);
+        localSeconds = initialSeconds;
+        document.getElementById('cronometro_display').innerText = formatTime(localSeconds);
+
+        timerInterval = setInterval(() => {
+            localSeconds++;
+            document.getElementById('cronometro_display').innerText = formatTime(localSeconds);
+        }, 1000);
+    }
+
+    // Função para parar o cronômetro localmente
+    function stopLocalTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+
+    // Função para animar o escudo do time
+    function triggerShieldJump(teamId) {
+        const escudoElement = document.getElementById(`escudo${teamId}_display`);
+        const escudoPenaltyElement = document.getElementById(`escudoPenalty${teamId}_display`);
+
+        if (escudoElement) {
+            escudoElement.classList.remove('jump-animation');
+            void escudoElement.offsetWidth;
+            escudoElement.classList.add('jump-animation');
+            setTimeout(() => {
+                escudoElement.classList.remove('jump-animation');
+            }, 700);
+        }
+
+        if (escudoPenaltyElement) {
+            escudoPenaltyElement.classList.remove('jump-animation');
+            void escudoPenaltyElement.offsetWidth;
+            escudoPenaltyElement.classList.add('jump-animation');
+            setTimeout(() => {
+                escudoPenaltyElement.classList.remove('jump-animation');
+            }, 700);
+        }
+    }
+
+    // Renderiza a interface do usuário com base no estado `overlayState`
+    function renderUI() {
+      document.getElementById('placar1_display').innerText = overlayState.placar['1'];
+      document.getElementById('placar2_display').innerText = overlayState.placar['2'];
+      document.getElementById('nomeAbbr1_display').innerText = overlayState.nomeAbbr1 || 'T1';
+      document.getElementById('nomeAbbr2_display').innerText = overlayState.nomeAbbr2 || 'T2';
+      document.getElementById('nomePenalty1_display').innerText = overlayState.nome1 || 'Time 1';
+      document.getElementById('nomePenalty2_display').innerText = overlayState.nome2 || 'Time 2';
+
+      // Define as fontes dos escudos e logos usando as strings Base64
+      document.getElementById('escudo1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+      document.getElementById('escudoPenalty1_display').src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+      document.getElementById('escudo2_display').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+      document.getElementById('escudoPenalty2_display').src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+
+      document.getElementById('logoOverlay_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+      document.getElementById('logoOverlayPenalty_display').src = overlayState.logoOverlay || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+
+      document.getElementById('cronometro_display').innerText = formatTime(localSeconds);
+      renderCards('1');
+      renderCards('2');
+      document.getElementById('periodoDisplay_display').innerText = periodNames[overlayState.currentPeriod] || 'N/A';
+      renderPenalties('1');
+      renderPenalties('2');
+      applyPlacarTheme();
+
+      document.documentElement.style.setProperty('--placar-text', overlayState.fontColor);
+      document.documentElement.style.setProperty('--highlight-color', overlayState.fontColor);
+
+      const placarContentWrapper = document.getElementById('placarContentWrapper');
+      const normalContent = document.getElementById('normalPlacarContent_display');
+      const penaltyContent = document.getElementById('penaltyPlacarContent_display');
+      const goalAnimation = document.getElementById('goalAnimation_display');
+
+      if (overlayState.activeAnimation === 'goalAnimation') {
+          placarContentWrapper.classList.add('hidden-content');
+          placarContentWrapper.classList.remove('visible-content');
+          goalAnimation.style.visibility = 'visible';
+          goalAnimation.classList.add('active');
+      } else {
+          goalAnimation.style.visibility = 'hidden';
+          goalAnimation.classList.remove('active');
+
+          placarContentWrapper.classList.remove('hidden-content');
+          placarContentWrapper.classList.add('visible-content');
+
+          if (overlayState.penaltyModeActive) {
+              normalContent.style.display = 'none';
+              penaltyContent.style.display = 'flex';
+          } else {
+              normalContent.style.display = 'flex';
+              penaltyContent.style.display = 'none';
+          }
+      }
+
+      const visualContainer = document.getElementById('visualOverlayContainer');
+      if (overlayState.isVisible) {
+        visualContainer.classList.remove('hidden-display');
+      } else {
+        visualContainer.classList.add('hidden-display');
+      }
+    }
+
+    function formatTime(s) {
+      const min = String(Math.floor(s / 60)).padStart(2, '0');
+      const sec = String(s % 60).padStart(2, '0');
+      return `${min}:${sec}`;
+    }
+
+    function applyPlacarTheme() {
+      const theme = placarThemes[overlayState.placarThemeIndex];
+      document.documentElement.style.setProperty('--placar-bg-rgb', theme.rgb);
+      document.documentElement.style.setProperty('--placar-opacity', (overlayState.placarOpacity / 100).toFixed(2));
+      document.documentElement.style.setProperty('--placar-border', theme.border);
+      document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
+    }
+
+    function renderCards(time) {
+      const displayElement = document.getElementById(`cardsDisplay${time}_display`);
+      displayElement.innerHTML = '';
+      const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
+      const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
+
+      for (let i = 0; i < amarelos; i++) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-indicator yellow-card';
+        displayElement.appendChild(cardDiv);
+      }
+      for (let i = 0; i < vermelhos; i++) {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-indicator red-card';
+        displayElement.appendChild(cardDiv);
+      }
+    }
+
+    function renderPenalties(time) {
+      const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
+      penaltyBallsContainer.innerHTML = '';
+
+      const penalties = overlayState.penalties && Array.isArray(overlayState.penalties[time]) ? overlayState.penalties[time] : [];
+
+      penalties.forEach(result => {
+        const ballDiv = document.createElement('div');
+        ballDiv.className = `penalty-ball ${result}`;
+        penaltyBallsContainer.appendChild(ballDiv);
+      });
+    }
+  </script>
+</body>
+</html>
