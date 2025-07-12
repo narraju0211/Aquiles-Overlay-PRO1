@@ -66,32 +66,7 @@
             min-width: 150px;
         }
         
-        .file-upload-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        .file-upload-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .upload-button {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            border: none;
-            font-size: 1em;
-            text-align: center;
-            display: inline-block;
-        }
+        /* Removido .file-upload-wrapper, .upload-button, etc. */
 
         .button {
             background-color: #27ae60;
@@ -184,6 +159,30 @@
             min-width: 40px;
             text-align: right;
         }
+
+        .image-url-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .image-url-group label {
+            flex-basis: 100%; /* Força a label para a própria linha em telas menores */
+            text-align: left;
+        }
+        .image-url-group input[type="text"] {
+            flex-grow: 1;
+            min-width: 250px; /* Garante largura mínima para o campo URL */
+        }
+        .image-url-group img {
+            height: 50px;
+            width: 50px;
+            object-fit: contain;
+            background: #eee;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -211,31 +210,31 @@
             <input type="text" id="team1Name" class="input-field" placeholder="Ex: Grêmio">
             <label for="team1Abbr">Time 1 (Abreviatura):</label>
             <input type="text" id="team1Abbr" class="input-field" placeholder="Ex: GRE" maxlength="4">
-            <div class="file-upload-wrapper">
-                <button class="upload-button">Upload Escudo 1</button>
-                <input type="file" id="team1Escudo" accept="image/*">
-            </div>
+        </div>
+        <div class="image-url-group">
+            <label for="team1EscudoURL">URL do Escudo 1:</label>
+            <input type="text" id="team1EscudoURL" class="input-field" placeholder="Cole a URL direta da imagem (ex: .png, .jpg)">
             <img id="previewEscudo1" src="" alt="Preview Escudo 1" style="height: 50px; width: 50px; object-fit: contain; background: #eee; border-radius: 5px;">
         </div>
+
         <div class="team-input-group">
             <label for="team2Name">Time 2 (Nome Completo):</label>
             <input type="text" id="team2Name" class="input-field" placeholder="Ex: Internacional">
             <label for="team2Abbr">Time 2 (Abreviatura):</label>
             <input type="text" id="team2Abbr" class="input-field" placeholder="Ex: INT" maxlength="4">
-            <div class="file-upload-wrapper">
-                <button class="upload-button">Upload Escudo 2</button>
-                <input type="file" id="team2Escudo" accept="image/*">
-            </div>
+        </div>
+        <div class="image-url-group">
+            <label for="team2EscudoURL">URL do Escudo 2:</label>
+            <input type="text" id="team2EscudoURL" class="input-field" placeholder="Cole a URL direta da imagem (ex: .png, .jpg)">
             <img id="previewEscudo2" src="" alt="Preview Escudo 2" style="height: 50px; width: 50px; object-fit: contain; background: #eee; border-radius: 5px;">
         </div>
-        <div class="team-input-group">
-            <label for="overlayLogo">Logo Central (Overlay):</label>
-            <div class="file-upload-wrapper">
-                <button class="upload-button">Upload Logo</button>
-                <input type="file" id="overlayLogo" accept="image/*">
-            </div>
+
+        <div class="image-url-group">
+            <label for="overlayLogoURL">URL da Logo Central (Overlay):</label>
+            <input type="text" id="overlayLogoURL" class="input-field" placeholder="Cole a URL direta da imagem da logo">
             <img id="previewLogoOverlay" src="" alt="Preview Logo" style="height: 50px; width: 50px; object-fit: contain; background: #eee; border-radius: 5px;">
         </div>
+        
         <button class="button blue" id="updateTeamNamesLogosBtn">Atualizar Nomes e Logos</button>
     </div>
 
@@ -267,8 +266,7 @@
                 </div>
             </div>
         </div>
-        <button class="button purple" id="playGoalAnimationBtn">Animação GOOOOL!</button>
-    </div>
+        </div>
 
     <div class="container">
         <h2 class="section-title">Cronômetro e Período</h2>
@@ -350,8 +348,6 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
     <script>
         // ** SUAS CONFIGURAÇÕES DO FIREBASE ESTÃO AQUI **
         const firebaseConfig = {
@@ -359,7 +355,7 @@
           authDomain: "aquilesplacarpro.firebaseapp.com",
           databaseURL: "https://aquilesplacarpro-default-rtdb.firebaseio.com",
           projectId: "aquilesplacarpro",
-          storageBucket: "aquilesplacarpro.firebasestorage.app",
+          // storageBucket: "aquilesplacarpro.firebasestorage.app", // REMOVIDO OU COMENTADO
           messagingSenderId: "922321609151",
           appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
         };
@@ -370,7 +366,7 @@
         // Inicializa o Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = app.database();
-        const storage = app.storage();
+        // REMOVIDO: const storage = app.storage();
         const overlayStateRef = database.ref(`narrators/${NARRATOR_ID}/overlayState`);
 
         document.getElementById('displayNarratorId').innerText = NARRATOR_ID;
@@ -386,15 +382,15 @@
             placarOpacity: 90,
             fontColor: '#E0E0E0',
             penaltyModeActive: false,
-            activeAnimation: null,
+            activeAnimation: null, // Para a animação de gol
             currentPeriod: 1,
             nome1: '',
             nome2: '',
             nomeAbbr1: 'T1',
             nomeAbbr2: 'T2',
-            escudo1: '',
-            escudo2: '',
-            logoOverlay: '',
+            escudo1: '', // Será uma URL direta
+            escudo2: '', // Será uma URL direta
+            logoOverlay: '', // Será uma URL direta
             isVisible: true
         };
 
@@ -406,7 +402,6 @@
         }
 
         // Listener para atualizar a UI do controlador com base no Firebase
-        // Isso garante que se você abrir o controlador em outro lugar, ele sincronize.
         overlayStateRef.on('value', (snapshot) => {
             if (snapshot.exists()) {
                 currentState = snapshot.val();
@@ -427,17 +422,16 @@
 
             document.getElementById('team1Name').value = currentState.nome1;
             document.getElementById('team1Abbr').value = currentState.nomeAbbr1;
-            // Carrega o preview se a URL já existe
+            document.getElementById('team1EscudoURL').value = currentState.escudo1; // Atualiza o campo URL
             document.getElementById('previewEscudo1').src = currentState.escudo1 || '';
 
             document.getElementById('team2Name').value = currentState.nome2;
             document.getElementById('team2Abbr').value = currentState.nomeAbbr2;
-            // Carrega o preview se a URL já existe
+            document.getElementById('team2EscudoURL').value = currentState.escudo2; // Atualiza o campo URL
             document.getElementById('previewEscudo2').src = currentState.escudo2 || '';
             
-            // Carrega o preview se a URL já existe
+            document.getElementById('overlayLogoURL').value = currentState.logoOverlay; // Atualiza o campo URL
             document.getElementById('previewLogoOverlay').src = currentState.logoOverlay || '';
-
 
             document.getElementById('periodSelect').value = currentState.currentPeriod;
             document.getElementById('penaltyModeToggle').checked = currentState.penaltyModeActive;
@@ -458,28 +452,6 @@
             0: 'Parado', 1: '1º T', 2: '2º T', 3: 'Prorrog', 4: 'Int', 5: 'T. Extra'
         };
 
-        async function uploadImage(file, path) {
-            if (!file) {
-                console.warn("Nenhum arquivo selecionado para upload.");
-                return null;
-            }
-            const storageRef = storage.ref();
-            // Para garantir nomes únicos e evitar cache, adicione um timestamp
-            const uniqueFileName = `${Date.now()}-${file.name}`;
-            const imageRef = storageRef.child(`${NARRATOR_ID}/${path}/${uniqueFileName}`);
-            try {
-                const snapshot = await imageRef.put(file);
-                const downloadURL = await snapshot.ref.getDownloadURL();
-                console.log(`Imagem '${file.name}' enviada com sucesso! URL: ${downloadURL}`);
-                alert(`Imagem '${file.name}' enviada com sucesso!`);
-                return downloadURL;
-            } catch (error) {
-                console.error("Erro ao fazer upload da imagem:", error);
-                alert("Erro ao fazer upload da imagem. Verifique o console para detalhes.");
-                return null;
-            }
-        }
-
         // --- Event Listeners ---
 
         // Visibilidade
@@ -488,67 +460,37 @@
             writeStateToFirebase(currentState);
         });
 
-        // Atualizar Nomes e Logos
+        // Atualizar Nomes e Logos (agora pegando URLs de campos de texto)
         document.getElementById('updateTeamNamesLogosBtn').addEventListener('click', async () => {
             currentState.nome1 = document.getElementById('team1Name').value;
             currentState.nomeAbbr1 = document.getElementById('team1Abbr').value;
             currentState.nome2 = document.getElementById('team2Name').value;
             currentState.nomeAbbr2 = document.getElementById('team2Abbr').value;
 
-            const escudo1File = document.getElementById('team1Escudo').files[0];
-            if (escudo1File) {
-                currentState.escudo1 = await uploadImage(escudo1File, 'escudos/time1');
-            }
-            const escudo2File = document.getElementById('team2Escudo').files[0];
-            if (escudo2File) {
-                currentState.escudo2 = await uploadImage(escudo2File, 'escudos/time2');
-            }
-            const logoOverlayFile = document.getElementById('overlayLogo').files[0];
-            if (logoOverlayFile) {
-                currentState.logoOverlay = await uploadImage(logoOverlayFile, 'logos');
-            }
+            // Pega as URLs dos campos de texto
+            currentState.escudo1 = document.getElementById('team1EscudoURL').value;
+            currentState.escudo2 = document.getElementById('team2EscudoURL').value;
+            currentState.logoOverlay = document.getElementById('overlayLogoURL').value;
             
             writeStateToFirebase(currentState);
         });
 
-        // Previews de Imagem
-        document.getElementById('team1Escudo').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) document.getElementById('previewEscudo1').src = URL.createObjectURL(file);
+        // Previews de Imagem ao colar URL
+        document.getElementById('team1EscudoURL').addEventListener('input', (e) => {
+            document.getElementById('previewEscudo1').src = e.target.value;
         });
-        document.getElementById('team2Escudo').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) document.getElementById('previewEscudo2').src = URL.createObjectURL(file);
+        document.getElementById('team2EscudoURL').addEventListener('input', (e) => {
+            document.getElementById('previewEscudo2').src = e.target.value;
         });
-        document.getElementById('overlayLogo').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) document.getElementById('previewLogoOverlay').src = URL.createObjectURL(file);
+        document.getElementById('overlayLogoURL').addEventListener('input', (e) => {
+            document.getElementById('previewLogoOverlay').src = e.target.value;
         });
 
-        // Placar
+        // Placar - Agora com animação de gol
         document.getElementById('score1Plus').addEventListener('click', () => {
             currentState.placar['1']++;
+            currentState.activeAnimation = 'goalAnimation'; // Ativa animação
             writeStateToFirebase(currentState);
-        });
-        document.getElementById('score1Minus').addEventListener('click', () => {
-            currentState.placar['1'] = Math.max(0, currentState.placar['1'] - 1);
-            writeStateToFirebase(currentState);
-        });
-        document.getElementById('score2Plus').addEventListener('click', () => {
-            currentState.placar['2']++;
-            writeStateToFirebase(currentState);
-        });
-        document.getElementById('score2Minus').addEventListener('click', () => {
-            currentState.placar['2'] = Math.max(0, currentState.placar['2'] - 1);
-            writeStateToFirebase(currentState);
-        });
-
-        // Animação de Gol
-        document.getElementById('playGoalAnimationBtn').addEventListener('click', () => {
-            // Define a animação ativa, a overlay vai detectar e tocar
-            currentState.activeAnimation = 'goalAnimation';
-            writeStateToFirebase(currentState);
-
             // Reseta a animação após um tempo (um pouco mais que a duração da animação no CSS)
             setTimeout(() => {
                 if (currentState.activeAnimation === 'goalAnimation') {
@@ -557,6 +499,28 @@
                 }
             }, 2500); // Duração da animação é 2.2s + um pequeno buffer
         });
+        document.getElementById('score1Minus').addEventListener('click', () => {
+            currentState.placar['1'] = Math.max(0, currentState.placar['1'] - 1);
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('score2Plus').addEventListener('click', () => {
+            currentState.placar['2']++;
+            currentState.activeAnimation = 'goalAnimation'; // Ativa animação
+            writeStateToFirebase(currentState);
+            // Reseta a animação após um tempo (um pouco mais que a duração da animação no CSS)
+            setTimeout(() => {
+                if (currentState.activeAnimation === 'goalAnimation') {
+                    currentState.activeAnimation = null;
+                    writeStateToFirebase(currentState);
+                }
+            }, 2500); // Duração da animação é 2.2s + um pequeno buffer
+        });
+        document.getElementById('score2Minus').addEventListener('click', () => {
+            currentState.placar['2'] = Math.max(0, currentState.placar['2'] - 1);
+            writeStateToFirebase(currentState);
+        });
+
+        // REMOVIDO: document.getElementById('playGoalAnimationBtn').addEventListener('click', ...);
 
         // Cartões
         document.getElementById('card1Yellow').addEventListener('click', () => {
@@ -630,7 +594,6 @@
             } else if (resultType === 'clear') {
                 currentState.penalties[teamId] = []; // Limpa tudo
             } else {
-                // Não há mais limite de 5 pênaltis
                 currentState.penalties[teamId].push(resultType); // 'green' ou 'red'
             }
             writeStateToFirebase(currentState);
@@ -645,7 +608,6 @@
         document.getElementById('penalty2Miss').addEventListener('click', () => handlePenalty('2', 'red'));
         document.getElementById('penalty2Undo').addEventListener('click', () => handlePenalty('2', 'undo'));
         document.getElementById('penalty2ClearAll').addEventListener('click', () => handlePenalty('2', 'clear'));
-
 
         // Temas e Cores
         document.getElementById('applyTheme').addEventListener('click', () => {
@@ -665,4 +627,4 @@
         });
     </script>
 </body>
-        </html>
+</html>
