@@ -283,7 +283,7 @@
         border-width: 2px;
     }
 
-    /* ANIMAÇÃO DO ESCUDO DE PULO */
+    /* ANIMAÇÃO DO ESCUDO DE PULO (no placar) */
     @keyframes jumpAndBounce {
       0% { transform: translateY(0) scale(1); }
       25% { transform: translateY(-25px) scale(1.1); }
@@ -296,6 +296,7 @@
       animation: jumpAndBounce 0.7s ease-out forwards;
     }
 
+    /* ESTILOS PARA A ANIMAÇÃO DE GOOOOL e ESCUDO (central) */
     .animated-text {
       position: absolute;
       top: 50%;
@@ -312,6 +313,18 @@
       pointer-events: none;
       white-space: nowrap;
       font-family: 'Montserrat', sans-serif;
+      display: flex; /* Para alinhar o texto e o escudo */
+      align-items: center;
+      justify-content: center;
+      gap: 15px; /* Espaçamento entre texto e escudo */
+    }
+
+    .animated-text .goal-shield {
+        height: 70px; /* Tamanho do escudo na animação */
+        width: 70px;
+        object-fit: contain;
+        display: none; /* Escondido por padrão, será exibido via JS */
+        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
     }
 
     @keyframes fadeInScaleOut {
@@ -358,6 +371,14 @@
         }
         .penalty-team-display {
             min-width: unset;
+        }
+        .animated-text {
+            font-size: 50px; /* Reduz o tamanho do texto do gol */
+            gap: 10px;
+        }
+        .animated-text .goal-shield {
+            height: 50px;
+            width: 50px;
         }
     }
 
@@ -414,7 +435,11 @@
         </div>
       </div>
 
-      <div class="animated-text" id="goalAnimation_display">GOOOOL!</div>
+      <div class="animated-text" id="goalAnimation_display">
+        <img id="goalShield1_display" class="goal-shield" src="" alt="Escudo Time 1">
+        GOOOOL!
+        <img id="goalShield2_display" class="goal-shield" src="" alt="Escudo Time 2">
+      </div>
     </div>
   </div>
 
@@ -451,7 +476,8 @@
       placarOpacity: 90,
       fontColor: '#E0E0E0',
       penaltyModeActive: false,
-      activeAnimation: null,
+      activeAnimation: null, // Pode ser 'goalAnimation', null
+      lastGoalScoredBy: null, // Novo campo para identificar quem marcou o último gol
       currentPeriod: 1,
       nome1: '',
       nome2: '',
@@ -496,6 +522,12 @@
             if (event.animationName === 'fadeInScaleOut') {
                 goalAnimationElement.style.visibility = 'hidden';
                 goalAnimationElement.classList.remove('active');
+                
+                // Esconde os escudos após a animação
+                document.getElementById('goalShield1_display').style.display = 'none';
+                document.getElementById('goalShield2_display').style.display = 'none';
+
+                // Mostra o placar novamente
                 document.getElementById('placarContentWrapper').classList.remove('hidden-content');
                 document.getElementById('placarContentWrapper').classList.add('visible-content');
             }
@@ -526,6 +558,7 @@
                 overlayState.fontColor = newState.fontColor || '#E0E0E0';
                 overlayState.penaltyModeActive = newState.penaltyModeActive !== undefined ? newState.penaltyModeActive : false;
                 overlayState.activeAnimation = newState.activeAnimation || null;
+                overlayState.lastGoalScoredBy = newState.lastGoalScoredBy || null; // Atualiza o último time a marcar
                 overlayState.currentPeriod = newState.currentPeriod !== undefined ? newState.currentPeriod : 1;
                 overlayState.nome1 = newState.nome1 || '';
                 overlayState.nome2 = newState.nome2 || '';
@@ -553,7 +586,7 @@
                 // RENDERIZA A INTERFACE
                 renderUI();
 
-                // LÓGICA PARA DETECTAR GOL E ANIMAR O ESCUDO
+                // LÓGICA PARA DETECTAR GOL E ANIMAR O ESCUDO NO PLACAR
                 if (overlayState.placar['1'] > previousPlacar1) {
                     triggerShieldJump('1');
                 } else if (overlayState.placar['2'] > previousPlacar2) {
@@ -593,7 +626,7 @@
         }
     }
 
-    // Função para animar o escudo do time
+    // Função para animar o escudo do time no placar principal/pênaltis
     function triggerShieldJump(teamId) {
         const escudoElement = document.getElementById(`escudo${teamId}_display`);
         const escudoPenaltyElement = document.getElementById(`escudoPenalty${teamId}_display`);
@@ -646,15 +679,36 @@
       const normalContent = document.getElementById('normalPlacarContent_display');
       const penaltyContent = document.getElementById('penaltyPlacarContent_display');
       const goalAnimation = document.getElementById('goalAnimation_display');
+      const goalShield1 = document.getElementById('goalShield1_display');
+      const goalShield2 = document.getElementById('goalShield2_display');
 
       if (overlayState.activeAnimation === 'goalAnimation') {
           placarContentWrapper.classList.add('hidden-content');
           placarContentWrapper.classList.remove('visible-content');
+          
           goalAnimation.style.visibility = 'visible';
           goalAnimation.classList.add('active');
+
+          // Lógica para mostrar o escudo certo na animação de gol
+          if (overlayState.lastGoalScoredBy === '1') {
+              goalShield1.src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+              goalShield1.style.display = 'block'; // Mostra o escudo do Time 1
+              goalShield2.style.display = 'none'; // Esconde o escudo do Time 2
+          } else if (overlayState.lastGoalScoredBy === '2') {
+              goalShield2.src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+              goalShield2.style.display = 'block'; // Mostra o escudo do Time 2
+              goalShield1.style.display = 'none'; // Esconde o escudo do Time 1
+          } else {
+              // Se não soubermos quem marcou, escondemos ambos para o texto puro "GOOOOL!"
+              goalShield1.style.display = 'none';
+              goalShield2.style.display = 'none';
+          }
+
       } else {
           goalAnimation.style.visibility = 'hidden';
           goalAnimation.classList.remove('active');
+          goalShield1.style.display = 'none'; // Garante que os escudos estejam escondidos
+          goalShield2.style.display = 'none'; // Garante que os escudos estejam escondidos
 
           placarContentWrapper.classList.remove('hidden-content');
           placarContentWrapper.classList.add('visible-content');
