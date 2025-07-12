@@ -311,7 +311,7 @@
         opacity: 0;
         visibility: hidden;
         animation-fill-mode: forwards;
-        z-index: 1000;
+        z-index: 1000; /* Z-index alto para garantir que apareça sobre outros elementos */
         pointer-events: none;
         white-space: nowrap;
         font-family: 'Montserrat', sans-serif;
@@ -327,7 +327,7 @@
         width: 70px;
         object-fit: contain;
         display: block; /* O escudo sempre será exibido quando a animação estiver ativa */
-        filter: drop_shadow(0 0 8px rgba(0, 0, 0, 0.8)); /* Corrigido: drop-shadow */
+        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8)); /* Corrigido de drop_shadow para drop-shadow */
     }
 
     /* Animação de entrada e saída, ajustada para a nova posição */
@@ -449,7 +449,7 @@
           </div>
         </div>
       </div>
-      </div>
+    </div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -533,6 +533,7 @@
                 if (event.animationName === 'fadeInScaleAndFadeOut') {
                     goalAnimation1.style.visibility = 'hidden';
                     goalAnimation1.classList.remove('active');
+                    // Garante que o placar principal seja reexibido após a animação
                     document.getElementById('placarContentWrapper').classList.remove('hidden-content');
                     document.getElementById('placarContentWrapper').classList.add('visible-content');
                 }
@@ -546,6 +547,7 @@
                 if (event.animationName === 'fadeInScaleAndFadeOut') {
                     goalAnimation2.style.visibility = 'hidden';
                     goalAnimation2.classList.remove('active');
+                    // Garante que o placar principal seja reexibido após a animação
                     document.getElementById('placarContentWrapper').classList.remove('hidden-content');
                     document.getElementById('placarContentWrapper').classList.add('visible-content');
                 }
@@ -606,6 +608,7 @@
                 renderUI();
 
                 // LÓGICA PARA DETECTAR GOL E ANIMAR O ESCUDO NO PLACAR PRINCIPAL
+                // A animação de "GOOOOL!" é ativada dentro do renderUI
                 if (overlayState.placar['1'] > previousPlacar1) {
                     triggerShieldJump('1');
                 } else if (overlayState.placar['2'] > previousPlacar2) {
@@ -704,31 +707,34 @@
       const goalShield1 = document.getElementById('goalShield1_display');
       const goalShield2 = document.getElementById('goalShield2_display');
 
-      // Reseta todas as animações de gol e esconde seus escudos
+      // Reseta todas as animações de gol e esconde seus escudos para evitar sobreposição ou flashes
       goalAnimation1.style.visibility = 'hidden';
       goalAnimation1.classList.remove('active');
-      goalShield1.src = 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Reseta a imagem
+      goalShield1.src = 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Reseta a imagem para um transparente
       
       goalAnimation2.style.visibility = 'hidden';
       goalAnimation2.classList.remove('active');
-      goalShield2.src = 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Reseta a imagem
+      goalShield2.src = 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Reseta a imagem para um transparente
 
 
       if (overlayState.activeAnimation === 'goalAnimation1') {
+          // Esconde o placar principal e mostra a animação do Time 1
           placarContentWrapper.classList.add('hidden-content');
           placarContentWrapper.classList.remove('visible-content');
           
           goalAnimation1.style.visibility = 'visible';
           goalAnimation1.classList.add('active');
-          goalShield1.src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Garante que o escudo correto é exibido
+          goalShield1.src = overlayState.escudo1 || 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Define o escudo do Time 1
       } else if (overlayState.activeAnimation === 'goalAnimation2') {
+          // Esconde o placar principal e mostra a animação do Time 2
           placarContentWrapper.classList.add('hidden-content');
           placarContentWrapper.classList.remove('visible-content');
           
           goalAnimation2.style.visibility = 'visible';
           goalAnimation2.classList.add('active');
-          goalShield2.src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Garante que o escudo correto é exibido
+          goalShield2.src = overlayState.escudo2 || 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Define o escudo do Time 2
       } else {
+          // Nenhuma animação de gol ativa, mostra o placar (normal ou pênaltis)
           placarContentWrapper.classList.remove('hidden-content');
           placarContentWrapper.classList.add('visible-content');
 
