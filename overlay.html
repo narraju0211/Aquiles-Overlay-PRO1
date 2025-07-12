@@ -155,7 +155,8 @@
       object-fit: contain;
       flex-shrink: 0;
       filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
-      transition: transform 0.2s ease-out;
+      /* TRANSITION REMOVIDA: Era para a animação de pulo do escudo */
+      /* transition: transform 0.2s ease-out; */
     }
     .placar-numero {
       font-size: 38px;
@@ -284,19 +285,21 @@
         border-width: 2px;
     }
 
-    /* ANIMAÇÃO DO ESCUDO DE PULO (no placar) - ATUALIZADO */
+    /* ANIMAÇÃO DO ESCUDO DE PULO (no placar) - REMOVIDA */
+    /*
     @keyframes jumpAndBounce {
       0% { transform: translateY(0) scale(1); }
-      20% { transform: translateY(-30px) scale(1.15); /* Sobe mais, aumenta mais */ }
-      40% { transform: translateY(0) scale(1.08); /* Desce e expande um pouco no impacto */ }
-      60% { transform: translateY(-15px) scale(1.05); /* Pequeno salto secundário */ }
-      80% { transform: translateY(0) scale(1.02); /* Amortecimento final */ }
+      20% { transform: translateY(-30px) scale(1.15); }
+      40% { transform: translateY(0) scale(1.08); }
+      60% { transform: translateY(-15px) scale(1.05); }
+      80% { transform: translateY(0) scale(1.02); }
       100% { transform: translateY(0) scale(1); }
     }
 
     .escudo.jump-animation {
-      animation: jumpAndBounce 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; /* Duração ajustada e curva de animação mais elástica */
+      animation: jumpAndBounce 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
     }
+    */
 
     /* ESTILOS PARA AS ANIMAÇÕES DE GOOOOL! (posicionadas por time) */
     .goal-animation-team {
@@ -327,7 +330,7 @@
         width: 70px;
         object-fit: contain;
         display: block; /* O escudo sempre será exibido quando a animação estiver ativa */
-        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8)); /* Corrigido de drop_shadow para drop-shadow */
+        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.8));
     }
 
     /* Animação de entrada e saída, ajustada para a nova posição */
@@ -607,13 +610,16 @@
                 // RENDERIZA A INTERFACE
                 renderUI();
 
-                // LÓGICA PARA DETECTAR GOL E ANIMAR O ESCUDO NO PLACAR PRINCIPAL
+                // LÓGICA PARA DETECTAR GOL
                 // A animação de "GOOOOL!" é ativada dentro do renderUI
+                // ANIMAÇÃO DE PULO DO ESCUDO REMOVIDA DAQUI
+                /*
                 if (overlayState.placar['1'] > previousPlacar1) {
                     triggerShieldJump('1');
                 } else if (overlayState.placar['2'] > previousPlacar2) {
                     triggerShieldJump('2');
                 }
+                */
 
             } else {
                 console.warn(`Nó para narrador '${narratorId}' não encontrado no Firebase. Aguardando dados do controlador.`);
@@ -648,7 +654,8 @@
         }
     }
 
-    // Função para animar o escudo do time no placar principal/pênaltis
+    // Função para animar o escudo do time no placar principal/pênaltis - FUNÇÃO REMOVIDA
+    /*
     function triggerShieldJump(teamId) {
         const escudoElement = document.getElementById(`escudo${teamId}_display`);
         const escudoPenaltyElement = document.getElementById(`escudoPenalty${teamId}_display`);
@@ -667,6 +674,7 @@
             escudoPenaltyElement.classList.add('jump-animation');
         }
     }
+    */
 
     // Renderiza a interface do usuário com base no estado `overlayState`
     function renderUI() {
