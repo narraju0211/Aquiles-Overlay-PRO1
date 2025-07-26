@@ -431,7 +431,7 @@
 
 
     .penalty-shootout-placar {
-        display: none;
+        display: none; /* Escondido por padrão, JavaScript o mostrará */
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
@@ -533,7 +533,7 @@
         height: calc(var(--image-base-size) * 1.6); /* Tamanho do escudo na animação, proporcional ao base */
         width: calc(var(--image-base-size) * 1.6);
         object-fit: contain;
-        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.7));
+        filter: drop_shadow(0 0 8px rgba(0, 0, 0, 0.7));
     }
 
     @keyframes fadeInScaleOut {
@@ -995,7 +995,7 @@
     // Função para animar o escudo do time
     function triggerShieldJump(teamId) {
         // Encontra todos os elementos de escudo que correspondem ao ID do time
-        const escudosToAnimate = document.querySelectorAll(`[id^="escudo${teamId}_"]`);
+        const escudosToAnimate = document.querySelectorAll(`[id^="escudo${teamId}"]`); // Seleciona por escudo{teamId}
         
         escudosToAnimate.forEach(el => {
             if (el) {
@@ -1011,8 +1011,8 @@
 
     // Renderiza a interface do usuário com base no estado `overlayState`
     function renderUI() {
-        const defaultEscudo1 = 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Imagem transparente 1x1
-        const defaultLogo = 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
+        const defaultEscudo1 = 'data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA='; // Imagem transparente 1x1
+        const defaultLogo = 'data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=';
 
         // Atualiza a variável CSS para o tamanho das imagens
         document.documentElement.style.setProperty('--image-base-size', `${overlayState.imageSize}px`);
@@ -1022,8 +1022,14 @@
         const placar2Elements = document.querySelectorAll('[id^="placar2_"]');
         const nomeAbbr1Elements = document.querySelectorAll('[id^="nomeAbbr1_"]');
         const nomeAbbr2Elements = document.querySelectorAll('[id^="nomeAbbr2_"]');
-        const nomePenalty1Elements = document.querySelectorAll('[id^="nomePenalty1_"]');
-        const nomePenalty2Elements = document.querySelectorAll('[id^="nomePenalty2_"]');
+        
+        // CORREÇÃO: IDs específicos para o modo pênalti
+        const escudoPenalty1Element = document.getElementById('escudoPenalty1_display');
+        const nomePenalty1Element = document.getElementById('nomePenalty1_display');
+        const escudoPenalty2Element = document.getElementById('escudoPenalty2_display');
+        const nomePenalty2Element = document.getElementById('nomePenalty2_display');
+        const logoOverlayPenaltyElement = document.getElementById('logoOverlayPenalty_display');
+
         const escudo1Elements = document.querySelectorAll('[id^="escudo1_"]');
         const escudo2Elements = document.querySelectorAll('[id^="escudo2_"]');
         const logoOverlayElements = document.querySelectorAll('[id^="logoOverlay_"]');
@@ -1035,8 +1041,14 @@
         placar2Elements.forEach(el => el.innerText = overlayState.placar['2']);
         nomeAbbr1Elements.forEach(el => el.innerText = overlayState.nomeAbbr1 || 'T1');
         nomeAbbr2Elements.forEach(el => el.innerText = overlayState.nomeAbbr2 || 'T2');
-        nomePenalty1Elements.forEach(el => el.innerText = overlayState.nome1 || 'Time 1');
-        nomePenalty2Elements.forEach(el => el.innerText = overlayState.nome2 || 'Time 2');
+        
+        // Atualiza elementos específicos do modo pênalti
+        if (escudoPenalty1Element) escudoPenalty1Element.src = overlayState.escudo1 || defaultEscudo1;
+        if (nomePenalty1Element) nomePenalty1Element.innerText = overlayState.nome1 || 'Time 1';
+        if (escudoPenalty2Element) escudoPenalty2Element.src = overlayState.escudo2 || defaultEscudo1;
+        if (nomePenalty2Element) nomePenalty2Element.innerText = overlayState.nome2 || 'Time 2';
+        if (logoOverlayPenaltyElement) logoOverlayPenaltyElement.src = overlayState.logoOverlay || defaultLogo;
+
 
         escudo1Elements.forEach(el => el.src = overlayState.escudo1 || defaultEscudo1);
         escudo2Elements.forEach(el => el.src = overlayState.escudo2 || defaultEscudo1);
@@ -1045,7 +1057,7 @@
         cronometroDisplays.forEach(el => el.innerText = formatTime(localSeconds));
         periodoDisplays.forEach(el => el.innerText = periodNames[overlayState.currentPeriod] || 'N/A');
 
-        // Renderiza cartões para todos os displays de cartão
+        // Renderiza cartões para todos os displays de cartão em todos os layouts
         renderCards('1', 'basic');
         renderCards('2', 'basic');
         renderCards('1', 'modern');
@@ -1058,8 +1070,10 @@
         renderCards('2', 'customizable');
 
 
+        // Renderiza as bolinhas de pênalti
         renderPenalties('1');
         renderPenalties('2');
+        
         applyPlacarTheme();
 
         document.documentElement.style.setProperty('--placar-text', overlayState.fontColor);
@@ -1097,18 +1111,19 @@
             // Lógica de exibição de layout (Normal, Compacto, Centralizado, Minimalista, Lateralizado ou Pênaltis)
             if (overlayState.penaltyModeActive) {
                 normalLayoutsContainer.style.display = 'none';
-                penaltyContent.style.display = 'flex';
+                penaltyContent.style.display = 'flex'; // Exibe o container de pênaltis como flex
             } else {
-                penaltyContent.style.display = 'block'; // Mostra o contêiner de layouts normais
+                penaltyContent.style.display = 'none'; // Esconde o container de pênaltis
+                normalLayoutsContainer.style.display = 'block'; // Mostra o contêiner de layouts normais (como block para o flexbox interno)
 
-                // Esconde todos os layouts primeiro
+                // Esconde todos os layouts de placar normais primeiro
                 document.getElementById('layoutBasic_display').style.display = 'none';
                 document.getElementById('layoutModern_display').style.display = 'none';
                 document.getElementById('layoutRetro_display').style.display = 'none';
                 document.getElementById('layoutFuturistic_display').style.display = 'none';
                 document.getElementById('layoutCustomizable_display').style.display = 'none';
 
-                // Mostra apenas o layout selecionado
+                // Mostra apenas o layout selecionado como 'flex'
                 switch (overlayState.currentLayoutIndex) {
                     case 0:
                         document.getElementById('layoutBasic_display').style.display = 'flex';
@@ -1157,7 +1172,7 @@
 
     // Função renderCards modificada para aceitar o sufixo do ID do layout
     function renderCards(time, layoutSuffix) {
-        const displayElementId = `cardsDisplay${time}_${layoutSuffix}_display`;
+        const displayElementId = `cardsDisplay${time}_${layoutSuffix}`;
         const displayElement = document.getElementById(displayElementId);
         
         if (!displayElement) return; // Se o elemento não existe para este layout/time, sai
@@ -1180,6 +1195,8 @@
 
     function renderPenalties(time) {
       const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
+      if (!penaltyBallsContainer) return; // Garante que o elemento existe
+
       penaltyBallsContainer.innerHTML = '';
 
       const penalties = overlayState.penalties && Array.isArray(overlayState.penalties[time]) ? overlayState.penalties[time] : [];
