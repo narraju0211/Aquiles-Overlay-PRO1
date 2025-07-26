@@ -354,69 +354,62 @@
     /* --- FIM DOS LAYOUTS ESPECÍFICOS --- */
 
 
+    /* Estilos para o novo placar de pênaltis */
     .penalty-shootout-placar {
-        display: flex; 
+        display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
         width: 100%;
         gap: 10px;
-        padding: 5px 0;
+        padding: 10px 0; /* Aumentado o padding para centralizar melhor */
     }
     .penalty-team-display {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 3px;
+        gap: 5px; /* Aumentado o gap */
         min-width: 120px;
         justify-content: center;
         flex-grow: 1;
     }
     .penalty-team-display .team-name-display {
-        font-size: 16px;
+        font-size: 18px; /* Levemente maior */
         font-weight: 600;
-        margin-top: 3px;
         background: rgba(0, 0, 0, 0.4);
-        padding: 3px 8px;
-        border-radius: 5px;
+        padding: 4px 10px; /* Ajustado padding */
+        border-radius: 8px; /* Ajustado border-radius */
         white-space: nowrap;
         color: var(--placar-text);
     }
     .penalty-team-display .escudo {
-        width: var(--image-base-size); 
-        height: var(--image-base-size); 
+        width: calc(var(--image-base-size) * 1.1); /* Levemente maior no pênalti */
+        height: calc(var(--image-base-size) * 1.1);
     }
-    .penalty-balls-container {
-        display: flex; /* Garante que as bolinhas são flexíveis e visíveis */
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-top: 3px;
-        justify-content: center;
-        min-height: 24px; /* Garante um espaço mínimo */
+    .penalty-score {
+        font-size: 52px; /* Tamanho grande para o placar de pênaltis */
+        font-weight: 700;
+        color: var(--placar-text);
+        background: rgba(0, 0, 0, 0.3);
+        padding: 8px 15px;
+        border-radius: 10px;
+        min-width: 80px; /* Garante largura mínima */
+        text-align: center;
+        font-family: 'Roboto Mono', monospace;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
+        transition: transform 0.2s ease-out, color 0.2s ease-out; /* Transição para animação */
     }
-    .penalty-ball {
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        border: 1px solid white;
-        background-color: transparent;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        transition: width 0.3s ease, height 0.3s ease, border-width 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+
+    /* Animação para o placar de pênaltis */
+    @keyframes scorePop {
+      0% { transform: scale(1); background-color: rgba(0, 0, 0, 0.3); }
+      50% { transform: scale(1.1); background-color: rgba(40, 167, 69, 0.8); color: white; } /* Verde para destaque */
+      100% { transform: scale(1); background-color: rgba(0, 0, 0, 0.3); }
     }
-    .penalty-ball.green {
-        background-color: #28a745;
-        border-color: #28a745;
-        width: 24px;
-        height: 24px;
-        border-width: 2px;
+    .penalty-score.animate-score {
+        animation: scorePop 0.6s ease-out;
     }
-    .penalty-ball.red {
-        background-color: #dc3545;
-        border-color: #dc3545;
-        width: 24px;
-        height: 24px;
-        border-width: 2px;
-    }
+
 
     /* ANIMAÇÃO DO ESCUDO DE PULO */
     @keyframes jumpAndBounce {
@@ -511,6 +504,11 @@
         }
         .penalty-team-display {
             min-width: unset;
+        }
+        .penalty-score { /* Ajusta o placar de pênaltis para mobile */
+            font-size: 42px;
+            padding: 5px 10px;
+            min-width: 60px;
         }
 
         /* Ajustes específicos para layout retrô em mobile */
@@ -664,15 +662,17 @@
           <div class="penalty-team-display">
             <img id="escudoPenalty1_display" class="escudo" src="" alt="Escudo Time 1">
             <span id="nomePenalty1_display" class="team-name-display">Time 1</span>
-            <div class="penalty-balls-container" id="penaltiesDisplay1_display"></div>
           </div>
+          <span id="penaltyScore1_display" class="penalty-score">0</span>
+          
           <div class="logo-central">
             <img id="logoOverlayPenalty_display" src="" alt="Sua Logo">
           </div>
+
+          <span id="penaltyScore2_display" class="penalty-score">0</span>
           <div class="penalty-team-display">
             <img id="escudoPenalty2_display" class="escudo" src="" alt="Escudo Time 2">
             <span id="nomePenalty2_display" class="team-name-display">Time 2</span>
-            <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
           </div>
         </div>
       </div>
@@ -720,7 +720,8 @@
     let overlayState = {
       placar: { '1': 0, '2': 0 },
       cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
-      penalties: { '1': [], '2': [] },
+      // Penalties agora guarda apenas os gols convertidos para o placar numérico
+      penalties: { '1': 0, '2': 0 }, 
       seconds: 0,
       timerRunning: false,
       placarThemeIndex: 0,
@@ -789,6 +790,10 @@
     // Variáveis para guardar o placar anterior e detectar gol
     let previousPlacar1 = 0;
     let previousPlacar2 = 0;
+    // Variáveis para guardar o placar de pênaltis anterior
+    let previousPenaltyScore1 = 0;
+    let previousPenaltyScore2 = 0;
+
 
     function setupFirebaseForNarrator(narratorId) {
         overlayStateRef.on('value', (snapshot) => {
@@ -798,11 +803,15 @@
                 // Guarda o placar atual ANTES de atualizar o estado para detectar mudanças
                 previousPlacar1 = overlayState.placar['1'];
                 previousPlacar2 = overlayState.placar['2'];
+                previousPenaltyScore1 = overlayState.penalties['1'];
+                previousPenaltyScore2 = overlayState.penalties['2'];
+
 
                 // Mapeia os dados do Firebase para o estado local, garantindo valores padrão
                 overlayState.placar = newState.placar || { '1': 0, '2': 0 };
                 overlayState.cards = newState.cards || { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
-                overlayState.penalties = newState.penalties || { '1': [], '2': [] };
+                // Penalties agora é um número, não um array
+                overlayState.penalties = newState.penalties || { '1': 0, '2': 0 }; 
                 overlayState.placarThemeIndex = newState.placarThemeIndex !== undefined ? newState.placarThemeIndex : 0;
                 overlayState.placarOpacity = newState.placarOpacity !== undefined ? newState.placarOpacity : 90;
                 overlayState.fontColor = newState.fontColor || '#E0E0E0';
@@ -844,6 +853,15 @@
                     triggerShieldJump('1');
                 } else if (overlayState.placar['2'] > previousPlacar2) {
                     triggerShieldJump('2');
+                }
+
+                // LÓGICA PARA DETECTAR GOL DE PÊNALTI E ANIMAR O PLACAR DE PÊNALTIS
+                if (overlayState.penaltyModeActive) {
+                    if (overlayState.penalties['1'] > previousPenaltyScore1) {
+                        animatePenaltyScore('1');
+                    } else if (overlayState.penalties['2'] > previousPenaltyScore2) {
+                        animatePenaltyScore('2');
+                    }
                 }
 
             } else {
@@ -898,6 +916,20 @@
         });
     }
 
+    // Nova função para animar o placar de pênaltis
+    function animatePenaltyScore(teamId) {
+        const scoreElement = document.getElementById(`penaltyScore${teamId}_display`);
+        if (scoreElement) {
+            scoreElement.classList.remove('animate-score');
+            void scoreElement.offsetWidth; // Trigger reflow
+            scoreElement.classList.add('animate-score');
+            setTimeout(() => {
+                scoreElement.classList.remove('animate-score');
+            }, 600); // Duração da animação em CSS
+        }
+    }
+
+
     // Renderiza a interface do usuário com base no estado `overlayState`
     function renderUI() {
         const defaultEscudo1 = 'data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA='; // Imagem transparente 1x1
@@ -912,12 +944,16 @@
         const nomeAbbr1Elements = document.querySelectorAll('[id^="nomeAbbr1_"]');
         const nomeAbbr2Elements = document.querySelectorAll('[id^="nomeAbbr2_"]');
         
-        // CORREÇÃO: IDs específicos para o modo pênalti
+        // IDs específicos para o modo pênalti
         const escudoPenalty1Element = document.getElementById('escudoPenalty1_display');
         const nomePenalty1Element = document.getElementById('nomePenalty1_display');
         const escudoPenalty2Element = document.getElementById('escudoPenalty2_display');
         const nomePenalty2Element = document.getElementById('nomePenalty2_display');
         const logoOverlayPenaltyElement = document.getElementById('logoOverlayPenalty_display');
+        // Novos elementos para o placar numérico de pênaltis
+        const penaltyScore1Element = document.getElementById('penaltyScore1_display');
+        const penaltyScore2Element = document.getElementById('penaltyScore2_display');
+
 
         const escudo1Elements = document.querySelectorAll('[id^="escudo1_"]');
         const escudo2Elements = document.querySelectorAll('[id^="escudo2_"]');
@@ -937,6 +973,9 @@
         if (escudoPenalty2Element) escudoPenalty2Element.src = overlayState.escudo2 || defaultEscudo1;
         if (nomePenalty2Element) nomePenalty2Element.innerText = overlayState.nome2 || 'Time 2';
         if (logoOverlayPenaltyElement) logoOverlayPenaltyElement.src = overlayState.logoOverlay || defaultLogo;
+        // Atualiza os novos placares de pênalti
+        if (penaltyScore1Element) penaltyScore1Element.innerText = overlayState.penalties['1'];
+        if (penaltyScore2Element) penaltyScore2Element.innerText = overlayState.penalties['2'];
 
 
         escudo1Elements.forEach(el => el.src = overlayState.escudo1 || defaultEscudo1);
@@ -955,10 +994,6 @@
         renderCards('2', 'retro');
         renderCards('1', 'futuristic');
         renderCards('2', 'futuristic');
-
-        // Renderiza as bolinhas de pênalti (Chamada única para cada time)
-        renderPenalties('1');
-        renderPenalties('2');
         
         applyPlacarTheme();
 
@@ -1074,25 +1109,6 @@
             displayElement.appendChild(cardDiv);
         }
     }
-
-    // Função refatorada para renderizar as bolinhas de pênalti
-    function renderPenalties(time) {
-      const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
-      if (!penaltyBallsContainer) return;
-
-      // Limpa as bolinhas existentes
-      penaltyBallsContainer.innerHTML = '';
-
-      const penalties = overlayState.penalties && Array.isArray(overlayState.penalties[time]) ? overlayState.penalties[time] : [];
-
-      // Cria e adiciona as novas bolinhas
-      penalties.forEach(result => {
-        const ballDiv = document.createElement('div');
-        // Adiciona a classe correspondente ao resultado ('green' ou 'red')
-        ballDiv.className = `penalty-ball ${result}`; 
-        penaltyBallsContainer.appendChild(ballDiv);
-      });
-    }
   </script>
 </body>
-        </html>
+                        </html>
