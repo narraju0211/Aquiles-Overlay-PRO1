@@ -658,7 +658,7 @@
                 </div>
             </div>
 
-        </div> <div class="penalty-shootout-placar" id="penaltyPlacarContent_display">
+        </div> <div class="penalty-shootout-placar" id="penaltyPlacarContent_display" style="display: none;">
           <div class="penalty-team-display">
             <img id="escudoPenalty1_display" class="escudo" src="" alt="Escudo Time 1">
             <span id="nomePenalty1_display" class="team-name-display">Time 1</span>
@@ -866,8 +866,9 @@
 
             } else {
                 console.warn(`Nó para narrador '${narratorId}' não encontrado no Firebase. Aguardando dados do controlador.`);
+                // Adiciona uma mensagem de erro na overlay se não houver dados
                 document.getElementById('placarPrincipal').innerHTML = `<div style="color: red; font-size: 20px; text-align: center; padding: 20px;">
-                    Nenhum dado encontrado para o ID "${narratorId}".<br>
+                    Nenhum dado encontrado para o ID "${NARRATOR_ID}".<br>
                     Verifique se o ID está correto ou se o controlador está ativo.
                 </div>`;
             }
@@ -1111,4 +1112,4 @@
     }
   </script>
 </body>
-                        </html>
+            </html>
