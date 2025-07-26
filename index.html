@@ -233,6 +233,22 @@
             text-align: right;
         }
 
+        #overlayLinkContainer {
+            margin-top: 20px;
+            background-color: #27ae60;
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+        }
+        #overlayLink {
+            color: #f1c40f;
+            word-break: break-all;
+            display: block;
+            margin-top: 10px;
+            font-family: 'Roboto Mono', monospace;
+        }
     </style>
 </head>
 <body>
@@ -256,7 +272,14 @@
                 <button class="button blue" id="setNarratorIdBtn">Salvar ID</button>
             </div>
             <p><strong>ID Atual:</strong> <span id="displayNarratorId"></span></p>
-            <p>Certifique-se de que a Overlay (página do placar) use o mesmo ID. Ele é salvo no seu navegador.</p>
+            <p>Este ID é crucial para conectar seu controlador à sua overlay. Certifique-se de que ele seja único para você.</p>
+            
+            <div id="overlayLinkContainer" style="display: none;">
+                Seu link da Overlay (para OBS/Streamlabs):
+                <span id="overlayLink"></span>
+                <p style="font-size: 0.8em; margin-top: 5px;">Copie e cole este link como uma "Fonte de Navegador" no seu software de transmissão.</p>
+            </div>
+
             <h2 class="section-title">Visibilidade da Overlay</h2>
             <div class="general-controls">
                 <button class="button blue" id="toggleVisibilityBtn">Mostrar/Ocultar Overlay</button>
@@ -396,6 +419,9 @@
                 <select id="layoutSelect" class="select-field">
                     <option value="0">Padrão</option>
                     <option value="1">Compacto</option>
+                    <option value="2">Centralizado</option>
+                    <option value="3">Minimalista</option>
+                    <option value="4">Lateralizado</option>
                 </select>
                 <button class="button blue" id="applyLayout">Aplicar Layout</button>
             </div>
@@ -447,6 +473,9 @@
             document.getElementById('displayNarratorId').innerText = NARRATOR_ID;
             document.getElementById('narratorIdInput').value = NARRATOR_ID;
 
+            // Gera e exibe o link da overlay
+            generateOverlayLink();
+
             // Limpa listeners antigos para evitar duplicação ao mudar o ID
             overlayStateRef.off('value'); 
 
@@ -483,7 +512,7 @@
             escudo2: '', // Será a string Base64
             logoOverlay: '', // Será a string Base64
             isVisible: true,
-            currentLayoutIndex: 0 // Novo: 0 = Padrão, 1 = Compacto
+            currentLayoutIndex: 0 // Novo: 0 = Padrão, 1 = Compacto, 2 = Centralizado, 3 = Minimalista, 4 = Lateralizado
         };
 
         // --- Funções de Leitura e Escrita no Firebase ---
@@ -560,6 +589,24 @@
             document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
             // Mostra o painel de aba correspondente
             document.getElementById(tabId).classList.add('active');
+        }
+
+        // Função para gerar o link da Overlay
+        function generateOverlayLink() {
+            const currentPath = window.location.href;
+            const baseUrl = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+            const overlayUrl = `${baseUrl}overlay.html?narratorId=${NARRATOR_ID}`;
+            
+            const overlayLinkElement = document.getElementById('overlayLink');
+            const overlayLinkContainer = document.getElementById('overlayLinkContainer');
+
+            if (NARRATOR_ID && NARRATOR_ID !== 'SEU_ID_UNICO_AQUI') {
+                overlayLinkElement.innerText = overlayUrl;
+                overlayLinkContainer.style.display = 'block';
+            } else {
+                overlayLinkElement.innerText = 'Defina seu ID de Narrador para gerar o link.';
+                overlayLinkContainer.style.display = 'block'; // Mostrar mesmo sem ID para instruir
+            }
         }
 
         // Inicializa a primeira aba ao carregar a página e Firebase
@@ -800,4 +847,4 @@
         });
     </script>
 </body>
-                </html>
+    </html>
