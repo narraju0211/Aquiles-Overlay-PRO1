@@ -402,36 +402,11 @@
         box-shadow: 0 0 6px #00eaff;
     }
 
-    /* Layout Personalizável (Base Neutra) */
-    .placar-main-line.layout-customizable {
-        /* ESTE É SEU PONTO DE PARTIDA PARA CUSTOMIZAÇÃO! */
-        /* Exemplo: */
-        /* font-family: 'Comic Sans MS', cursive; */
-        /* background: linear-gradient(to right, #ff7e5f, #feb47b); */
-        /* padding: 20px; */
-        /* border-radius: 20px; */
-        /* border: 5px dashed purple; */
-        /* color: #333; */
-
-        /* Adicione suas próprias regras CSS aqui para alterar o visual */
-        /* Pode usar !important se precisar sobrepor estilos base */
-    }
-    /* Exemplo de como você pode personalizar o layout customizável */
-    /* .placar-main-line.layout-customizable .placar-numero {
-        font-size: 60px;
-        background: none;
-        border: none;
-        text-shadow: 3px 3px 0px orange;
-    }
-    .placar-main-line.layout-customizable .escudo {
-        border: 3px solid red;
-    } */
-
     /* --- FIM DOS LAYOUTS ESPECÍFICOS --- */
 
 
     .penalty-shootout-placar {
-        display: none; /* Escondido por padrão, JavaScript o mostrará */
+        display: flex; /* Mantenha como flex, o JS controla a visibilidade */
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
@@ -468,6 +443,7 @@
         gap: 6px;
         margin-top: 3px;
         justify-content: center;
+        /* Garante que o contêiner das bolinhas esteja sempre visível */
     }
     .penalty-ball {
         width: 18px;
@@ -530,10 +506,10 @@
     }
 
     .animated-goal-container img {
-        height: calc(var(--image-base-size) * 1.6); /* Tamanho do escudo na animação, proporcional ao base */
-        width: calc(var(--image-base-size) * 1.6);
+        height: calc(var(--image-base-size) * 2.5); /* AUMENTADO PARA MAIOR DESTAQUE */
+        width: calc(var(--image-base-size) * 2.5);  /* AUMENTADO PARA MAIOR DESTAQUE */
         object-fit: contain;
-        filter: drop_shadow(0 0 8px rgba(0, 0, 0, 0.7));
+        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.7));
     }
 
     @keyframes fadeInScaleOut {
@@ -611,8 +587,8 @@
             gap: 10px;
         }
         .animated-goal-container img {
-            height: calc(var(--image-base-size) * 1.2);
-            width: calc(var(--image-base-size) * 1.2);
+            height: calc(var(--image-base-size) * 1.8); /* Ajustado para mobile */
+            width: calc(var(--image-base-size) * 1.8);  /* Ajustado para mobile */
         }
     }
 
@@ -742,35 +718,6 @@
                 </div>
             </div>
 
-            <div class="placar-main-line layout-customizable" id="layoutCustomizable_display" style="display: none;">
-                <div class="placar-group timer-period-group">
-                    <div id="cronometro_customizable_display">00:00</div>
-                    <div id="periodoDisplay_customizable_display" class="periodo">1º T</div>
-                </div>
-
-                <div class="placar-group">
-                    <div class="placar-group-score">
-                        <img id="escudo1_customizable_display" class="escudo" src="" alt="Escudo Time 1">
-                        <span id="nomeAbbr1_customizable_display" class="team-name-abbr">T1</span>
-                        <span id="placar1_customizable_display" class="placar-numero">0</span>
-                    </div>
-                    <div id="cardsDisplay1_customizable_display" class="cards-display"></div>
-                </div>
-
-                <div class="logo-central">
-                    <img id="logoOverlay_customizable_display" src="" alt="Sua Logo">
-                </div>
-
-                <div class="placar-group">
-                    <div class="placar-group-score">
-                        <span id="placar2_customizable_display" class="placar-numero">0</span>
-                        <span id="nomeAbbr2_customizable_display" class="team-name-abbr">T2</span>
-                        <img id="escudo2_customizable_display" class="escudo" src="" alt="Escudo Time 2">
-                    </div>
-                    <div id="cardsDisplay2_customizable_display" class="cards-display"></div>
-                </div>
-            </div>
-
         </div> <div class="penalty-shootout-placar" id="penaltyPlacarContent_display">
           <div class="penalty-team-display">
             <img id="escudoPenalty1_display" class="escudo" src="" alt="Escudo Time 1">
@@ -848,7 +795,7 @@
       escudo2: '', // Será a string Base64
       logoOverlay: '', // Será a string Base64
       isVisible: true,
-      currentLayoutIndex: 0, // 0 = Básico, 1 = Moderno, 2 = Retrô, 3 = Futurista, 4 = Personalizável
+      currentLayoutIndex: 0, // 0 = Básico, 1 = Moderno, 2 = Retrô, 3 = Futurista
       imageSize: 50 // Novo: Tamanho base dos escudos em pixels
     };
 
@@ -928,8 +875,8 @@
                 overlayState.escudo2 = newState.escudo2 || ''; // Agora é Base64
                 overlayState.logoOverlay = newState.logoOverlay || ''; // Agora é Base64
                 overlayState.isVisible = newState.isVisible !== undefined ? newState.isVisible : true;
-                overlayState.currentLayoutIndex = newState.currentLayoutIndex !== undefined ? newState.currentLayoutIndex : 0; // Novo
-                overlayState.imageSize = newState.imageSize !== undefined ? newState.imageSize : 50; // Novo: tamanho da imagem
+                overlayState.currentLayoutIndex = newState.currentLayoutIndex !== undefined ? newState.currentLayoutIndex : 0; 
+                overlayState.imageSize = newState.imageSize !== undefined ? newState.imageSize : 50; 
 
                 // *** LÓGICA DO CRONÔMETRO: Sincronização e controle local ***
                 const firebaseSeconds = newState.seconds !== undefined ? newState.seconds : 0;
@@ -995,7 +942,7 @@
     // Função para animar o escudo do time
     function triggerShieldJump(teamId) {
         // Encontra todos os elementos de escudo que correspondem ao ID do time
-        const escudosToAnimate = document.querySelectorAll(`[id^="escudo${teamId}"]`); // Seleciona por escudo{teamId}
+        const escudosToAnimate = document.querySelectorAll(`[id^="escudo${teamId}"]`); 
         
         escudosToAnimate.forEach(el => {
             if (el) {
@@ -1066,9 +1013,6 @@
         renderCards('2', 'retro');
         renderCards('1', 'futuristic');
         renderCards('2', 'futuristic');
-        renderCards('1', 'customizable');
-        renderCards('2', 'customizable');
-
 
         // Renderiza as bolinhas de pênalti
         renderPenalties('1');
@@ -1121,7 +1065,6 @@
                 document.getElementById('layoutModern_display').style.display = 'none';
                 document.getElementById('layoutRetro_display').style.display = 'none';
                 document.getElementById('layoutFuturistic_display').style.display = 'none';
-                document.getElementById('layoutCustomizable_display').style.display = 'none';
 
                 // Mostra apenas o layout selecionado como 'flex'
                 switch (overlayState.currentLayoutIndex) {
@@ -1136,9 +1079,6 @@
                         break;
                     case 3:
                         document.getElementById('layoutFuturistic_display').style.display = 'flex';
-                        break;
-                    case 4:
-                        document.getElementById('layoutCustomizable_display').style.display = 'flex';
                         break;
                     default: // Fallback para o layout básico
                         document.getElementById('layoutBasic_display').style.display = 'flex';
