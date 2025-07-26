@@ -87,7 +87,7 @@
             font-size: 1.5em;
         }
 
-        .team-input-group, .score-controls, .timer-controls, .card-controls, .penalty-controls, .theme-controls, .general-controls, .layout-controls {
+        .team-input-group, .score-controls, .timer-controls, .card-controls, .penalty-controls, .theme-controls, .general-controls, .layout-controls, .image-size-controls {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
@@ -317,6 +317,14 @@
                 <input type="file" id="overlayLogo" accept="image/*">
                 <img id="previewLogoOverlay" src="" alt="Preview Logo">
             </div>
+
+            <h2 class="section-title">Tamanho dos Escudos e Logo</h2>
+            <div class="slider-group image-size-controls">
+                <label for="imageSizeSlider">Tamanho Base (Escudos/Logo):</label>
+                <input type="range" id="imageSizeSlider" min="30" max="100" value="50">
+                <span id="imageSizeValue">50px</span>
+                <button class="button blue" id="applyImageSize">Aplicar</button>
+            </div>
         </div>
 
         <div id="placar" class="tab-pane">
@@ -417,11 +425,11 @@
             <div class="layout-controls">
                 <label for="layoutSelect">Layout da Overlay:</label>
                 <select id="layoutSelect" class="select-field">
-                    <option value="0">Padrão</option>
-                    <option value="1">Compacto</option>
-                    <option value="2">Centralizado</option>
-                    <option value="3">Minimalista</option>
-                    <option value="4">Lateralizado</option>
+                    <option value="0">Básico</option>
+                    <option value="1">Moderno</option>
+                    <option value="2">Retrô</option>
+                    <option value="3">Futurista</option>
+                    <option value="4">Personalizável</option>
                 </select>
                 <button class="button blue" id="applyLayout">Aplicar Layout</button>
             </div>
@@ -512,7 +520,8 @@
             escudo2: '', // Será a string Base64
             logoOverlay: '', // Será a string Base64
             isVisible: true,
-            currentLayoutIndex: 0 // Novo: 0 = Padrão, 1 = Compacto, 2 = Centralizado, 3 = Minimalista, 4 = Lateralizado
+            currentLayoutIndex: 0, // 0 = Básico, 1 = Moderno, 2 = Retrô, 3 = Futurista, 4 = Personalizável
+            imageSize: 50 // Novo: Tamanho base dos escudos em pixels
         };
 
         // --- Funções de Leitura e Escrita no Firebase ---
@@ -557,10 +566,12 @@
             document.getElementById('periodSelect').value = currentState.currentPeriod;
             document.getElementById('penaltyModeToggle').checked = currentState.penaltyModeActive;
             document.getElementById('themeSelect').value = currentState.placarThemeIndex;
-            document.getElementById('layoutSelect').value = currentState.currentLayoutIndex; // Atualiza o layout selecionado
+            document.getElementById('layoutSelect').value = currentState.currentLayoutIndex; 
             document.getElementById('opacitySlider').value = currentState.placarOpacity;
             document.getElementById('opacityValue').innerText = `${currentState.placarOpacity}%`;
             document.getElementById('fontColorPicker').value = currentState.fontColor;
+            document.getElementById('imageSizeSlider').value = currentState.imageSize; // Atualiza o slider
+            document.getElementById('imageSizeValue').innerText = `${currentState.imageSize}px`; // Atualiza o valor do slider
         }
 
         // --- Funções Auxiliares ---
@@ -713,7 +724,7 @@
                     currentState.activeAnimation = null;
                     writeStateToFirebase(currentState);
                 }
-            }, 2500); // Duração da animação é 2.2s + um pequeno buffer
+            }, 3500); // Duração da animação aumentada para 3.5s
         });
         document.getElementById('score1Minus').addEventListener('click', () => {
             currentState.placar['1'] = Math.max(0, currentState.placar['1'] - 1);
@@ -729,7 +740,7 @@
                     currentState.activeAnimation = null;
                     writeStateToFirebase(currentState);
                 }
-            }, 2500); // Duração da animação é 2.2s + um pequeno buffer
+            }, 3500); // Duração da animação aumentada para 3.5s
         });
         document.getElementById('score2Minus').addEventListener('click', () => {
             currentState.placar['2'] = Math.max(0, currentState.placar['2'] - 1);
@@ -843,6 +854,15 @@
         });
         document.getElementById('applyFontColor').addEventListener('click', () => {
             currentState.fontColor = document.getElementById('fontColorPicker').value;
+            writeStateToFirebase(currentState);
+        });
+
+        // Controle de Tamanho da Imagem
+        document.getElementById('imageSizeSlider').addEventListener('input', (e) => {
+            document.getElementById('imageSizeValue').innerText = `${e.target.value}px`;
+        });
+        document.getElementById('applyImageSize').addEventListener('click', () => {
+            currentState.imageSize = parseInt(document.getElementById('imageSizeSlider').value);
             writeStateToFirebase(currentState);
         });
     </script>
