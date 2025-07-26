@@ -389,23 +389,24 @@
                 <input type="checkbox" id="penaltyModeToggle">
                 <label for="penaltyModeToggle">Ativar Modo Pênaltis</label>
             </div>
-            <div class="flex-row">
-                <h3>Time 1 Penalidades:</h3>
-                <div class="penalty-input">
-                    <button class="button" id="penalty1Goal">Gol</button>
-                    <button class="button red" id="penalty1Miss">Erro</button>
-                    <button class="button orange" id="penalty1Undo">Desfazer</button>
-                    <button class="button gray" id="penalty1ClearAll">Limpar Tudo</button>
+            <div class="flex-row space-between">
+                <div>
+                    <h3>Time 1 Penalidades: <span id="penaltyScore1">0</span></h3>
+                    <div class="penalty-controls">
+                        <button class="button" id="penalty1Plus">+1</button>
+                        <button class="button red" id="penalty1Minus">-1</button>
+                    </div>
+                </div>
+                <div>
+                    <h3>Time 2 Penalidades: <span id="penaltyScore2">0</span></h3>
+                    <div class="penalty-controls">
+                        <button class="button" id="penalty2Plus">+1</button>
+                        <button class="button red" id="penalty2Minus">-1</button>
+                    </div>
                 </div>
             </div>
             <div class="flex-row">
-                <h3>Time 2 Penalidades:</h3>
-                <div class="penalty-input">
-                    <button class="button" id="penalty2Goal">Gol</button>
-                    <button class="button red" id="penalty2Miss">Erro</button>
-                    <button class="button orange" id="penalty2Undo">Desfazer</button>
-                    <button class="button gray" id="penalty2ClearAll">Limpar Tudo</button>
-                </div>
+                <button class="button gray" id="penaltyClearAll">Zerar Placar de Pênaltis</button>
             </div>
         </div>
 
@@ -503,14 +504,14 @@
         let currentState = {
             placar: { '1': 0, '2': 0 },
             cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
-            penalties: { '1': [], '2': [] },
+            penaltyScore: { '1': 0, '2': 0 }, // Nova propriedade para o placar de pênaltis
             seconds: 0,
             timerRunning: false,
             placarThemeIndex: 0,
             placarOpacity: 90,
             fontColor: '#E0E0E0',
             penaltyModeActive: false,
-            activeAnimation: null, // Será um objeto { type: 'goalAnimation', team: '1' }
+            activeAnimation: null, // Será um objeto { type: 'goalAnimation', team: '1' } ou { type: 'penaltyGoalAnimation', team: '1' }
             currentPeriod: 1,
             nome1: '',
             nome2: '',
@@ -565,6 +566,11 @@
 
             document.getElementById('periodSelect').value = currentState.currentPeriod;
             document.getElementById('penaltyModeToggle').checked = currentState.penaltyModeActive;
+            
+            // Atualiza os placares de pênalti na UI do controlador
+            document.getElementById('penaltyScore1').innerText = currentState.penaltyScore['1'];
+            document.getElementById('penaltyScore2').innerText = currentState.penaltyScore['2'];
+
             document.getElementById('themeSelect').value = currentState.placarThemeIndex;
             document.getElementById('layoutSelect').value = currentState.currentLayoutIndex; 
             document.getElementById('opacitySlider').value = currentState.placarOpacity;
@@ -713,7 +719,7 @@
             }
         });
 
-        // Placar - Agora com animação de gol
+        // Placar - Animação de Gol Normal
         document.getElementById('score1Plus').addEventListener('click', () => {
             currentState.placar['1']++;
             currentState.activeAnimation = { type: 'goalAnimation', team: '1' }; // Ativa animação + time
@@ -724,7 +730,7 @@
                     currentState.activeAnimation = null;
                     writeStateToFirebase(currentState);
                 }
-            }, 3500); // Duração da animação aumentada para 3.5s
+            }, 3500); // Duração da animação
         });
         document.getElementById('score1Minus').addEventListener('click', () => {
             currentState.placar['1'] = Math.max(0, currentState.placar['1'] - 1);
@@ -740,7 +746,7 @@
                     currentState.activeAnimation = null;
                     writeStateToFirebase(currentState);
                 }
-            }, 3500); // Duração da animação aumentada para 3.5s
+            }, 3500); // Duração da animação
         });
         document.getElementById('score2Minus').addEventListener('click', () => {
             currentState.placar['2'] = Math.max(0, currentState.placar['2'] - 1);
@@ -812,44 +818,56 @@
             writeStateToFirebase(currentState);
         });
 
+        // Função para disparar a animação de gol de pênalti (chamada pelos botões abaixo)
+        function triggerPenaltyGoalAnimation(team) {
+            currentState.activeAnimation = { type: 'penaltyGoalAnimation', team: team };
+            writeStateToFirebase(currentState);
+            setTimeout(() => {
+                // Só reseta se a animação atual ainda for 'penaltyGoalAnimation' do time correto
+                if (currentState.activeAnimation && currentState.activeAnimation.type === 'penaltyGoalAnimation' && currentState.activeAnimation.team === team) {
+                    currentState.activeAnimation = null;
+                    writeStateToFirebase(currentState);
+                }
+            }, 2000); // Duração da animação de pênalti (ajuste conforme necessário)
+        }
+
         // Penalidades Time 1
-        document.getElementById('penalty1Goal').addEventListener('click', () => {
-            currentState.penalties['1'].push('green');
-            writeStateToFirebase(currentState);
-        });
-        document.getElementById('penalty1Miss').addEventListener('click', () => {
-            currentState.penalties['1'].push('red');
-            writeStateToFirebase(currentState);
-        });
-        document.getElementById('penalty1Undo').addEventListener('click', () => {
-            if (currentState.penalties['1'].length > 0) {
-                currentState.penalties['1'].pop(); // Remove o último elemento
+        document.getElementById('penalty1Plus').addEventListener('click', () => {
+            if (currentState.penaltyModeActive) {
+                currentState.penaltyScore['1']++;
                 writeStateToFirebase(currentState);
+                triggerPenaltyGoalAnimation('1'); // Dispara a animação de gol de pênalti para o Time 1
             }
         });
-        document.getElementById('penalty1ClearAll').addEventListener('click', () => {
-            currentState.penalties['1'] = [];
-            writeStateToFirebase(currentState);
+        document.getElementById('penalty1Minus').addEventListener('click', () => {
+            if (currentState.penaltyModeActive && currentState.penaltyScore['1'] > 0) {
+                currentState.penaltyScore['1']--;
+                writeStateToFirebase(currentState);
+            }
         });
 
         // Penalidades Time 2
-        document.getElementById('penalty2Goal').addEventListener('click', () => {
-            currentState.penalties['2'].push('green');
-            writeStateToFirebase(currentState);
+        document.getElementById('penalty2Plus').addEventListener('click', () => {
+            if (currentState.penaltyModeActive) {
+                currentState.penaltyScore['2']++;
+                writeStateToFirebase(currentState);
+                triggerPenaltyGoalAnimation('2'); // Dispara a animação de gol de pênalti para o Time 2
+            }
         });
-        document.getElementById('penalty2Miss').addEventListener('click', () => {
-            currentState.penalties['2'].push('red');
-            writeStateToFirebase(currentState);
-        });
-        document.getElementById('penalty2Undo').addEventListener('click', () => {
-            if (currentState.penalties['2'].length > 0) {
-                currentState.penalties['2'].pop(); // Remove o último elemento
+        document.getElementById('penalty2Minus').addEventListener('click', () => {
+            if (currentState.penaltyModeActive && currentState.penaltyScore['2'] > 0) {
+                currentState.penaltyScore['2']--;
                 writeStateToFirebase(currentState);
             }
         });
-        document.getElementById('penalty2ClearAll').addEventListener('click', () => {
-            currentState.penalties['2'] = [];
-            writeStateToFirebase(currentState);
+
+        // Limpar Placar de Pênaltis
+        document.getElementById('penaltyClearAll').addEventListener('click', () => {
+            if (currentState.penaltyModeActive) {
+                currentState.penaltyScore['1'] = 0;
+                currentState.penaltyScore['2'] = 0;
+                writeStateToFirebase(currentState);
+            }
         });
 
         // Temas e Cores
