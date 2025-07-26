@@ -87,7 +87,7 @@
             font-size: 1.5em;
         }
 
-        .team-input-group, .score-controls, .timer-controls, .card-controls, .penalty-controls, .theme-controls, .general-controls {
+        .team-input-group, .score-controls, .timer-controls, .card-controls, .penalty-controls, .theme-controls, .general-controls, .layout-controls {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
@@ -251,9 +251,12 @@
         <div id="conexao" class="tab-pane active">
             <h2 class="section-title">Configurações de Conexão</h2>
             <div class="flex-row">
-                <p><strong>Narrator ID:</strong> <span id="displayNarratorId"></span></p>
-                <p>Certifique-se de que a Overlay use o mesmo ID.</p>
+                <label for="narratorIdInput">Seu ID de Narrador:</label>
+                <input type="text" id="narratorIdInput" class="input-field" placeholder="Ex: MeuIDUnico">
+                <button class="button blue" id="setNarratorIdBtn">Salvar ID</button>
             </div>
+            <p><strong>ID Atual:</strong> <span id="displayNarratorId"></span></p>
+            <p>Certifique-se de que a Overlay (página do placar) use o mesmo ID. Ele é salvo no seu navegador.</p>
             <h2 class="section-title">Visibilidade da Overlay</h2>
             <div class="general-controls">
                 <button class="button blue" id="toggleVisibilityBtn">Mostrar/Ocultar Overlay</button>
@@ -388,6 +391,14 @@
                 </select>
                 <button class="button blue" id="applyTheme">Aplicar Tema</button>
             </div>
+            <div class="layout-controls">
+                <label for="layoutSelect">Layout da Overlay:</label>
+                <select id="layoutSelect" class="select-field">
+                    <option value="0">Padrão</option>
+                    <option value="1">Compacto</option>
+                </select>
+                <button class="button blue" id="applyLayout">Aplicar Layout</button>
+            </div>
             <div class="slider-group">
                 <label for="opacitySlider">Opacidade do Fundo:</label>
                 <input type="range" id="opacitySlider" min="0" max="100" value="90">
@@ -416,15 +427,40 @@
           appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
         };
 
-        // ** ID DO NARRADOR - MUDE ESTE VALOR PARA UM ID ÚNICO SEU **
-        const NARRATOR_ID = "SEU_ID_UNICO_AQUI"; // <-- MUDE AQUI! Ex: "narradorAquilesLiveFut"
+        let NARRATOR_ID = localStorage.getItem('aquiles_narrator_id') || 'SEU_ID_UNICO_AQUI'; // <-- Valor padrão se não tiver salvo
 
-        // Inicializa o Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = app.database();
-        const overlayStateRef = database.ref(`narrators/${NARRATOR_ID}/overlayState`);
+        // Inicializa o Firebase (será reinicializado se o ID mudar)
+        let app = null;
+        let database = null;
+        let overlayStateRef = null;
 
-        document.getElementById('displayNarratorId').innerText = NARRATOR_ID;
+        function initializeFirebaseAndListeners() {
+            if (app) {
+                // Se já inicializado, apenas reconfigura a referência do banco de dados
+                database = app.database();
+            } else {
+                app = firebase.initializeApp(firebaseConfig);
+                database = app.database();
+            }
+            overlayStateRef = database.ref(`narrators/${NARRATOR_ID}/overlayState`);
+            
+            document.getElementById('displayNarratorId').innerText = NARRATOR_ID;
+            document.getElementById('narratorIdInput').value = NARRATOR_ID;
+
+            // Limpa listeners antigos para evitar duplicação ao mudar o ID
+            overlayStateRef.off('value'); 
+
+            // Listener para atualizar a UI do controlador com base no Firebase
+            overlayStateRef.on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    currentState = snapshot.val();
+                    updateControllerUI();
+                } else {
+                    console.log("Nenhum dado encontrado no Firebase para este Narrator ID. Criando estado inicial...");
+                    writeStateToFirebase(currentState); // Inicializa o estado se não existir
+                }
+            });
+        }
 
         // Estado atual do controlador (o que está no Firebase)
         let currentState = {
@@ -437,7 +473,7 @@
             placarOpacity: 90,
             fontColor: '#E0E0E0',
             penaltyModeActive: false,
-            activeAnimation: null,
+            activeAnimation: null, // Será um objeto { type: 'goalAnimation', team: '1' }
             currentPeriod: 1,
             nome1: '',
             nome2: '',
@@ -446,7 +482,8 @@
             escudo1: '', // Será a string Base64
             escudo2: '', // Será a string Base64
             logoOverlay: '', // Será a string Base64
-            isVisible: true
+            isVisible: true,
+            currentLayoutIndex: 0 // Novo: 0 = Padrão, 1 = Compacto
         };
 
         // --- Funções de Leitura e Escrita no Firebase ---
@@ -470,17 +507,6 @@
             reader.readAsDataURL(file);
         }
 
-        // Listener para atualizar a UI do controlador com base no Firebase
-        overlayStateRef.on('value', (snapshot) => {
-            if (snapshot.exists()) {
-                currentState = snapshot.val();
-                updateControllerUI();
-            } else {
-                console.log("Nenhum dado encontrado no Firebase para este Narrator ID. Criando estado inicial...");
-                writeStateToFirebase(currentState); // Inicializa o estado se não existir
-            }
-        });
-
         // --- Funções para Atualizar a UI do Controlador ---
         function updateControllerUI() {
             document.getElementById('currentScore1').innerText = currentState.placar['1'];
@@ -502,6 +528,7 @@
             document.getElementById('periodSelect').value = currentState.currentPeriod;
             document.getElementById('penaltyModeToggle').checked = currentState.penaltyModeActive;
             document.getElementById('themeSelect').value = currentState.placarThemeIndex;
+            document.getElementById('layoutSelect').value = currentState.currentLayoutIndex; // Atualiza o layout selecionado
             document.getElementById('opacitySlider').value = currentState.placarOpacity;
             document.getElementById('opacityValue').innerText = `${currentState.placarOpacity}%`;
             document.getElementById('fontColorPicker').value = currentState.fontColor;
@@ -535,12 +562,27 @@
             document.getElementById(tabId).classList.add('active');
         }
 
-        // Inicializa a primeira aba ao carregar a página
+        // Inicializa a primeira aba ao carregar a página e Firebase
         document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebaseAndListeners(); // Inicializa Firebase e listeners no DOMContentLoaded
             showTab('conexao'); 
         });
 
         // --- Event Listeners ---
+
+        // Configuração do Narrator ID
+        document.getElementById('setNarratorIdBtn').addEventListener('click', () => {
+            const newId = document.getElementById('narratorIdInput').value.trim();
+            if (newId && newId !== NARRATOR_ID) {
+                NARRATOR_ID = newId;
+                localStorage.setItem('aquiles_narrator_id', NARRATOR_ID);
+                alert(`ID de Narrador salvo como: ${NARRATOR_ID}. A página será recarregada para aplicar.`);
+                window.location.reload(); // Recarrega para aplicar o novo ID
+            } else if (!newId) {
+                alert("Por favor, digite um ID de Narrador válido.");
+            }
+        });
+
 
         // Atualização em tempo real de nomes
         document.getElementById('team1Name').addEventListener('input', () => {
@@ -616,11 +658,11 @@
         // Placar - Agora com animação de gol
         document.getElementById('score1Plus').addEventListener('click', () => {
             currentState.placar['1']++;
-            currentState.activeAnimation = 'goalAnimation'; // Ativa animação
+            currentState.activeAnimation = { type: 'goalAnimation', team: '1' }; // Ativa animação + time
             writeStateToFirebase(currentState);
             setTimeout(() => {
-                // Só reseta se a animação atual ainda for 'goalAnimation'
-                if (currentState.activeAnimation === 'goalAnimation') {
+                // Só reseta se a animação atual ainda for 'goalAnimation' do time 1
+                if (currentState.activeAnimation && currentState.activeAnimation.type === 'goalAnimation' && currentState.activeAnimation.team === '1') {
                     currentState.activeAnimation = null;
                     writeStateToFirebase(currentState);
                 }
@@ -632,11 +674,11 @@
         });
         document.getElementById('score2Plus').addEventListener('click', () => {
             currentState.placar['2']++;
-            currentState.activeAnimation = 'goalAnimation'; // Ativa animação
+            currentState.activeAnimation = { type: 'goalAnimation', team: '2' }; // Ativa animação + time
             writeStateToFirebase(currentState);
             setTimeout(() => {
-                // Só reseta se a animação atual ainda for 'goalAnimation'
-                if (currentState.activeAnimation === 'goalAnimation') {
+                // Só reseta se a animação atual ainda for 'goalAnimation' do time 2
+                if (currentState.activeAnimation && currentState.activeAnimation.type === 'goalAnimation' && currentState.activeAnimation.team === '2') {
                     currentState.activeAnimation = null;
                     writeStateToFirebase(currentState);
                 }
@@ -739,6 +781,12 @@
             currentState.placarThemeIndex = parseInt(document.getElementById('themeSelect').value);
             writeStateToFirebase(currentState);
         });
+        // Layouts
+        document.getElementById('applyLayout').addEventListener('click', () => {
+            currentState.currentLayoutIndex = parseInt(document.getElementById('layoutSelect').value);
+            writeStateToFirebase(currentState);
+        });
+
         document.getElementById('opacitySlider').addEventListener('input', (e) => {
             document.getElementById('opacityValue').innerText = `${e.target.value}%`;
         });
@@ -752,4 +800,4 @@
         });
     </script>
 </body>
-                    </html>
+                </html>
