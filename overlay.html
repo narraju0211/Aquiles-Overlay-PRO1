@@ -409,7 +409,7 @@
         display: flex; /* Mantenha como flex, o JS controla a visibilidade */
         flex-direction: row;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-around; /* Espaço igual entre os elementos */
         width: 100%;
         gap: 10px;
         padding: 5px 0;
@@ -418,39 +418,29 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 3px;
-        min-width: 120px;
+        gap: 8px; /* Aumenta o espaçamento entre escudo e bolinhas */
         justify-content: center;
-        flex-grow: 1;
+        flex-grow: 1; /* Permite que cresçam para ocupar espaço */
+        flex-basis: 0; /* Base flexível para permitir crescimento igual */
     }
-    .penalty-team-display .team-name-display {
-        font-size: 16px;
-        font-weight: 600;
-        margin-top: 3px;
-        background: rgba(0, 0, 0, 0.4);
-        padding: 3px 8px;
-        border-radius: 5px;
-        white-space: nowrap;
-        color: var(--placar-text);
-    }
+    /* Removido: .penalty-team-display .team-name-display { ... } */
+    
     .penalty-team-display .escudo {
-        width: var(--image-base-size); 
-        height: var(--image-base-size); 
+        width: calc(var(--image-base-size) * 1.2); /* Escudo ligeiramente maior no modo pênalti */
+        height: calc(var(--image-base-size) * 1.2); 
     }
     .penalty-balls-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
-        margin-top: 3px;
+        gap: 8px; /* Aumenta o espaçamento entre as bolinhas */
         justify-content: center;
-        /* Garante que o contêiner das bolinhas esteja sempre visível */
     }
     .penalty-ball {
-        display: inline-block; /* Garante que width e height funcionem */
-        width: 20px; /* Tamanho da bolinha visível */
-        height: 20px; /* Tamanho da bolinha visível */
+        display: inline-block;
+        width: 20px;
+        height: 20px;
         border-radius: 50%;
-        border: 2px solid #aaa; /* Borda visível para bolinhas não marcadas, cor mais escura para contraste */
+        border: 2px solid #aaa; /* Borda visível para bolinhas não marcadas */
         background-color: rgba(200, 200, 200, 0.3); /* Fundo levemente visível para bolinhas não marcadas */
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -504,7 +494,7 @@
         height: calc(var(--image-base-size) * 2.5); /* AUMENTADO PARA MAIOR DESTAQUE */
         width: calc(var(--image-base-size) * 2.5);  /* AUMENTADO PARA MAIOR DESTAQUE */
         object-fit: contain;
-        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.7));
+        filter: drop_shadow(0 0 8px rgba(0, 0, 0, 0.7));
     }
 
     @keyframes fadeInScaleOut {
@@ -551,6 +541,17 @@
         }
         .penalty-team-display {
             min-width: unset;
+        }
+        .penalty-team-display .escudo { /* Ajusta o escudo no modo pênalti para mobile */
+            width: calc(var(--image-base-size) * 1.0);
+            height: calc(var(--image-base-size) * 1.0);
+        }
+        .penalty-balls-container {
+            gap: 5px; /* Reduz o espaçamento das bolinhas em mobile */
+        }
+        .penalty-ball {
+            width: 18px; /* Ajusta o tamanho da bolinha em mobile */
+            height: 18px;
         }
 
         /* Ajustes para layout moderno em mobile */
@@ -717,7 +718,6 @@
         <div class="penalty-shootout-placar" id="penaltyPlacarContent_display">
           <div class="penalty-team-display">
             <img id="escudoPenalty1_display" class="escudo" src="" alt="Escudo Time 1">
-            <span id="nomePenalty1_display" class="team-name-display">Time 1</span>
             <div class="penalty-balls-container" id="penaltiesDisplay1_display"></div>
           </div>
           <div class="logo-central">
@@ -725,7 +725,6 @@
           </div>
           <div class="penalty-team-display">
             <img id="escudoPenalty2_display" class="escudo" src="" alt="Escudo Time 2">
-            <span id="nomePenalty2_display" class="team-name-display">Time 2</span>
             <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
           </div>
         </div>
@@ -968,13 +967,13 @@
 
     function updatePenaltyDisplay() {
         document.getElementById('escudoPenalty1_display').src = overlayState.escudo1;
-        document.getElementById('nomePenalty1_display').innerText = overlayState.nome1 || overlayState.nomeAbbr1;
+        // Removido: document.getElementById('nomePenalty1_display').innerText = overlayState.nome1 || overlayState.nomeAbbr1;
         renderPenalties(overlayState.penalties['1'], document.getElementById('penaltiesDisplay1_display'));
 
         document.getElementById('logoOverlayPenalty_display').src = overlayState.logoOverlay;
 
         document.getElementById('escudoPenalty2_display').src = overlayState.escudo2;
-        document.getElementById('nomePenalty2_display').innerText = overlayState.nome2 || overlayState.nomeAbbr2;
+        // Removido: document.getElementById('nomePenalty2_display').innerText = overlayState.nome2 || overlayState.nomeAbbr2;
         renderPenalties(overlayState.penalties['2'], document.getElementById('penaltiesDisplay2_display'));
     }
 
@@ -1068,4 +1067,4 @@
     }
   </script>
 </body>
-                                                                                       </html>
+  </html>
