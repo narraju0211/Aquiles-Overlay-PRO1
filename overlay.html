@@ -36,9 +36,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      /* Transições de entrada e saída */
       transition: opacity 0.5s ease-out, transform 0.5s ease-out;
       opacity: 1;
       visibility: visible;
+      transform: translateY(0);
       background-color: transparent;
       position: relative;
       z-index: 2;
@@ -51,7 +53,7 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transform: translateY(-50px);
+      transform: translateY(-50px); /* Move para cima ao esconder */
     }
 
     .placar {
@@ -96,29 +98,29 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      gap: 5px;
+      gap: 15px; /* Padronizado como o moderno */
       flex-wrap: nowrap;
-      padding: 5px 0;
+      padding: 10px 0; /* Padronizado como o moderno */
     }
 
     .placar-group {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-end;
-      gap: 3px;
+      justify-content: center; /* Alinhamento central para consistência */
+      gap: 8px; /* Padronizado como o moderno */
       flex-shrink: 0;
-      min-height: 80px;
+      min-height: unset; /* Permite que o conteúdo defina a altura */
       box-sizing: border-box;
       flex-grow: 0;
       flex-basis: auto;
-      padding-bottom: 5px;
+      padding-bottom: 0; /* Removido padding inferior específico, usar gap */
     }
 
     .placar-group-score {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 10px; /* Padronizado como o moderno */
       flex-shrink: 0;
       justify-content: center;
     }
@@ -129,13 +131,13 @@
       justify-content: center;
       flex-shrink: 0;
       padding: 0 5px;
-      min-width: calc(var(--image-base-size) * 1.44); /* 1.2 * 1.2 = 1.44, aumentado em 20% do base */
+      min-width: calc(var(--image-base-size) * 1.44);
       min-height: calc(var(--image-base-size) * 1.44);
       box-sizing: border-box;
     }
     .logo-central img {
-      width: calc(var(--image-base-size) * 1.2); /* Aumentado em 20% do base */
-      height: calc(var(--image-base-size) * 1.2); /* Aumentado em 20% do base */
+      width: calc(var(--image-base-size) * 1.2);
+      height: calc(var(--image-base-size) * 1.2);
       object-fit: contain;
       filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
     }
@@ -149,23 +151,27 @@
       transition: transform 0.2s ease-out;
     }
     .placar-numero {
-      font-size: 38px;
-      font-weight: 800;
-      margin: 0 3px;
-      min-width: 45px;
+      font-size: 48px; /* Padronizado como o moderno */
+      font-weight: 700; /* Padronizado como o moderno */
+      margin: 0; /* Removido margem específica */
+      min-width: 60px; /* Padronizado como o moderno */
       text-align: center;
       flex-shrink: 0;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
       font-family: 'Roboto Mono', monospace;
       color: var(--placar-text);
+      background: rgba(0, 0, 0, 0.2); /* Padronizado como o moderno */
+      padding: 5px 10px; /* Padronizado como o moderno */
+      border-radius: 8px; /* Padronizado como o moderno */
     }
 
     .team-name-abbr {
-      font-size: 24px;
-      font-weight: 600;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 3px 6px;
-      border-radius: 4px;
+      font-size: 28px; /* Padronizado como o moderno */
+      font-weight: 700; /* Padronizado como o moderno */
+      background: none; /* Removido fundo */
+      padding: 0; /* Removido padding */
+      border-radius: 0; /* Removido border-radius */
+      border-bottom: 2px solid var(--placar-text); /* Padronizado como o moderno */
       text-transform: uppercase;
       flex-shrink: 0;
       white-space: nowrap;
@@ -174,19 +180,19 @@
 
     #cronometro_display,
     #periodoDisplay_display {
-      font-size: 20px;
+      font-size: 24px; /* Padronizado como o moderno */
       font-weight: 700;
       color: var(--placar-timer-color);
-      background: rgba(0, 0, 0, 0.6);
-      padding: 3px 8px;
-      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.3); /* Padronizado como o moderno */
+      padding: 5px 10px; /* Padronizado como o moderno */
+      border-radius: 8px; /* Padronizado como o moderno */
       white-space: nowrap;
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
       flex-shrink: 0;
       font-family: 'Roboto Mono', monospace;
     }
     #periodoDisplay_display {
-        font-size: 18px;
+        font-size: 20px; /* Levemente ajustado para período */
         background: rgba(0, 0, 0, 0.4);
         color: var(--placar-text);
         font-family: 'Montserrat', sans-serif;
@@ -200,6 +206,7 @@
       width: unset;
       flex-shrink: 0;
       gap: 3px;
+      margin-top: 5px; /* Padronizado como o moderno */
     }
     .card-indicator {
       width: 18px;
@@ -212,81 +219,35 @@
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
 
-    /* --- LAYOUTS ESPECÍFICOS --- */
+    /* --- LAYOUTS ESPECÍFICOS (Ajustes de fontes e cores, mantendo posicionamento) --- */
 
-    /* Layout Básico */
-    .placar-main-line.layout-basic .placar-group.timer-period-group {
-        justify-content: center;
-        padding-bottom: 0;
-        align-self: center;
-        position: relative;
-        top: -5px;
+    /* Layout Básico - Agora com posicionamento do Moderno */
+    .placar-main-line.layout-basic {
+        font-family: 'Open Sans', sans-serif; /* Mantendo fonte padrão se não houver outra específica */
     }
-
-    /* Layout Moderno */
-    .placar-main-line.layout-modern {
-        gap: 15px;
-        padding: 10px 0;
-        font-family: 'Open Sans', sans-serif;
-    }
-    .placar-main-line.layout-modern .placar-group {
-        gap: 8px;
-        min-height: unset;
-    }
-    .placar-main-line.layout-modern .placar-group-score {
-        gap: 10px;
-    }
-    .placar-main-line.layout-modern .placar-numero {
-        font-size: 48px;
-        font-weight: 700;
-        background: rgba(0, 0, 0, 0.2);
-        padding: 5px 10px;
-        border-radius: 8px;
-        min-width: 60px;
-    }
-    .placar-main-line.layout-modern .team-name-abbr {
-        font-size: 28px;
-        font-weight: 700;
-        background: none;
-        padding: 0;
-        border-radius: 0;
-        border-bottom: 2px solid var(--placar-text);
-    }
-    .placar-main-line.layout-modern .escudo {
-        width: calc(var(--image-base-size) * 1.1);
-        height: calc(var(--image-base-size) * 1.1);
-    }
-    .placar-main-line.layout-modern .logo-central img {
+    /* Logo central para todos, pode ser ajustado individualmente se necessário */
+    .placar-main-line.layout-basic .logo-central img,
+    .placar-main-line.layout-modern .logo-central img,
+    .placar-main-line.layout-retro .logo-central img,
+    .placar-main-line.layout-futuristic .logo-central img {
         width: calc(var(--image-base-size) * 1.5);
         height: calc(var(--image-base-size) * 1.5);
     }
-    .placar-main-line.layout-modern .placar-group.timer-period-group {
-        flex-direction: column;
-        gap: 5px;
-        min-height: unset;
-        top: 0;
-    }
-    .placar-main-line.layout-modern #cronometro_display,
-    .placar-main-line.layout-modern #periodoDisplay_display {
-        font-size: 24px;
-        background: rgba(0, 0, 0, 0.3);
-        padding: 5px 10px;
-        border-radius: 8px;
-    }
-    .placar-main-line.layout-modern .cards-display {
-        margin-top: 5px;
-    }
 
-    /* Layout Retrô */
+
+    /* Layout Moderno (Mantido como base) */
+    .placar-main-line.layout-modern {
+        font-family: 'Open Sans', sans-serif;
+    }
+    /* Estilos já definidos no base agora aplicam-se a todos */
+
+    /* Layout Retrô - Agora com posicionamento do Moderno, mas com fonte e estilos retrô */
     .placar-main-line.layout-retro {
-        gap: 10px;
-        padding: 8px 0;
         font-family: 'Press Start 2P', cursive; /* Fonte pixelada */
         text-shadow: 2px 2px 0px rgba(0,0,0,0.8);
     }
     .placar-main-line.layout-retro .placar-group {
         gap: 2px;
-        min-height: unset;
     }
     .placar-main-line.layout-retro .placar-group-score {
         gap: 5px;
@@ -311,17 +272,6 @@
         width: calc(var(--image-base-size) * 0.9);
         height: calc(var(--image-base-size) * 0.9);
     }
-    .placar-main-line.layout-retro .logo-central img {
-        image-rendering: pixelated;
-        width: calc(var(--image-base-size) * 1.1);
-        height: calc(var(--image-base-size) * 1.1);
-    }
-    .placar-main-line.layout-retro .placar-group.timer-period-group {
-        flex-direction: column;
-        gap: 3px;
-        min-height: unset;
-        top: 0;
-    }
     .placar-main-line.layout-retro #cronometro_display,
     .placar-main-line.layout-retro #periodoDisplay_display {
         font-size: 18px;
@@ -338,17 +288,14 @@
         box-shadow: none;
     }
 
-    /* Layout Futurista */
+    /* Layout Futurista - Agora com posicionamento do Moderno, mas com fonte e estilos futuristas */
     .placar-main-line.layout-futuristic {
-        gap: 20px;
-        padding: 12px 0;
         font-family: 'Orbitron', sans-serif; /* Fonte geométrica */
         color: #00eaff; /* Cor padrão neon */
         text-shadow: 0 0 8px #00eaff, 0 0 15px rgba(0,255,255,0.4);
     }
     .placar-main-line.layout-futuristic .placar-group {
         gap: 10px;
-        min-height: unset;
     }
     .placar-main-line.layout-futuristic .placar-group-score {
         gap: 15px;
@@ -373,17 +320,6 @@
         width: calc(var(--image-base-size) * 1.2);
         height: calc(var(--image-base-size) * 1.2);
         filter: drop-shadow(0 0 8px #00eaff);
-    }
-    .placar-main-line.layout-futuristic .logo-central img {
-        width: calc(var(--image-base-size) * 1.6);
-        height: calc(var(--image-base-size) * 1.6);
-        filter: drop-shadow(0 0 10px #00eaff);
-    }
-    .placar-main-line.layout-futuristic .placar-group.timer-period-group {
-        flex-direction: column;
-        gap: 8px;
-        min-height: unset;
-        top: 0;
     }
     .placar-main-line.layout-futuristic #cronometro_display,
     .placar-main-line.layout-futuristic #periodoDisplay_display {
@@ -443,7 +379,6 @@
         gap: 6px;
         margin-top: 3px;
         justify-content: center;
-        /* Garante que o contêiner das bolinhas esteja sempre visível */
     }
     .penalty-ball {
         width: 18px;
@@ -537,50 +472,40 @@
             padding: 0 2px;
         }
         .placar-numero {
-            font-size: 32px;
+            font-size: 38px; /* Ajustado para mobile */
             min-width: 40px;
         }
         .team-name-abbr {
-            font-size: 20px;
+            font-size: 22px; /* Ajustado para mobile */
         }
         #cronometro_display, #periodoDisplay_display {
-            font-size: 16px;
+            font-size: 18px; /* Ajustado para mobile */
         }
         .escudo { /* Ajusta o escudo dos times para mobile */
             width: calc(var(--image-base-size) * 0.9);
             height: calc(var(--image-base-size) * 0.9);
         }
         .logo-central img { /* Ajusta a logo central para mobile */
-            width: calc(var(--image-base-size) * 1.1);
-            height: calc(var(--image-base-size) * 1.1);
+            width: calc(var(--image-base-size) * 1.3);
+            height: calc(var(--image-base-size) * 1.3);
         }
         .penalty-team-display {
             min-width: unset;
         }
 
-        /* Ajustes para layout moderno em mobile */
-        .placar-main-line.layout-modern .placar-numero { font-size: 38px; }
-        .placar-main-line.layout-modern .team-name-abbr { font-size: 22px; }
-        .placar-main-line.layout-modern #cronometro_display,
-        .placar-main-line.layout-modern #periodoDisplay_display { font-size: 18px; }
-        .placar-main-line.layout-modern .escudo { width: calc(var(--image-base-size) * 0.9); height: calc(var(--image-base-size) * 0.9); }
-        .placar-main-line.layout-modern .logo-central img { width: calc(var(--image-base-size) * 1.3); height: calc(var(--image-base-size) * 1.3); }
-
-        /* Ajustes para layout retrô em mobile */
+        /* Ajustes específicos para layout retrô em mobile */
         .placar-main-line.layout-retro .placar-numero { font-size: 30px; }
         .placar-main-line.layout-retro .team-name-abbr { font-size: 16px; }
         .placar-main-line.layout-retro #cronometro_display,
         .placar-main-line.layout-retro #periodoDisplay_display { font-size: 14px; }
         .placar-main-line.layout-retro .escudo { width: calc(var(--image-base-size) * 0.8); height: calc(var(--image-base-size) * 0.8); }
-        .placar-main-line.layout-retro .logo-central img { width: calc(var(--image-base-size) * 1.0); height: calc(var(--image-base-size) * 1.0); }
 
-        /* Ajustes para layout futurista em mobile */
+        /* Ajustes específicos para layout futurista em mobile */
         .placar-main-line.layout-futuristic .placar-numero { font-size: 42px; }
         .placar-main-line.layout-futuristic .team-name-abbr { font-size: 24px; }
         .placar-main-line.layout-futuristic #cronometro_display,
         .placar-main-line.layout-futuristic #periodoDisplay_display { font-size: 20px; }
         .placar-main-line.layout-futuristic .escudo { width: calc(var(--image-base-size) * 1.0); height: calc(var(--image-base-size) * 1.0); }
-        .placar-main-line.layout-futuristic .logo-central img { width: calc(var(--image-base-size) * 1.4); height: calc(var(--image-base-size) * 1.4); }
 
         .animated-goal-container {
             font-size: 60px;
@@ -600,10 +525,6 @@
       <div class="placar-content-wrapper" id="placarContentWrapper">
         <div id="normalLayoutsContainer">
             <div class="placar-main-line layout-basic" id="layoutBasic_display">
-              <div class="placar-group timer-period-group">
-                <div id="cronometro_basic_display">00:00</div>
-              </div>
-
               <div class="placar-group">
                   <div class="placar-group-score">
                       <img id="escudo1_basic_display" class="escudo" src="" alt="Escudo Time 1">
@@ -611,6 +532,11 @@
                       <span id="placar1_basic_display" class="placar-numero">0</span>
                   </div>
                   <div id="cardsDisplay1_basic_display" class="cards-display"></div>
+              </div>
+
+              <div class="placar-group timer-period-group">
+                <div id="cronometro_basic_display">00:00</div>
+                <div id="periodoDisplay_basic_display" class="periodo">1º T</div>
               </div>
 
               <div class="logo-central">
@@ -625,10 +551,6 @@
                   </div>
                   <div id="cardsDisplay2_basic_display" class="cards-display"></div>
               </div>
-
-              <div class="placar-group timer-period-group">
-                <div id="periodoDisplay_basic_display" class="periodo">1º T</div>
-              </div>
             </div>
 
             <div class="placar-main-line layout-modern" id="layoutModern_display" style="display: none;">
@@ -639,6 +561,11 @@
                         <span id="placar1_modern_display" class="placar-numero">0</span>
                     </div>
                     <div id="cardsDisplay1_modern_display" class="cards-display"></div>
+                </div>
+
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_modern_display">00:00</div>
+                    <div id="periodoDisplay_modern_display" class="periodo">1º T</div>
                 </div>
 
                 <div class="logo-central">
@@ -653,19 +580,9 @@
                     </div>
                     <div id="cardsDisplay2_modern_display" class="cards-display"></div>
                 </div>
-
-                <div class="placar-group timer-period-group">
-                    <div id="cronometro_modern_display">00:00</div>
-                    <div id="periodoDisplay_modern_display" class="periodo">1º T</div>
-                </div>
             </div>
 
             <div class="placar-main-line layout-retro" id="layoutRetro_display" style="display: none;">
-                <div class="placar-group timer-period-group">
-                    <div id="cronometro_retro_display">00:00</div>
-                    <div id="periodoDisplay_retro_display" class="periodo">1º T</div>
-                </div>
-
                 <div class="placar-group">
                     <div class="placar-group-score">
                         <img id="escudo1_retro_display" class="escudo" src="" alt="Escudo Time 1">
@@ -673,6 +590,11 @@
                         <span id="placar1_retro_display" class="placar-numero">0</span>
                     </div>
                     <div id="cardsDisplay1_retro_display" class="cards-display"></div>
+                </div>
+
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_retro_display">00:00</div>
+                    <div id="periodoDisplay_retro_display" class="periodo">1º T</div>
                 </div>
 
                 <div class="logo-central">
@@ -1052,7 +974,7 @@
             placarContentWrapper.classList.remove('hidden-content');
             placarContentWrapper.classList.add('visible-content');
 
-            // Lógica de exibição de layout (Normal, Compacto, Centralizado, Minimalista, Lateralizado ou Pênaltis)
+            // Lógica de exibição de layout (Normal ou Pênaltis)
             if (overlayState.penaltyModeActive) {
                 normalLayoutsContainer.style.display = 'none';
                 penaltyContent.style.display = 'flex'; // Exibe o container de pênaltis como flex
@@ -1087,7 +1009,7 @@
             }
         }
 
-        // Visibilidade geral da overlay
+        // Visibilidade geral da overlay com transição
         const visualContainer = document.getElementById('visualOverlayContainer');
         if (overlayState.isVisible) {
           visualContainer.classList.remove('hidden-display');
@@ -1133,20 +1055,23 @@
         }
     }
 
+    // Função refatorada para renderizar as bolinhas de pênalti
     function renderPenalties(time) {
       const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
-      if (!penaltyBallsContainer) return; // Garante que o elemento existe
+      if (!penaltyBallsContainer) return;
 
+      // Limpa as bolinhas existentes
       penaltyBallsContainer.innerHTML = '';
 
       const penalties = overlayState.penalties && Array.isArray(overlayState.penalties[time]) ? overlayState.penalties[time] : [];
 
+      // Cria e adiciona as novas bolinhas
       penalties.forEach(result => {
         const ballDiv = document.createElement('div');
-        ballDiv.className = `penalty-ball ${result}`;
+        ballDiv.className = `penalty-ball ${result}`; // 'green' ou 'red'
         penaltyBallsContainer.appendChild(ballDiv);
       });
     }
   </script>
 </body>
-  </html>
+                  </html>
