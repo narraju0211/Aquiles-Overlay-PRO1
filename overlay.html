@@ -89,7 +89,7 @@
         pointer-events: auto;
     }
 
-    /* Layout Padrão */
+    /* Estilos base para todos os layouts normais (não-penaltis) */
     .placar-main-line {
       display: flex;
       align-items: center;
@@ -100,71 +100,18 @@
       padding: 5px 0;
     }
 
-    /* Layout Compacto */
-    .placar-main-line.compact-layout {
-        gap: 3px;
-        padding: 3px 0;
-    }
-    .placar-main-line.compact-layout .placar-group-score {
-        gap: 3px;
-    }
-    .placar-main-line.compact-layout .placar-numero {
-        font-size: 34px; /* Levemente menor */
-        min-width: 40px;
-    }
-    .placar-main-line.compact-layout .team-name-abbr {
-        font-size: 20px; /* Levemente menor */
-        padding: 2px 5px;
-    }
-    .placar-main-line.compact-layout .escudo {
-        width: 45px; /* Ajuste para caber melhor */
-        height: 45px;
-    }
-    .placar-main-line.compact-layout .logo-central img {
-        width: 60px; /* Ajuste para caber melhor */
-        height: 60px;
-    }
-    .placar-main-line.compact-layout .placar-group.timer-period-group {
-        flex-direction: row; /* Cronômetro e período lado a lado */
-        gap: 5px;
-        min-height: unset;
-        top: 0; /* Volta para o posicionamento normal */
-    }
-    .placar-main-line.compact-layout #cronometro_display {
-        font-size: 18px; /* Levemente menor */
-        padding: 2px 6px;
-    }
-    .placar-main-line.compact-layout #periodoDisplay_display {
-        font-size: 16px; /* Levemente menor */
-        padding: 2px 6px;
-    }
-    .placar-main-line.compact-layout .cards-display {
-        margin-top: -3px; /* Ajusta espaço */
-    }
-
-
-    /* Ajustes para alinhar cronômetro/período mais acima */
     .placar-group {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-end; /* Alinha o conteúdo ao fundo do grupo */
+      justify-content: flex-end;
       gap: 3px;
       flex-shrink: 0;
-      min-height: 80px; /* Altura mínima ajustada */
+      min-height: 80px;
       box-sizing: border-box;
       flex-grow: 0;
       flex-basis: auto;
-      padding-bottom: 5px; /* Adiciona um pequeno padding na parte inferior */
-    }
-
-    /* Especificamente para o grupo do cronômetro/período */
-    .placar-group.timer-period-group {
-        justify-content: center; /* Centraliza o conteúdo (cronômetro/período) */
-        padding-bottom: 0; /* Remove padding inferior extra se houver */
-        align-self: center; /* Garante que ele se alinhe ao centro da linha principal */
-        position: relative; /* Para possível ajuste fino */
-        top: -5px; /* Ajuste manual para subir um pouco mais */
+      padding-bottom: 5px;
     }
 
     .placar-group-score {
@@ -181,20 +128,20 @@
       justify-content: center;
       flex-shrink: 0;
       padding: 0 5px;
-      min-width: 72px; /* Ajustado em 10% (65px * 1.1 = 71.5px -> 72px) */
-      min-height: 88px; /* Altura proporcional ao novo tamanho da imagem */
+      min-width: 72px; /* Aumentado em 10% */
+      min-height: 88px;
       box-sizing: border-box;
     }
     .logo-central img {
-      width: 72px; /* Ampliado em 10% */
-      height: 72px; /* Ampliado em 10% */
+      width: 72px; /* Aumentado em 10% */
+      height: 72px; /* Aumentado em 10% */
       object-fit: contain;
       filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
     }
 
     .escudo {
-      width: 50px; /* Ajustado em 10% (45px * 1.1 = 49.5px -> 50px) */
-      height: 50px; /* Ajustado em 10% */
+      width: 50px; /* Aumentado em 10% */
+      height: 50px; /* Aumentado em 10% */
       object-fit: contain;
       flex-shrink: 0;
       filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
@@ -264,8 +211,186 @@
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
 
+    /* --- LAYOUTS ESPECÍFICOS --- */
+
+    /* Layout Padrão */
+    .placar-main-line.layout-default .placar-group.timer-period-group {
+        justify-content: center;
+        padding-bottom: 0;
+        align-self: center;
+        position: relative;
+        top: -5px;
+    }
+
+    /* Layout Compacto */
+    .placar-main-line.layout-compact {
+        gap: 3px;
+        padding: 3px 0;
+    }
+    .placar-main-line.layout-compact .placar-group-score {
+        gap: 3px;
+    }
+    .placar-main-line.layout-compact .placar-numero {
+        font-size: 34px;
+        min-width: 40px;
+    }
+    .placar-main-line.layout-compact .team-name-abbr {
+        font-size: 20px;
+        padding: 2px 5px;
+    }
+    .placar-main-line.layout-compact .escudo {
+        width: 45px;
+        height: 45px;
+    }
+    .placar-main-line.layout-compact .logo-central img {
+        width: 60px;
+        height: 60px;
+    }
+    .placar-main-line.layout-compact .placar-group.timer-period-group {
+        flex-direction: row; /* Cronômetro e período lado a lado */
+        gap: 5px;
+        min-height: unset;
+        top: 0;
+    }
+    .placar-main-line.layout-compact #cronometro_display,
+    .placar-main-line.layout-compact #periodoDisplay_display {
+        font-size: 18px;
+        padding: 2px 6px;
+    }
+    .placar-main-line.layout-compact .cards-display {
+        margin-top: -3px;
+    }
+
+    /* Layout Centralizado */
+    .placar-main-line.layout-centered {
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px 0;
+    }
+    .placar-main-line.layout-centered .placar-group {
+        flex-direction: row;
+        gap: 20px;
+        min-height: unset;
+        padding-bottom: 0;
+        justify-content: center;
+    }
+    .placar-main-line.layout-centered .placar-group-score {
+        gap: 8px;
+    }
+    .placar-main-line.layout-centered .logo-central {
+        order: -1; /* Move logo para cima */
+        min-height: unset;
+        margin-bottom: 5px;
+    }
+    .placar-main-line.layout-centered .placar-group.timer-period-group {
+        order: 1; /* Move timer/period para baixo */
+        flex-direction: row;
+        gap: 10px;
+        margin-top: 5px;
+    }
+    .placar-main-line.layout-centered .cards-display {
+        position: absolute; /* Posiciona cartões de forma absoluta */
+        bottom: 5px;
+        /* Ajustar left/right para cada time conforme necessário */
+    }
+    .placar-main-line.layout-centered .team1-cards { left: 10px; }
+    .placar-main-line.layout-centered .team2-cards { right: 10px; }
+
+
+    /* Layout Minimalista */
+    .placar-main-line.layout-minimalist {
+        gap: 10px;
+        padding: 5px 0;
+    }
+    .placar-main-line.layout-minimalist .placar-group {
+        min-height: unset;
+        padding-bottom: 0;
+        gap: 5px;
+    }
+    .placar-main-line.layout-minimalist .escudo {
+        width: 40px; /* Escudos menores */
+        height: 40px;
+    }
+    .placar-main-line.layout-minimalist .placar-numero {
+        font-size: 32px; /* Números ligeiramente menores */
+    }
+    .placar-main-line.layout-minimalist .team-name-abbr {
+        font-size: 18px; /* Abreviaturas menores */
+        padding: 2px 4px;
+    }
+    .placar-main-line.layout-minimalist .logo-central {
+        display: none; /* Esconde logo central */
+    }
+    .placar-main-line.layout-minimalist .placar-group.timer-period-group {
+        flex-direction: row; /* Cronômetro e período lado a lado */
+        gap: 8px;
+        order: -1; /* Move para o início da linha */
+        margin-right: auto; /* Alinha à esquerda */
+        padding-left: 10px;
+        top: 0;
+    }
+    .placar-main-line.layout-minimalist .placar-group:last-child {
+        order: 1; /* Move o último grupo (onde estaria o timer no padrão) para o final */
+        margin-left: auto; /* Alinha à direita */
+        padding-right: 10px;
+    }
+    .placar-main-line.layout-minimalist #cronometro_display,
+    .placar-main-line.layout-minimalist #periodoDisplay_display {
+        font-size: 16px;
+        padding: 2px 5px;
+    }
+    .placar-main-line.layout-minimalist .cards-display {
+        display: none; /* Esconde cartões */
+    }
+
+    /* Layout Lateralizado */
+    .placar-main-line.layout-lateralized {
+        justify-content: space-between;
+        gap: 0;
+    }
+    .placar-main-line.layout-lateralized .placar-group {
+        flex-grow: 1;
+        max-width: 300px; /* Limita largura dos grupos dos times */
+        justify-content: flex-end; /* Alinha ao fim para manter espaço central */
+    }
+    .placar-main-line.layout-lateralized .placar-group:first-child {
+        align-items: flex-start; /* Alinha time 1 à esquerda */
+    }
+    .placar-main-line.layout-lateralized .placar-group:last-child {
+        align-items: flex-end; /* Alinha time 2 à direita */
+    }
+    .placar-main-line.layout-lateralized .logo-central {
+        flex-grow: 0;
+        min-width: 100px;
+    }
+    .placar-main-line.layout-lateralized .placar-group.timer-period-group {
+        justify-content: center;
+        padding-bottom: 0;
+        align-self: center;
+        position: relative;
+        top: 0;
+        flex-grow: 0;
+        margin: 0 10px;
+    }
+    .placar-main-line.layout-lateralized .placar-numero {
+        font-size: 42px; /* Números maiores */
+        min-width: 50px;
+    }
+    .placar-main-line.layout-lateralized .team-name-abbr {
+        font-size: 28px; /* Abreviaturas maiores */
+    }
+    .placar-main-line.layout-lateralized #cronometro_display,
+    .placar-main-line.layout-lateralized #periodoDisplay_display {
+        font-size: 22px;
+        padding: 4px 10px;
+    }
+
+
+    /* --- FIM DOS LAYOUTS ESPECÍFICOS --- */
+
+
     .penalty-shootout-placar {
-        display: none; /* Controlado por JS */
+        display: none;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
@@ -417,24 +542,32 @@
         }
 
         /* Ajustes para layout compacto em mobile */
-        .placar-main-line.compact-layout .placar-numero {
+        .placar-main-line.layout-compact .placar-numero {
             font-size: 30px;
         }
-        .placar-main-line.compact-layout .team-name-abbr {
+        .placar-main-line.layout-compact .team-name-abbr {
             font-size: 18px;
         }
-        .placar-main-line.compact-layout #cronometro_display,
-        .placar-main-line.compact-layout #periodoDisplay_display {
+        .placar-main-line.layout-compact #cronometro_display,
+        .placar-main-line.layout-compact #periodoDisplay_display {
             font-size: 14px;
         }
-        .placar-main-line.compact-layout .escudo {
+        .placar-main-line.layout-compact .escudo {
             width: 40px;
             height: 40px;
         }
-        .placar-main-line.compact-layout .logo-central img {
+        .placar-main-line.layout-compact .logo-central img {
             width: 50px;
             height: 50px;
         }
+
+        /* Ajustes para layout minimalista em mobile */
+        .placar-main-line.layout-minimalist .placar-group.timer-period-group,
+        .placar-main-line.layout-minimalist .placar-group:last-child {
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
         .animated-goal-container {
             font-size: 60px;
             gap: 10px;
@@ -451,68 +584,145 @@
   <div class="visual-overlay-container" id="visualOverlayContainer">
     <div class="placar" id="placarPrincipal">
       <div class="placar-content-wrapper" id="placarContentWrapper">
-        <div class="placar-main-line default-layout" id="normalPlacarContent_display">
-          <div class="placar-group timer-period-group">
-            <div id="cronometro_display">00:00</div>
-          </div>
-
-          <div class="placar-group">
-              <div class="placar-group-score">
-                  <img id="escudo1_display" class="escudo" src="" alt="Escudo Time 1">
-                  <span id="nomeAbbr1_display" class="team-name-abbr">T1</span>
-                  <span id="placar1_display" class="placar-numero">0</span>
+        <div id="normalLayoutsContainer">
+            <div class="placar-main-line layout-default" id="layoutDefault_display">
+              <div class="placar-group timer-period-group">
+                <div id="cronometro_default_display">00:00</div>
               </div>
-              <div id="cardsDisplay1_display" class="cards-display"></div>
-          </div>
 
-          <div class="logo-central">
-            <img id="logoOverlay_display" src="" alt="Sua Logo">
-          </div>
-
-          <div class="placar-group">
-              <div class="placar-group-score">
-                  <span id="placar2_display" class="placar-numero">0</span>
-                  <span id="nomeAbbr2_display" class="team-name-abbr">T2</span>
-                  <img id="escudo2_display" class="escudo" src="" alt="Escudo Time 2">
+              <div class="placar-group">
+                  <div class="placar-group-score">
+                      <img id="escudo1_default_display" class="escudo" src="" alt="Escudo Time 1">
+                      <span id="nomeAbbr1_default_display" class="team-name-abbr">T1</span>
+                      <span id="placar1_default_display" class="placar-numero">0</span>
+                  </div>
+                  <div id="cardsDisplay1_default_display" class="cards-display"></div>
               </div>
-              <div id="cardsDisplay2_display" class="cards-display"></div>
-          </div>
 
-          <div class="placar-group timer-period-group">
-            <div id="periodoDisplay_display" class="periodo">1º T</div>
-          </div>
-        </div>
+              <div class="logo-central">
+                <img id="logoOverlay_default_display" src="" alt="Sua Logo">
+              </div>
 
-        <div class="placar-main-line compact-layout" id="compactPlacarContent_display" style="display: none;">
-            <div class="placar-group timer-period-group">
-                <div id="cronometro_compact_display">00:00</div>
-                <div id="periodo_compact_display" class="periodo">1º T</div>
+              <div class="placar-group">
+                  <div class="placar-group-score">
+                      <span id="placar2_default_display" class="placar-numero">0</span>
+                      <span id="nomeAbbr2_default_display" class="team-name-abbr">T2</span>
+                      <img id="escudo2_default_display" class="escudo" src="" alt="Escudo Time 2">
+                  </div>
+                  <div id="cardsDisplay2_default_display" class="cards-display"></div>
+              </div>
+
+              <div class="placar-group timer-period-group">
+                <div id="periodoDisplay_default_display" class="periodo">1º T</div>
+              </div>
             </div>
 
-            <div class="placar-group">
-                <div class="placar-group-score">
-                    <img id="escudo1_compact_display" class="escudo" src="" alt="Escudo Time 1">
-                    <span id="nomeAbbr1_compact_display" class="team-name-abbr">T1</span>
-                    <span id="placar1_compact_display" class="placar-numero">0</span>
+            <div class="placar-main-line layout-compact" id="layoutCompact_display" style="display: none;">
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_compact_display">00:00</div>
+                    <div id="periodoDisplay_compact_display" class="periodo">1º T</div>
                 </div>
-                <div id="cardsDisplay1_compact_display" class="cards-display"></div>
-            </div>
 
-            <div class="logo-central">
-                <img id="logoOverlay_compact_display" src="" alt="Sua Logo">
-            </div>
-
-            <div class="placar-group">
-                <div class="placar-group-score">
-                    <span id="placar2_compact_display" class="placar-numero">0</span>
-                    <span id="nomeAbbr2_compact_display" class="team-name-abbr">T2</span>
-                    <img id="escudo2_compact_display" class="escudo" src="" alt="Escudo Time 2">
+                <div class="placar-group">
+                    <div class="placar-group-score">
+                        <img id="escudo1_compact_display" class="escudo" src="" alt="Escudo Time 1">
+                        <span id="nomeAbbr1_compact_display" class="team-name-abbr">T1</span>
+                        <span id="placar1_compact_display" class="placar-numero">0</span>
+                    </div>
+                    <div id="cardsDisplay1_compact_display" class="cards-display"></div>
                 </div>
-                <div id="cardsDisplay2_compact_display" class="cards-display"></div>
-            </div>
-        </div>
 
-        <div class="penalty-shootout-placar" id="penaltyPlacarContent_display">
+                <div class="logo-central">
+                    <img id="logoOverlay_compact_display" src="" alt="Sua Logo">
+                </div>
+
+                <div class="placar-group">
+                    <div class="placar-group-score">
+                        <span id="placar2_compact_display" class="placar-numero">0</span>
+                        <span id="nomeAbbr2_compact_display" class="team-name-abbr">T2</span>
+                        <img id="escudo2_compact_display" class="escudo" src="" alt="Escudo Time 2">
+                    </div>
+                    <div id="cardsDisplay2_compact_display" class="cards-display"></div>
+                </div>
+            </div>
+
+            <div class="placar-main-line layout-centered" id="layoutCentered_display" style="display: none;">
+                <div class="logo-central">
+                    <img id="logoOverlay_centered_display" src="" alt="Sua Logo">
+                </div>
+                <div class="placar-group">
+                    <div class="placar-group-score">
+                        <img id="escudo1_centered_display" class="escudo" src="" alt="Escudo Time 1">
+                        <span id="nomeAbbr1_centered_display" class="team-name-abbr">T1</span>
+                        <span id="placar1_centered_display" class="placar-numero">0</span>
+                    </div>
+                    <div class="placar-group-score">
+                        <span id="placar2_centered_display" class="placar-numero">0</span>
+                        <span id="nomeAbbr2_centered_display" class="team-name-abbr">T2</span>
+                        <img id="escudo2_centered_display" class="escudo" src="" alt="Escudo Time 2">
+                    </div>
+                </div>
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_centered_display">00:00</div>
+                    <div id="periodoDisplay_centered_display" class="periodo">1º T</div>
+                </div>
+                <div id="cardsDisplay1_centered_display" class="cards-display team1-cards"></div>
+                <div id="cardsDisplay2_centered_display" class="cards-display team2-cards"></div>
+            </div>
+
+            <div class="placar-main-line layout-minimalist" id="layoutMinimalist_display" style="display: none;">
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_minimalist_display">00:00</div>
+                    <div id="periodoDisplay_minimalist_display" class="periodo">1º T</div>
+                </div>
+                <div class="placar-group">
+                    <div class="placar-group-score">
+                        <img id="escudo1_minimalist_display" class="escudo" src="" alt="Escudo Time 1">
+                        <span id="nomeAbbr1_minimalist_display" class="team-name-abbr">T1</span>
+                        <span id="placar1_minimalist_display" class="placar-numero">0</span>
+                    </div>
+                    <div id="cardsDisplay1_minimalist_display" class="cards-display"></div>
+                </div>
+                <div class="placar-group">
+                    <div class="placar-group-score">
+                        <span id="placar2_minimalist_display" class="placar-numero">0</span>
+                        <span id="nomeAbbr2_minimalist_display" class="team-name-abbr">T2</span>
+                        <img id="escudo2_minimalist_display" class="escudo" src="" alt="Escudo Time 2">
+                    </div>
+                    <div id="cardsDisplay2_minimalist_display" class="cards-display"></div>
+                </div>
+            </div>
+
+            <div class="placar-main-line layout-lateralized" id="layoutLateralized_display" style="display: none;">
+                <div class="placar-group">
+                    <div class="placar-group-score">
+                        <img id="escudo1_lateralized_display" class="escudo" src="" alt="Escudo Time 1">
+                        <span id="nomeAbbr1_lateralized_display" class="team-name-abbr">T1</span>
+                        <span id="placar1_lateralized_display" class="placar-numero">0</span>
+                    </div>
+                    <div id="cardsDisplay1_lateralized_display" class="cards-display"></div>
+                </div>
+
+                <div class="logo-central">
+                    <img id="logoOverlay_lateralized_display" src="" alt="Sua Logo">
+                </div>
+
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_lateralized_display">00:00</div>
+                    <div id="periodoDisplay_lateralized_display" class="periodo">1º T</div>
+                </div>
+
+                <div class="placar-group">
+                    <div class="placar-group-score">
+                        <span id="placar2_lateralized_display" class="placar-numero">0</span>
+                        <span id="nomeAbbr2_lateralized_display" class="team-name-abbr">T2</span>
+                        <img id="escudo2_lateralized_display" class="escudo" src="" alt="Escudo Time 2">
+                    </div>
+                    <div id="cardsDisplay2_lateralized_display" class="cards-display"></div>
+                </div>
+            </div>
+
+        </div> <div class="penalty-shootout-placar" id="penaltyPlacarContent_display">
           <div class="penalty-team-display">
             <img id="escudoPenalty1_display" class="escudo" src="" alt="Escudo Time 1">
             <span id="nomePenalty1_display" class="team-name-display">Time 1</span>
@@ -550,8 +760,18 @@
       appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
     };
 
-    // ** ID DO NARRADOR - LÊ DO localStorage (MESMO ID USADO NO CONTROLADOR) **
-    const NARRATOR_ID = localStorage.getItem('aquiles_narrator_id') || 'SEU_ID_UNICO_AQUI'; // Valor padrão de fallback
+    // ** ID DO NARRADOR - LÊ DO localStorage ou do parâmetro da URL **
+    let NARRATOR_ID = localStorage.getItem('aquiles_narrator_id');
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('narratorId')) {
+        NARRATOR_ID = urlParams.get('narratorId');
+        localStorage.setItem('aquiles_narrator_id', NARRATOR_ID); // Salva se veio da URL
+    }
+
+    // Fallback se não encontrar em nenhum lugar
+    if (!NARRATOR_ID) {
+        NARRATOR_ID = 'SEU_ID_UNICO_AQUI'; // Valor padrão de fallback
+    }
 
     // Inicialize o Firebase
     const app = firebase.initializeApp(firebaseConfig);
@@ -579,7 +799,7 @@
       escudo2: '', // Será a string Base64
       logoOverlay: '', // Será a string Base64
       isVisible: true,
-      currentLayoutIndex: 0 // Novo: 0 = Padrão, 1 = Compacto
+      currentLayoutIndex: 0 // Novo: 0 = Padrão, 1 = Compacto, 2 = Centralizado, 3 = Minimalista, 4 = Lateralizado
     };
 
     let timerInterval = null;
@@ -609,7 +829,7 @@
     function initializeApp() {
         if (NARRATOR_ID === 'SEU_ID_UNICO_AQUI') {
              document.getElementById('placarPrincipal').innerHTML = `<div style="color: red; font-size: 20px; text-align: center; padding: 20px;">
-                Por favor, defina seu ID de Narrador no Controlador e recarregue esta página.
+                Por favor, defina seu ID de Narrador no Controlador e recarregue esta página, ou acesse pelo link gerado.
             </div>`;
             return;
         }
@@ -703,15 +923,13 @@
     function startLocalTimer(initialSeconds) {
         if (timerInterval) clearInterval(timerInterval);
         localSeconds = initialSeconds;
-        // Atualiza ambos os displays do cronômetro
-        document.getElementById('cronometro_display').innerText = formatTime(localSeconds);
-        document.getElementById('cronometro_compact_display').innerText = formatTime(localSeconds);
+        // Atualiza todos os displays do cronômetro
+        const cronometroDisplays = document.querySelectorAll('[id^="cronometro_"]');
+        cronometroDisplays.forEach(el => el.innerText = formatTime(localSeconds));
 
         timerInterval = setInterval(() => {
             localSeconds++;
-            // Atualiza ambos os displays do cronômetro
-            document.getElementById('cronometro_display').innerText = formatTime(localSeconds);
-            document.getElementById('cronometro_compact_display').innerText = formatTime(localSeconds);
+            cronometroDisplays.forEach(el => el.innerText = formatTime(localSeconds));
         }, 1000);
     }
 
@@ -725,11 +943,10 @@
 
     // Função para animar o escudo do time
     function triggerShieldJump(teamId) {
-        const escudoElement = document.getElementById(`escudo${teamId}_display`);
-        const escudoPenaltyElement = document.getElementById(`escudoPenalty${teamId}_display`);
-        const escudoCompactElement = document.getElementById(`escudo${teamId}_compact_display`);
-
-        [escudoElement, escudoPenaltyElement, escudoCompactElement].forEach(el => {
+        // Encontra todos os elementos de escudo que correspondem ao ID do time
+        const escudosToAnimate = document.querySelectorAll(`[id^="escudo${teamId}_"]`);
+        
+        escudosToAnimate.forEach(el => {
             if (el) {
                 el.classList.remove('jump-animation');
                 void el.offsetWidth; // Trigger reflow
@@ -743,45 +960,48 @@
 
     // Renderiza a interface do usuário com base no estado `overlayState`
     function renderUI() {
-        // Atualiza placar, nomes e abreviações para ambos os layouts
-        document.getElementById('placar1_display').innerText = overlayState.placar['1'];
-        document.getElementById('placar2_display').innerText = overlayState.placar['2'];
-        document.getElementById('nomeAbbr1_display').innerText = overlayState.nomeAbbr1 || 'T1';
-        document.getElementById('nomeAbbr2_display').innerText = overlayState.nomeAbbr2 || 'T2';
-
-        document.getElementById('placar1_compact_display').innerText = overlayState.placar['1'];
-        document.getElementById('placar2_compact_display').innerText = overlayState.placar['2'];
-        document.getElementById('nomeAbbr1_compact_display').innerText = overlayState.nomeAbbr1 || 'T1';
-        document.getElementById('nomeAbbr2_compact_display').innerText = overlayState.nomeAbbr2 || 'T2';
-
-
-        document.getElementById('nomePenalty1_display').innerText = overlayState.nome1 || 'Time 1';
-        document.getElementById('nomePenalty2_display').innerText = overlayState.nome2 || 'Time 2';
-
-        // Define as fontes dos escudos e logos usando as strings Base64
         const defaultEscudo1 = 'data:image/gif;base64,R0lGODlhAQABAAACADs='; // Imagem transparente 1x1
         const defaultLogo = 'data:image/gif;base64,R0lGODlhAQABAAACADs=';
 
-        document.getElementById('escudo1_display').src = overlayState.escudo1 || defaultEscudo1;
-        document.getElementById('escudo1_compact_display').src = overlayState.escudo1 || defaultEscudo1;
-        document.getElementById('escudoPenalty1_display').src = overlayState.escudo1 || defaultEscudo1;
+        // Arrays de IDs para atualizar todos os elementos, independente do layout
+        const placar1Elements = document.querySelectorAll('[id^="placar1_"]');
+        const placar2Elements = document.querySelectorAll('[id^="placar2_"]');
+        const nomeAbbr1Elements = document.querySelectorAll('[id^="nomeAbbr1_"]');
+        const nomeAbbr2Elements = document.querySelectorAll('[id^="nomeAbbr2_"]');
+        const nomePenalty1Elements = document.querySelectorAll('[id^="nomePenalty1_"]');
+        const nomePenalty2Elements = document.querySelectorAll('[id^="nomePenalty2_"]');
+        const escudo1Elements = document.querySelectorAll('[id^="escudo1_"]');
+        const escudo2Elements = document.querySelectorAll('[id^="escudo2_"]');
+        const logoOverlayElements = document.querySelectorAll('[id^="logoOverlay_"]');
+        const cronometroDisplays = document.querySelectorAll('[id^="cronometro_"]');
+        const periodoDisplays = document.querySelectorAll('[id^="periodoDisplay_"]');
 
-        document.getElementById('escudo2_display').src = overlayState.escudo2 || defaultEscudo1;
-        document.getElementById('escudo2_compact_display').src = overlayState.escudo2 || defaultEscudo1;
-        document.getElementById('escudoPenalty2_display').src = overlayState.escudo2 || defaultEscudo1;
+        // Atualiza texto e imagens para todos os elementos relevantes em todos os layouts
+        placar1Elements.forEach(el => el.innerText = overlayState.placar['1']);
+        placar2Elements.forEach(el => el.innerText = overlayState.placar['2']);
+        nomeAbbr1Elements.forEach(el => el.innerText = overlayState.nomeAbbr1 || 'T1');
+        nomeAbbr2Elements.forEach(el => el.innerText = overlayState.nomeAbbr2 || 'T2');
+        nomePenalty1Elements.forEach(el => el.innerText = overlayState.nome1 || 'Time 1');
+        nomePenalty2Elements.forEach(el => el.innerText = overlayState.nome2 || 'Time 2');
 
-        document.getElementById('logoOverlay_display').src = overlayState.logoOverlay || defaultLogo;
-        document.getElementById('logoOverlay_compact_display').src = overlayState.logoOverlay || defaultLogo;
-        document.getElementById('logoOverlayPenalty_display').src = overlayState.logoOverlay || defaultLogo;
-
-        document.getElementById('cronometro_display').innerText = formatTime(localSeconds);
-        document.getElementById('cronometro_compact_display').innerText = formatTime(localSeconds);
-
-        renderCards('1');
-        renderCards('2');
+        escudo1Elements.forEach(el => el.src = overlayState.escudo1 || defaultEscudo1);
+        escudo2Elements.forEach(el => el.src = overlayState.escudo2 || defaultEscudo1);
+        logoOverlayElements.forEach(el => el.src = overlayState.logoOverlay || defaultLogo);
         
-        document.getElementById('periodoDisplay_display').innerText = periodNames[overlayState.currentPeriod] || 'N/A';
-        document.getElementById('periodo_compact_display').innerText = periodNames[overlayState.currentPeriod] || 'N/A';
+        cronometroDisplays.forEach(el => el.innerText = formatTime(localSeconds));
+        periodoDisplays.forEach(el => el.innerText = periodNames[overlayState.currentPeriod] || 'N/A');
+
+        // Renderiza cartões para todos os displays de cartão
+        renderCards('1', 'default');
+        renderCards('2', 'default');
+        renderCards('1', 'compact');
+        renderCards('2', 'compact');
+        renderCards('1', 'centered');
+        renderCards('2', 'centered');
+        renderCards('1', 'minimalist');
+        renderCards('2', 'minimalist');
+        renderCards('1', 'lateralized');
+        renderCards('2', 'lateralized');
 
 
         renderPenalties('1');
@@ -789,13 +1009,10 @@
         applyPlacarTheme();
 
         document.documentElement.style.setProperty('--placar-text', overlayState.fontColor);
-        // A cor do highlight da animação de GOOL agora é a mesma da fonte do placar
         document.documentElement.style.setProperty('--highlight-color', overlayState.fontColor);
 
-
         const placarContentWrapper = document.getElementById('placarContentWrapper');
-        const normalContent = document.getElementById('normalPlacarContent_display');
-        const compactContent = document.getElementById('compactPlacarContent_display');
+        const normalLayoutsContainer = document.getElementById('normalLayoutsContainer');
         const penaltyContent = document.getElementById('penaltyPlacarContent_display');
         const goalAnimation = document.getElementById('goalAnimation_display');
         const goalTeamEscudo = document.getElementById('goalTeamEscudo');
@@ -823,19 +1040,41 @@
             placarContentWrapper.classList.remove('hidden-content');
             placarContentWrapper.classList.add('visible-content');
 
-            // Lógica de exibição de layout (Normal, Compacto ou Pênaltis)
+            // Lógica de exibição de layout (Normal, Compacto, Centralizado, Minimalista, Lateralizado ou Pênaltis)
             if (overlayState.penaltyModeActive) {
-                normalContent.style.display = 'none';
-                compactContent.style.display = 'none';
+                normalLayoutsContainer.style.display = 'none';
                 penaltyContent.style.display = 'flex';
             } else {
                 penaltyContent.style.display = 'none';
-                if (overlayState.currentLayoutIndex === 0) { // Layout Padrão
-                    normalContent.style.display = 'flex';
-                    compactContent.style.display = 'none';
-                } else { // Layout Compacto
-                    normalContent.style.display = 'none';
-                    compactContent.style.display = 'flex';
+                normalLayoutsContainer.style.display = 'block'; // Mostra o contêiner de layouts normais
+
+                // Esconde todos os layouts primeiro
+                document.getElementById('layoutDefault_display').style.display = 'none';
+                document.getElementById('layoutCompact_display').style.display = 'none';
+                document.getElementById('layoutCentered_display').style.display = 'none';
+                document.getElementById('layoutMinimalist_display').style.display = 'none';
+                document.getElementById('layoutLateralized_display').style.display = 'none';
+
+                // Mostra apenas o layout selecionado
+                switch (overlayState.currentLayoutIndex) {
+                    case 0:
+                        document.getElementById('layoutDefault_display').style.display = 'flex';
+                        break;
+                    case 1:
+                        document.getElementById('layoutCompact_display').style.display = 'flex';
+                        break;
+                    case 2:
+                        document.getElementById('layoutCentered_display').style.display = 'flex';
+                        break;
+                    case 3:
+                        document.getElementById('layoutMinimalist_display').style.display = 'flex';
+                        break;
+                    case 4:
+                        document.getElementById('layoutLateralized_display').style.display = 'flex';
+                        break;
+                    default: // Fallback para o layout padrão
+                        document.getElementById('layoutDefault_display').style.display = 'flex';
+                        break;
                 }
             }
         }
@@ -863,38 +1102,27 @@
       document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
     }
 
-    function renderCards(time) {
-      const displayElement = document.getElementById(`cardsDisplay${time}_display`);
-      const displayElementCompact = document.getElementById(`cardsDisplay${time}_compact_display`);
+    // Função renderCards modificada para aceitar o sufixo do ID do layout
+    function renderCards(time, layoutSuffix) {
+        const displayElementId = `cardsDisplay${time}_${layoutSuffix}_display`;
+        const displayElement = document.getElementById(displayElementId);
+        
+        if (!displayElement) return; // Se o elemento não existe para este layout/time, sai
 
-      // Limpa e renderiza para o layout padrão
-      displayElement.innerHTML = '';
-      const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
-      const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
+        displayElement.innerHTML = '';
+        const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
+        const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
 
-      for (let i = 0; i < amarelos; i++) {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card-indicator yellow-card';
-        displayElement.appendChild(cardDiv);
-      }
-      for (let i = 0; i < vermelhos; i++) {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card-indicator red-card';
-        displayElement.appendChild(cardDiv);
-      }
-
-      // Limpa e renderiza para o layout compacto
-      displayElementCompact.innerHTML = '';
-      for (let i = 0; i < amarelos; i++) {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card-indicator yellow-card';
-        displayElementCompact.appendChild(cardDiv);
-      }
-      for (let i = 0; i < vermelhos; i++) {
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'card-indicator red-card';
-        displayElementCompact.appendChild(cardDiv);
-      }
+        for (let i = 0; i < amarelos; i++) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card-indicator yellow-card';
+            displayElement.appendChild(cardDiv);
+        }
+        for (let i = 0; i < vermelhos; i++) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card-indicator red-card';
+            displayElement.appendChild(cardDiv);
+        }
     }
 
     function renderPenalties(time) {
@@ -911,4 +1139,4 @@
     }
   </script>
 </body>
-    </html>
+                  </html>
