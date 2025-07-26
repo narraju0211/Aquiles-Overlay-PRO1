@@ -468,6 +468,13 @@
         let database = null;
         let overlayStateRef = null;
 
+        // Armazenamento temporário dos nomes quando o modo pênalti estiver ativo
+        let tempTeam1Name = '';
+        let tempTeam1Abbr = '';
+        let tempTeam2Name = '';
+        let tempTeam2Abbr = '';
+
+
         function initializeFirebaseAndListeners() {
             if (app) {
                 // Se já inicializado, apenas reconfigura a referência do banco de dados
@@ -526,7 +533,24 @@
 
         // --- Funções de Leitura e Escrita no Firebase ---
         function writeStateToFirebase(newState) {
-            overlayStateRef.set(newState)
+            // Cria um clone do estado para modificação antes de enviar
+            const stateToSend = { ...newState }; 
+
+            if (stateToSend.penaltyModeActive) {
+                // Se o modo pênalti estiver ativo, os nomes no Firebase devem ser vazios
+                stateToSend.nome1 = '';
+                stateToSend.nome2 = '';
+                stateToSend.nomeAbbr1 = '';
+                stateToSend.nomeAbbr2 = '';
+            } else {
+                // Se o modo pênalti NÃO estiver ativo, restaurar os nomes do armazenamento temporário (ou dos inputs)
+                stateToSend.nome1 = tempTeam1Name || document.getElementById('team1Name').value;
+                stateToSend.nome2 = tempTeam2Name || document.getElementById('team2Name').value;
+                stateToSend.nomeAbbr1 = tempTeam1Abbr || document.getElementById('team1Abbr').value;
+                stateToSend.nomeAbbr2 = tempTeam2Abbr || document.getElementById('team2Abbr').value;
+            }
+
+            overlayStateRef.set(stateToSend)
                 .then(() => console.log("Estado atualizado no Firebase!"))
                 .catch(error => console.error("Erro ao escrever no Firebase:", error));
         }
@@ -553,14 +577,15 @@
             document.getElementById('setTimer').value = currentState.seconds;
             document.getElementById('displayPeriod').innerText = periodNames[currentState.currentPeriod] || 'N/A';
 
-            document.getElementById('team1Name').value = currentState.nome1;
-            document.getElementById('team1Abbr').value = currentState.nomeAbbr1;
-            document.getElementById('previewEscudo1').src = currentState.escudo1 || '';
+            // Atualiza os inputs do controlador COM os valores originais/temporários,
+            // independentemente do modo pênalti, para evitar "perder" os nomes digitados.
+            document.getElementById('team1Name').value = tempTeam1Name || currentState.nome1;
+            document.getElementById('team1Abbr').value = tempTeam1Abbr || currentState.nomeAbbr1;
+            document.getElementById('team2Name').value = tempTeam2Name || currentState.nome2;
+            document.getElementById('team2Abbr').value = tempTeam2Abbr || currentState.nomeAbbr2;
 
-            document.getElementById('team2Name').value = currentState.nome2;
-            document.getElementById('team2Abbr').value = currentState.nomeAbbr2;
+            document.getElementById('previewEscudo1').src = currentState.escudo1 || '';
             document.getElementById('previewEscudo2').src = currentState.escudo2 || '';
-            
             document.getElementById('previewLogoOverlay').src = currentState.logoOverlay || '';
 
             document.getElementById('periodSelect').value = currentState.currentPeriod;
@@ -644,20 +669,32 @@
 
         // Atualização em tempo real de nomes
         document.getElementById('team1Name').addEventListener('input', () => {
-            currentState.nome1 = document.getElementById('team1Name').value;
-            writeStateToFirebase(currentState);
+            tempTeam1Name = document.getElementById('team1Name').value; // Armazena o valor do input
+            if (!currentState.penaltyModeActive) { // Só atualiza o estado se não estiver em modo pênalti
+                currentState.nome1 = tempTeam1Name;
+                writeStateToFirebase(currentState);
+            }
         });
         document.getElementById('team1Abbr').addEventListener('input', () => {
-            currentState.nomeAbbr1 = document.getElementById('team1Abbr').value;
-            writeStateToFirebase(currentState);
+            tempTeam1Abbr = document.getElementById('team1Abbr').value; // Armazena o valor do input
+            if (!currentState.penaltyModeActive) {
+                currentState.nomeAbbr1 = tempTeam1Abbr;
+                writeStateToFirebase(currentState);
+            }
         });
         document.getElementById('team2Name').addEventListener('input', () => {
-            currentState.nome2 = document.getElementById('team2Name').value;
-            writeStateToFirebase(currentState);
+            tempTeam2Name = document.getElementById('team2Name').value; // Armazena o valor do input
+            if (!currentState.penaltyModeActive) {
+                currentState.nome2 = tempTeam2Name;
+                writeStateToFirebase(currentState);
+            }
         });
         document.getElementById('team2Abbr').addEventListener('input', () => {
-            currentState.nomeAbbr2 = document.getElementById('team2Abbr').value;
-            writeStateToFirebase(currentState);
+            tempTeam2Abbr = document.getElementById('team2Abbr').value; // Armazena o valor do input
+            if (!currentState.penaltyModeActive) {
+                currentState.nomeAbbr2 = tempTeam2Abbr;
+                writeStateToFirebase(currentState);
+            }
         });
 
 
@@ -761,6 +798,7 @@
             currentState.cards['1'].vermelho = 0;
             writeStateToFirebase(currentState);
         });
+
         document.getElementById('card2Yellow').addEventListener('click', () => {
             currentState.cards['2'].amarelo = (currentState.cards['2'].amarelo || 0) + 1;
             writeStateToFirebase(currentState);
@@ -776,24 +814,35 @@
         });
 
         // Cronômetro
+        let timerIntervalId = null;
+
         document.getElementById('startTimer').addEventListener('click', () => {
-            currentState.timerRunning = true;
-            writeStateToFirebase(currentState);
+            if (!currentState.timerRunning) {
+                currentState.timerRunning = true;
+                writeStateToFirebase(currentState);
+            }
         });
+
         document.getElementById('pauseTimer').addEventListener('click', () => {
-            currentState.timerRunning = false;
-            writeStateToFirebase(currentState);
+            if (currentState.timerRunning) {
+                currentState.timerRunning = false;
+                writeStateToFirebase(currentState);
+            }
         });
+
         document.getElementById('resetTimer').addEventListener('click', () => {
             currentState.seconds = 0;
             currentState.timerRunning = false;
             writeStateToFirebase(currentState);
         });
+
         document.getElementById('applyTimer').addEventListener('click', () => {
-            const seconds = parseInt(document.getElementById('setTimer').value);
-            if (!isNaN(seconds) && seconds >= 0) {
-                currentState.seconds = seconds;
+            const newSeconds = parseInt(document.getElementById('setTimer').value);
+            if (!isNaN(newSeconds) && newSeconds >= 0) {
+                currentState.seconds = newSeconds;
                 writeStateToFirebase(currentState);
+            } else {
+                alert("Por favor, insira um número válido para os segundos.");
             }
         });
 
@@ -803,68 +852,99 @@
             writeStateToFirebase(currentState);
         });
 
-        // Modo Pênaltis
-        document.getElementById('penaltyModeToggle').addEventListener('change', (e) => {
-            currentState.penaltyModeActive = e.target.checked;
+        // Pênaltis
+        document.getElementById('penaltyModeToggle').addEventListener('change', (event) => {
+            currentState.penaltyModeActive = event.target.checked;
+
+            if (currentState.penaltyModeActive) {
+                // Salva os nomes atuais antes de limpá-los no estado
+                tempTeam1Name = document.getElementById('team1Name').value;
+                tempTeam1Abbr = document.getElementById('team1Abbr').value;
+                tempTeam2Name = document.getElementById('team2Name').value;
+                tempTeam2Abbr = document.getElementById('team2Abbr').value;
+            } else {
+                // Restaura os nomes salvos quando o modo pênalti é desativado
+                currentState.nome1 = tempTeam1Name;
+                currentState.nomeAbbr1 = tempTeam1Abbr;
+                currentState.nome2 = tempTeam2Name;
+                currentState.nomeAbbr2 = tempTeam2Abbr;
+            }
             writeStateToFirebase(currentState);
         });
 
-        // Pênaltis
-        function handlePenalty(teamId, resultType) {
-            if (!Array.isArray(currentState.penalties[teamId])) {
-                currentState.penalties[teamId] = [];
-            }
-            if (resultType === 'undo') {
-                currentState.penalties[teamId].pop();
-            } else if (resultType === 'clear') {
-                currentState.penalties[teamId] = [];
-            } else {
-                currentState.penalties[teamId].push(resultType);
-            }
+
+        document.getElementById('penalty1Goal').addEventListener('click', () => {
+            currentState.penalties['1'].push('goal');
             writeStateToFirebase(currentState);
-        }
+        });
+        document.getElementById('penalty1Miss').addEventListener('click', () => {
+            currentState.penalties['1'].push('miss');
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('penalty1Undo').addEventListener('click', () => {
+            if (currentState.penalties['1'].length > 0) {
+                currentState.penalties['1'].pop();
+                writeStateToFirebase(currentState);
+            }
+        });
+        document.getElementById('penalty1ClearAll').addEventListener('click', () => {
+            currentState.penalties['1'] = [];
+            writeStateToFirebase(currentState);
+        });
 
-        document.getElementById('penalty1Goal').addEventListener('click', () => handlePenalty('1', 'green'));
-        document.getElementById('penalty1Miss').addEventListener('click', () => handlePenalty('1', 'red'));
-        document.getElementById('penalty1Undo').addEventListener('click', () => handlePenalty('1', 'undo'));
-        document.getElementById('penalty1ClearAll').addEventListener('click', () => handlePenalty('1', 'clear'));
+        document.getElementById('penalty2Goal').addEventListener('click', () => {
+            currentState.penalties['2'].push('goal');
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('penalty2Miss').addEventListener('click', () => {
+            currentState.penalties['2'].push('miss');
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('penalty2Undo').addEventListener('click', () => {
+            if (currentState.penalties['2'].length > 0) {
+                currentState.penalties['2'].pop();
+                writeStateToFirebase(currentState);
+            }
+        });
+        document.getElementById('penalty2ClearAll').addEventListener('click', () => {
+            currentState.penalties['2'] = [];
+            writeStateToFirebase(currentState);
+        });
 
-        document.getElementById('penalty2Goal').addEventListener('click', () => handlePenalty('2', 'green'));
-        document.getElementById('penalty2Miss').addEventListener('click', () => handlePenalty('2', 'red'));
-        document.getElementById('penalty2Undo').addEventListener('click', () => handlePenalty('2', 'undo'));
-        document.getElementById('penalty2ClearAll').addEventListener('click', () => handlePenalty('2', 'clear'));
-
-        // Temas e Cores
+        // Temas e Opacidade
         document.getElementById('applyTheme').addEventListener('click', () => {
             currentState.placarThemeIndex = parseInt(document.getElementById('themeSelect').value);
             writeStateToFirebase(currentState);
         });
-        // Layouts
+
         document.getElementById('applyLayout').addEventListener('click', () => {
             currentState.currentLayoutIndex = parseInt(document.getElementById('layoutSelect').value);
             writeStateToFirebase(currentState);
         });
 
-        document.getElementById('opacitySlider').addEventListener('input', (e) => {
-            document.getElementById('opacityValue').innerText = `${e.target.value}%`;
+        document.getElementById('opacitySlider').addEventListener('input', (event) => {
+            document.getElementById('opacityValue').innerText = `${event.target.value}%`;
         });
         document.getElementById('applyOpacity').addEventListener('click', () => {
             currentState.placarOpacity = parseInt(document.getElementById('opacitySlider').value);
             writeStateToFirebase(currentState);
         });
-        document.getElementById('applyFontColor').addEventListener('click', () => {
-            currentState.fontColor = document.getElementById('fontColorPicker').value;
+
+        document.getElementById('fontColorPicker').addEventListener('input', (event) => {
+            currentState.fontColor = event.target.value;
             writeStateToFirebase(currentState);
         });
 
         // Controle de Tamanho da Imagem
-        document.getElementById('imageSizeSlider').addEventListener('input', (e) => {
-            document.getElementById('imageSizeValue').innerText = `${e.target.value}px`;
+        document.getElementById('imageSizeSlider').addEventListener('input', (event) => {
+            document.getElementById('imageSizeValue').innerText = `${event.target.value}px`;
         });
+
         document.getElementById('applyImageSize').addEventListener('click', () => {
             currentState.imageSize = parseInt(document.getElementById('imageSizeSlider').value);
             writeStateToFirebase(currentState);
         });
+
     </script>
 </body>
-    </html>
+                        </html>
