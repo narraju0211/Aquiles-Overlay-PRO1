@@ -178,6 +178,19 @@
       color: var(--placar-text);
     }
 
+    .timer-period-group { /* Novo grupo para cronômetro e período */
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Alinha ao centro verticalmente */
+        justify-content: center; /* Alinha ao centro horizontalmente */
+        gap: 5px;
+        flex-shrink: 0;
+        min-height: unset;
+        margin-left: auto; /* Empurra para a direita */
+        margin-right: 0;
+        padding-left: 10px; /* Espaçamento da logo/time anterior */
+    }
+
     #cronometro_display,
     #periodoDisplay_display {
       font-size: 24px; /* Padronizado como o moderno */
@@ -342,7 +355,7 @@
 
 
     .penalty-shootout-placar {
-        display: flex; /* Mantenha como flex, o JS controla a visibilidade */
+        display: flex; 
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
@@ -374,11 +387,12 @@
         height: var(--image-base-size); 
     }
     .penalty-balls-container {
-        display: flex;
+        display: flex; /* Garante que as bolinhas são flexíveis e visíveis */
         flex-wrap: wrap;
         gap: 6px;
         margin-top: 3px;
         justify-content: center;
+        min-height: 24px; /* Garante um espaço mínimo */
     }
     .penalty-ball {
         width: 18px;
@@ -478,6 +492,12 @@
         .team-name-abbr {
             font-size: 22px; /* Ajustado para mobile */
         }
+        .timer-period-group {
+             margin-left: 0; /* Remove o push para a direita em telas pequenas se quebrar a linha */
+             width: 100%; /* Ocupa a largura total para centralizar */
+             order: 3; /* Move para a parte inferior em telas pequenas */
+             margin-top: 10px; /* Espaçamento da linha de cima */
+        }
         #cronometro_display, #periodoDisplay_display {
             font-size: 18px; /* Ajustado para mobile */
         }
@@ -534,11 +554,6 @@
                   <div id="cardsDisplay1_basic_display" class="cards-display"></div>
               </div>
 
-              <div class="placar-group timer-period-group">
-                <div id="cronometro_basic_display">00:00</div>
-                <div id="periodoDisplay_basic_display" class="periodo">1º T</div>
-              </div>
-
               <div class="logo-central">
                 <img id="logoOverlay_basic_display" src="" alt="Sua Logo">
               </div>
@@ -551,6 +566,11 @@
                   </div>
                   <div id="cardsDisplay2_basic_display" class="cards-display"></div>
               </div>
+              
+              <div class="placar-group timer-period-group">
+                <div id="cronometro_basic_display">00:00</div>
+                <div id="periodoDisplay_basic_display" class="periodo">1º T</div>
+              </div>
             </div>
 
             <div class="placar-main-line layout-modern" id="layoutModern_display" style="display: none;">
@@ -561,11 +581,6 @@
                         <span id="placar1_modern_display" class="placar-numero">0</span>
                     </div>
                     <div id="cardsDisplay1_modern_display" class="cards-display"></div>
-                </div>
-
-                <div class="placar-group timer-period-group">
-                    <div id="cronometro_modern_display">00:00</div>
-                    <div id="periodoDisplay_modern_display" class="periodo">1º T</div>
                 </div>
 
                 <div class="logo-central">
@@ -580,6 +595,11 @@
                     </div>
                     <div id="cardsDisplay2_modern_display" class="cards-display"></div>
                 </div>
+
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_modern_display">00:00</div>
+                    <div id="periodoDisplay_modern_display" class="periodo">1º T</div>
+                </div>
             </div>
 
             <div class="placar-main-line layout-retro" id="layoutRetro_display" style="display: none;">
@@ -590,11 +610,6 @@
                         <span id="placar1_retro_display" class="placar-numero">0</span>
                     </div>
                     <div id="cardsDisplay1_retro_display" class="cards-display"></div>
-                </div>
-
-                <div class="placar-group timer-period-group">
-                    <div id="cronometro_retro_display">00:00</div>
-                    <div id="periodoDisplay_retro_display" class="periodo">1º T</div>
                 </div>
 
                 <div class="logo-central">
@@ -609,6 +624,11 @@
                     </div>
                     <div id="cardsDisplay2_retro_display" class="cards-display"></div>
                 </div>
+
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_retro_display">00:00</div>
+                    <div id="periodoDisplay_retro_display" class="periodo">1º T</div>
+                </div>
             </div>
 
             <div class="placar-main-line layout-futuristic" id="layoutFuturistic_display" style="display: none;">
@@ -619,11 +639,6 @@
                         <span id="placar1_futuristic_display" class="placar-numero">0</span>
                     </div>
                     <div id="cardsDisplay1_futuristic_display" class="cards-display"></div>
-                </div>
-
-                <div class="placar-group timer-period-group">
-                    <div id="cronometro_futuristic_display">00:00</div>
-                    <div id="periodoDisplay_futuristic_display" class="periodo">1º T</div>
                 </div>
 
                 <div class="logo-central">
@@ -637,6 +652,11 @@
                         <img id="escudo2_futuristic_display" class="escudo" src="" alt="Escudo Time 2">
                     </div>
                     <div id="cardsDisplay2_futuristic_display" class="cards-display"></div>
+                </div>
+
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_futuristic_display">00:00</div>
+                    <div id="periodoDisplay_futuristic_display" class="periodo">1º T</div>
                 </div>
             </div>
 
@@ -936,7 +956,7 @@
         renderCards('1', 'futuristic');
         renderCards('2', 'futuristic');
 
-        // Renderiza as bolinhas de pênalti
+        // Renderiza as bolinhas de pênalti (Chamada única para cada time)
         renderPenalties('1');
         renderPenalties('2');
         
@@ -1068,10 +1088,11 @@
       // Cria e adiciona as novas bolinhas
       penalties.forEach(result => {
         const ballDiv = document.createElement('div');
-        ballDiv.className = `penalty-ball ${result}`; // 'green' ou 'red'
+        // Adiciona a classe correspondente ao resultado ('green' ou 'red')
+        ballDiv.className = `penalty-ball ${result}`; 
         penaltyBallsContainer.appendChild(ballDiv);
       });
     }
   </script>
 </body>
-                  </html>
+        </html>
