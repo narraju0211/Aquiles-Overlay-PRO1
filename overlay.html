@@ -172,6 +172,16 @@
       color: var(--placar-text);
     }
 
+    .timer-period-group { /* Novo estilo para o grupo de timer/periodo */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center; /* Centraliza verticalmente */
+        padding: 0 5px; /* Adiciona padding para afastar das bordas */
+        flex-shrink: 0; /* Não permite encolher */
+        min-width: 80px; /* Garante um tamanho mínimo */
+    }
+
     #cronometro_display,
     #periodoDisplay_display {
       font-size: 20px;
@@ -184,12 +194,14 @@
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
       flex-shrink: 0;
       font-family: 'Roboto Mono', monospace;
+      margin-bottom: 5px; /* Espaçamento entre cronometro e período */
     }
     #periodoDisplay_display {
         font-size: 18px;
         background: rgba(0, 0, 0, 0.4);
         color: var(--placar-text);
         font-family: 'Montserrat', sans-serif;
+        margin-bottom: 0; /* Remover margin-bottom se for o último */
     }
 
     .cards-display {
@@ -220,7 +232,7 @@
         padding-bottom: 0;
         align-self: center;
         position: relative;
-        top: -5px;
+        top: 0; /* Remove o top negativo */
     }
 
     /* Layout Moderno */
@@ -260,7 +272,7 @@
         width: calc(var(--image-base-size) * 1.5);
         height: calc(var(--image-base-size) * 1.5);
     }
-    .placar-main-line.layout-modern .placar-group.timer-period-group {
+    .placar-main-line.layout-modern .timer-period-group {
         flex-direction: column;
         gap: 5px;
         min-height: unset;
@@ -316,7 +328,7 @@
         width: calc(var(--image-base-size) * 1.1);
         height: calc(var(--image-base-size) * 1.1);
     }
-    .placar-main-line.layout-retro .placar-group.timer-period-group {
+    .placar-main-line.layout-retro .timer-period-group {
         flex-direction: column;
         gap: 3px;
         min-height: unset;
@@ -379,7 +391,7 @@
         height: calc(var(--image-base-size) * 1.6);
         filter: drop-shadow(0 0 10px #00eaff);
     }
-    .placar-main-line.layout-futuristic .placar-group.timer-period-group {
+    .placar-main-line.layout-futuristic .timer-period-group {
         flex-direction: column;
         gap: 8px;
         min-height: unset;
@@ -413,6 +425,7 @@
         width: 100%;
         gap: 10px;
         padding: 5px 0;
+        min-height: 80px; /* Garante altura mínima para as bolinhas aparecerem */
     }
     .penalty-team-display {
         display: flex;
@@ -422,8 +435,8 @@
         justify-content: center;
         flex-grow: 1; /* Permite que cresçam para ocupar espaço */
         flex-basis: 0; /* Base flexível para permitir crescimento igual */
+        min-width: 100px; /* Garante largura mínima */
     }
-    /* Removido: .penalty-team-display .team-name-display { ... } */
     
     .penalty-team-display .escudo {
         width: calc(var(--image-base-size) * 1.2); /* Escudo ligeiramente maior no modo pênalti */
@@ -434,6 +447,7 @@
         flex-wrap: wrap;
         gap: 8px; /* Aumenta o espaçamento entre as bolinhas */
         justify-content: center;
+        min-height: 25px; /* Garante altura mínima para o container das bolinhas */
     }
     .penalty-ball {
         display: inline-block;
@@ -494,7 +508,7 @@
         height: calc(var(--image-base-size) * 2.5); /* AUMENTADO PARA MAIOR DESTAQUE */
         width: calc(var(--image-base-size) * 2.5);  /* AUMENTADO PARA MAIOR DESTAQUE */
         object-fit: contain;
-        filter: drop_shadow(0 0 8px rgba(0, 0, 0, 0.7));
+        filter: drop-shadow(0 0 8px rgba(0, 0, 0, 0.7));
     }
 
     @keyframes fadeInScaleOut {
@@ -596,10 +610,6 @@
       <div class="placar-content-wrapper" id="placarContentWrapper">
         <div id="normalLayoutsContainer">
             <div class="placar-main-line layout-basic" id="layoutBasic_display">
-              <div class="placar-group timer-period-group">
-                <div id="cronometro_basic_display">00:00</div>
-              </div>
-
               <div class="placar-group">
                   <div class="placar-group-score">
                       <img id="escudo1_basic_display" class="escudo" src="" alt="Escudo Time 1">
@@ -621,8 +631,8 @@
                   </div>
                   <div id="cardsDisplay2_basic_display" class="cards-display"></div>
               </div>
-
-              <div class="placar-group timer-period-group">
+              <div class="timer-period-group">
+                <div id="cronometro_basic_display">00:00</div>
                 <div id="periodoDisplay_basic_display" class="periodo">1º T</div>
               </div>
             </div>
@@ -649,19 +659,13 @@
                     </div>
                     <div id="cardsDisplay2_modern_display" class="cards-display"></div>
                 </div>
-
-                <div class="placar-group timer-period-group">
+                <div class="timer-period-group">
                     <div id="cronometro_modern_display">00:00</div>
                     <div id="periodoDisplay_modern_display" class="periodo">1º T</div>
                 </div>
             </div>
 
             <div class="placar-main-line layout-retro" id="layoutRetro_display" style="display: none;">
-                <div class="placar-group timer-period-group">
-                    <div id="cronometro_retro_display">00:00</div>
-                    <div id="periodoDisplay_retro_display" class="periodo">1º T</div>
-                </div>
-
                 <div class="placar-group">
                     <div class="placar-group-score">
                         <img id="escudo1_retro_display" class="escudo" src="" alt="Escudo Time 1">
@@ -683,6 +687,10 @@
                     </div>
                     <div id="cardsDisplay2_retro_display" class="cards-display"></div>
                 </div>
+                <div class="timer-period-group">
+                    <div id="cronometro_retro_display">00:00</div>
+                    <div id="periodoDisplay_retro_display" class="periodo">1º T</div>
+                </div>
             </div>
 
             <div class="placar-main-line layout-futuristic" id="layoutFuturistic_display" style="display: none;">
@@ -693,11 +701,6 @@
                         <span id="placar1_futuristic_display" class="placar-numero">0</span>
                     </div>
                     <div id="cardsDisplay1_futuristic_display" class="cards-display"></div>
-                </div>
-
-                <div class="placar-group timer-period-group">
-                    <div id="cronometro_futuristic_display">00:00</div>
-                    <div id="periodoDisplay_futuristic_display" class="periodo">1º T</div>
                 </div>
 
                 <div class="logo-central">
@@ -711,6 +714,10 @@
                         <img id="escudo2_futuristic_display" class="escudo" src="" alt="Escudo Time 2">
                     </div>
                     <div id="cardsDisplay2_futuristic_display" class="cards-display"></div>
+                </div>
+                <div class="timer-period-group">
+                    <div id="cronometro_futuristic_display">00:00</div>
+                    <div id="periodoDisplay_futuristic_display" class="periodo">1º T</div>
                 </div>
             </div>
 
@@ -967,13 +974,11 @@
 
     function updatePenaltyDisplay() {
         document.getElementById('escudoPenalty1_display').src = overlayState.escudo1;
-        // Removido: document.getElementById('nomePenalty1_display').innerText = overlayState.nome1 || overlayState.nomeAbbr1;
         renderPenalties(overlayState.penalties['1'], document.getElementById('penaltiesDisplay1_display'));
 
         document.getElementById('logoOverlayPenalty_display').src = overlayState.logoOverlay;
 
         document.getElementById('escudoPenalty2_display').src = overlayState.escudo2;
-        // Removido: document.getElementById('nomePenalty2_display').innerText = overlayState.nome2 || overlayState.nomeAbbr2;
         renderPenalties(overlayState.penalties['2'], document.getElementById('penaltiesDisplay2_display'));
     }
 
@@ -1067,4 +1072,4 @@
     }
   </script>
 </body>
-  </html>
+                      </html>
