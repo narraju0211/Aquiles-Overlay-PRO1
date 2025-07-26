@@ -761,6 +761,7 @@
             currentState.cards['1'].vermelho = 0;
             writeStateToFirebase(currentState);
         });
+
         document.getElementById('card2Yellow').addEventListener('click', () => {
             currentState.cards['2'].amarelo = (currentState.cards['2'].amarelo || 0) + 1;
             writeStateToFirebase(currentState);
@@ -786,14 +787,16 @@
         });
         document.getElementById('resetTimer').addEventListener('click', () => {
             currentState.seconds = 0;
-            currentState.timerRunning = false;
+            currentState.timerRunning = false; // Parar o timer ao zerar
             writeStateToFirebase(currentState);
         });
         document.getElementById('applyTimer').addEventListener('click', () => {
-            const seconds = parseInt(document.getElementById('setTimer').value);
-            if (!isNaN(seconds) && seconds >= 0) {
-                currentState.seconds = seconds;
+            const newSeconds = parseInt(document.getElementById('setTimer').value);
+            if (!isNaN(newSeconds) && newSeconds >= 0) {
+                currentState.seconds = newSeconds;
                 writeStateToFirebase(currentState);
+            } else {
+                alert("Por favor, insira um número válido para os segundos.");
             }
         });
 
@@ -804,49 +807,63 @@
         });
 
         // Modo Pênaltis
-        document.getElementById('penaltyModeToggle').addEventListener('change', (e) => {
-            currentState.penaltyModeActive = e.target.checked;
+        document.getElementById('penaltyModeToggle').addEventListener('change', () => {
+            currentState.penaltyModeActive = document.getElementById('penaltyModeToggle').checked;
             writeStateToFirebase(currentState);
         });
 
-        // Pênaltis
-        function handlePenalty(teamId, resultType) {
-            if (!Array.isArray(currentState.penalties[teamId])) {
-                currentState.penalties[teamId] = [];
-            }
-            if (resultType === 'undo') {
-                currentState.penalties[teamId].pop();
-            } else if (resultType === 'clear') {
-                currentState.penalties[teamId] = [];
-            } else {
-                currentState.penalties[teamId].push(resultType);
-            }
+        // Penalidades Time 1
+        document.getElementById('penalty1Goal').addEventListener('click', () => {
+            currentState.penalties['1'].push('green');
             writeStateToFirebase(currentState);
-        }
+        });
+        document.getElementById('penalty1Miss').addEventListener('click', () => {
+            currentState.penalties['1'].push('red');
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('penalty1Undo').addEventListener('click', () => {
+            if (currentState.penalties['1'].length > 0) {
+                currentState.penalties['1'].pop(); // Remove o último elemento
+                writeStateToFirebase(currentState);
+            }
+        });
+        document.getElementById('penalty1ClearAll').addEventListener('click', () => {
+            currentState.penalties['1'] = [];
+            writeStateToFirebase(currentState);
+        });
 
-        document.getElementById('penalty1Goal').addEventListener('click', () => handlePenalty('1', 'green'));
-        document.getElementById('penalty1Miss').addEventListener('click', () => handlePenalty('1', 'red'));
-        document.getElementById('penalty1Undo').addEventListener('click', () => handlePenalty('1', 'undo'));
-        document.getElementById('penalty1ClearAll').addEventListener('click', () => handlePenalty('1', 'clear'));
-
-        document.getElementById('penalty2Goal').addEventListener('click', () => handlePenalty('2', 'green'));
-        document.getElementById('penalty2Miss').addEventListener('click', () => handlePenalty('2', 'red'));
-        document.getElementById('penalty2Undo').addEventListener('click', () => handlePenalty('2', 'undo'));
-        document.getElementById('penalty2ClearAll').addEventListener('click', () => handlePenalty('2', 'clear'));
+        // Penalidades Time 2
+        document.getElementById('penalty2Goal').addEventListener('click', () => {
+            currentState.penalties['2'].push('green');
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('penalty2Miss').addEventListener('click', () => {
+            currentState.penalties['2'].push('red');
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('penalty2Undo').addEventListener('click', () => {
+            if (currentState.penalties['2'].length > 0) {
+                currentState.penalties['2'].pop(); // Remove o último elemento
+                writeStateToFirebase(currentState);
+            }
+        });
+        document.getElementById('penalty2ClearAll').addEventListener('click', () => {
+            currentState.penalties['2'] = [];
+            writeStateToFirebase(currentState);
+        });
 
         // Temas e Cores
         document.getElementById('applyTheme').addEventListener('click', () => {
             currentState.placarThemeIndex = parseInt(document.getElementById('themeSelect').value);
             writeStateToFirebase(currentState);
         });
-        // Layouts
         document.getElementById('applyLayout').addEventListener('click', () => {
             currentState.currentLayoutIndex = parseInt(document.getElementById('layoutSelect').value);
             writeStateToFirebase(currentState);
         });
-
-        document.getElementById('opacitySlider').addEventListener('input', (e) => {
-            document.getElementById('opacityValue').innerText = `${e.target.value}%`;
+        document.getElementById('opacitySlider').addEventListener('input', () => {
+            const opacity = document.getElementById('opacitySlider').value;
+            document.getElementById('opacityValue').innerText = `${opacity}%`;
         });
         document.getElementById('applyOpacity').addEventListener('click', () => {
             currentState.placarOpacity = parseInt(document.getElementById('opacitySlider').value);
@@ -857,14 +874,15 @@
             writeStateToFirebase(currentState);
         });
 
-        // Controle de Tamanho da Imagem
-        document.getElementById('imageSizeSlider').addEventListener('input', (e) => {
-            document.getElementById('imageSizeValue').innerText = `${e.target.value}px`;
+        // Tamanho da Imagem (Slider)
+        document.getElementById('imageSizeSlider').addEventListener('input', () => {
+            document.getElementById('imageSizeValue').innerText = `${document.getElementById('imageSizeSlider').value}px`;
         });
         document.getElementById('applyImageSize').addEventListener('click', () => {
             currentState.imageSize = parseInt(document.getElementById('imageSizeSlider').value);
             writeStateToFirebase(currentState);
         });
+
     </script>
 </body>
-                          </html>
+    </html>
