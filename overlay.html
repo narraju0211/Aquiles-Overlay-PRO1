@@ -59,23 +59,23 @@
 
         .team1-shield, .team2-shield, .overlay-logo {
             position: absolute;
-            height: 80px; /* Ajustado via JS */
-            width: 80px; /* Ajustado via JS */
+            height: 80px; /* Será ajustado via JS, mas um valor padrão é bom */
+            width: 80px; /* Será ajustado via JS */
             object-fit: contain;
         }
 
+        /* Container do placar de pênaltis */
         .penalty-score-container {
             position: absolute;
             display: flex;
             align-items: center;
             gap: 20px;
-            /* Por padrão, escondido ou posicionado fora da tela */
-            visibility: hidden;
+            visibility: hidden; /* Escondido por padrão */
             opacity: 0;
-            transition: visibility 0s, opacity 0.5s linear;
+            transition: visibility 0s, opacity 0.5s linear; /* Transição para suavizar */
         }
 
-        /* Visibilidade do placar de pênaltis quando ativo */
+        /* Torna visível quando o modo pênaltis está ativo */
         .penalty-mode-active .penalty-score-container {
             visibility: visible;
             opacity: 1;
@@ -85,13 +85,13 @@
             font-family: 'Roboto Mono', monospace;
             font-size: 60px;
             font-weight: 700;
-            color: #e67e22; /* Cor mais para placar de pênaltis */
+            color: #e67e22; /* Cor destacada para pênaltis */
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
         }
 
         /* Estilos para animação de gol normal */
         .team1-shield.goal-animation, .team2-shield.goal-animation {
-            animation: pulse 1s ease-out infinite alternate; /* Animação mais suave */
+            animation: pulse 1s ease-out infinite alternate;
         }
 
         @keyframes pulse {
@@ -136,9 +136,13 @@
 
 
         /* Temas (serão adicionados via JS) */
-        /* .container.theme-dark, .container.theme-blue, etc. */
+        .theme-dark { background-color: rgba(44, 62, 80, var(--bg-opacity, 0.9)); }
+        .theme-blue { background-color: rgba(52, 152, 219, var(--bg-opacity, 0.9)); }
+        .theme-green { background-color: rgba(46, 204, 113, var(--bg-opacity, 0.9)); }
+        .theme-red { background-color: rgba(231, 76, 60, var(--bg-opacity, 0.9)); }
+        .theme-yellow { background-color: rgba(243, 156, 18, var(--bg-opacity, 0.9)); }
 
-        /* Layouts (serão adicionados via JS para posicionamento) */
+        /* Layouts (serão adicionados via JS) */
         .layout-basic .team1-name { top: 50px; left: 50px; }
         .layout-basic .team2-name { top: 50px; right: 50px; text-align: right; }
         .layout-basic .score-container { position: absolute; top: 120px; left: 50%; transform: translateX(-50%); display: flex; gap: 40px; }
@@ -150,21 +154,21 @@
         .layout-basic .team1-shield { top: 45px; left: 380px; }
         .layout-basic .team2-shield { top: 45px; right: 380px; }
         .layout-basic .overlay-logo { bottom: 20px; right: 20px; height: 60px; width: auto; }
+        
+        /* Posição do placar de pênaltis no layout básico */
         .layout-basic .penalty-score-container { 
             position: absolute; 
-            top: 250px; /* Ajuste a posição para o placar de pênaltis */
+            top: 250px; /* Ajuste a posição conforme necessário */
             left: 50%; 
             transform: translateX(-50%); 
-            display: flex;
-            align-items: center;
-            gap: 20px;
         }
         .layout-basic .penalty-score-container h3 { 
             font-size: 40px; 
             color: #ffffff;
             margin: 0;
-            white-space: nowrap;
+            white-space: nowrap; /* Impede que "Pênaltis" quebre linha */
         }
+
         .layout-basic .team1-cards {
             position: absolute;
             top: 190px;
@@ -175,9 +179,7 @@
             top: 190px;
             right: 50px;
         }
-
-
-        /* Adicione outros layouts aqui (moderno, retro, etc.) e ajuste as posições dos elementos */
+        /* Adicione outros layouts aqui (moderno, retro, etc.) */
 
     </style>
 </head>
@@ -245,6 +247,10 @@
             overlayStateRef.on('value', (snapshot) => {
                 const state = snapshot.val();
                 if (state) {
+                    // Garante que penaltyScore exista no estado lido
+                    if (!state.penaltyScore || typeof state.penaltyScore['1'] === 'undefined') {
+                        state.penaltyScore = { '1': 0, '2': 0 };
+                    }
                     updateOverlay(state);
                 } else {
                     console.log("Nenhum dado encontrado no Firebase para este Narrator ID. A overlay aguardará dados.");
@@ -274,14 +280,15 @@
             
             // Gerencia visibilidade da overlay
             if (state.isVisible) {
-                document.body.style.opacity = state.placarOpacity / 100;
+                document.body.style.opacity = 1; /* Opacidade controlada pelo fundo */
                 document.body.style.visibility = 'visible';
+                container.style.setProperty('--bg-opacity', (state.placarOpacity / 100).toFixed(2));
             } else {
                 document.body.style.opacity = 0;
                 document.body.style.visibility = 'hidden';
             }
 
-            // Aplica cor da fonte globalmente ou por tema, se necessário
+            // Aplica cor da fonte globalmente
             document.body.style.color = state.fontColor;
 
             // Gerencia a visibilidade do placar de pênaltis
@@ -304,16 +311,18 @@
                 }
             }
 
-            // Ajuste do tamanho das imagens
+            // Ajuste do tamanho das imagens (se houver um slider no controller para isso)
+            // Se você não tiver um controle de tamanho no controller, defina um tamanho fixo aqui
             const shields = document.querySelectorAll('.team1-shield, .team2-shield');
             const logo = document.querySelector('.overlay-logo');
-            const size = state.imageSize + 'px';
+            const imageSize = state.imageSize || 80; // Usa state.imageSize ou 80px como padrão
+            const sizePx = imageSize + 'px';
             shields.forEach(shield => {
-                shield.style.height = size;
-                shield.style.width = size;
+                shield.style.height = sizePx;
+                shield.style.width = sizePx;
             });
             if (logo) {
-                logo.style.maxHeight = size;
+                logo.style.maxHeight = sizePx;
                 logo.style.width = 'auto'; // Manter a proporção
             }
 
@@ -345,7 +354,6 @@
             }
         }
 
-
         function formatTime(s) {
             const min = String(Math.floor(s / 60)).padStart(2, '0');
             const sec = String(s % 60).padStart(2, '0');
@@ -363,27 +371,26 @@
 
         function getLayoutClass(index) {
             const layouts = ['basic', 'modern', 'retro', 'futuristic', 'custom'];
-            return layouts[index] || 'basic';
+            // O layout "custom" não existe neste overlay. Mantendo "basic" por segurança.
+            // Se você tiver layouts mais complexos, precisará adicioná-los e suas regras CSS aqui.
+            return layouts[index] || 'basic'; 
         }
 
         // Ajustar o tamanho do container para diferentes resoluções
         function resizeContainer() {
             const container = document.querySelector('.container');
-            // Calcula a escala baseada na largura e altura da janela
             const scaleX = window.innerWidth / 1920;
             const scaleY = window.innerHeight / 1080;
-            const scale = Math.min(scaleX, scaleY); // Usa a menor escala para garantir que tudo caiba
+            const scale = Math.min(scaleX, scaleY); 
 
-            // Aplica a transformação de escala
             container.style.transform = `scale(${scale})`;
-            // Centraliza o container na tela
             container.style.left = `${(window.innerWidth - (1920 * scale)) / 2}px`;
             container.style.top = `${(window.innerHeight - (1080 * scale)) / 2}px`;
         }
 
         window.onload = initializeFirebaseAndListeners;
         window.addEventListener('resize', resizeContainer);
-        resizeContainer(); // Ajustar no carregamento inicial
+        resizeContainer();
     </script>
 </body>
 </html>
