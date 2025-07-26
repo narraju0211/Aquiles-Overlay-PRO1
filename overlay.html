@@ -446,13 +446,14 @@
         /* Garante que o contêiner das bolinhas esteja sempre visível */
     }
     .penalty-ball {
+        display: inline-block; /* Garante que width e height funcionem */
         width: 20px; /* Tamanho da bolinha visível */
         height: 20px; /* Tamanho da bolinha visível */
         border-radius: 50%;
-        border: 2px solid #ccc; /* Borda visível para bolinhas não marcadas */
-        background-color: rgba(255, 255, 255, 0.2); /* Fundo levemente visível para bolinhas não marcadas */
+        border: 2px solid #aaa; /* Borda visível para bolinhas não marcadas, cor mais escura para contraste */
+        background-color: rgba(200, 200, 200, 0.3); /* Fundo levemente visível para bolinhas não marcadas */
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        transition: background-color 0.3s ease, border-color 0.3s ease; /* Transição suave para a mudança de cor */
+        transition: background-color 0.3s ease, border-color 0.3s ease;
     }
     .penalty-ball.green {
         background-color: #28a745; /* Cor verde para gol */
@@ -1067,4 +1068,4 @@
     }
   </script>
 </body>
-  </html>
+                                                                                       </html>
