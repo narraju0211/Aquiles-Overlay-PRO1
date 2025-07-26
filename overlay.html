@@ -20,6 +20,8 @@
             width: 1920px; /* Largura base para design em 1080p */
             height: 1080px; /* Altura base para design em 1080p */
             transform-origin: top left; /* Importante para o scaling */
+            background-color: var(--bg-color, rgba(44, 62, 80, 0.9));
+            transition: background-color 0.3s ease-in-out, opacity 0.3s ease-in-out;
         }
 
         /* Estilos base - serão modificados por temas e layouts */
@@ -29,6 +31,10 @@
             font-weight: 700;
             color: #ffffff;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            white-space: nowrap; /* Impede quebras de linha em nomes */
+            overflow: hidden;
+            text-overflow: ellipsis; /* Adiciona "..." se o texto for muito longo */
+            max-width: 300px; /* Limita a largura para evitar sobreposição */
         }
 
         .score {
@@ -59,59 +65,13 @@
 
         .team1-shield, .team2-shield, .overlay-logo {
             position: absolute;
-            height: 80px; /* Ajustado via JS */
-            width: 80px; /* Ajustado via JS */
+            height: var(--image-size, 80px); /* Usará a variável CSS */
+            width: var(--image-size, 80px); /* Usará a variável CSS */
             object-fit: contain;
+            transition: transform 0.2s ease-out, filter 0.2s ease-out; /* Transição para animação */
         }
 
-        .penalty-score-container {
-            position: absolute;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            /* Por padrão, escondido ou posicionado fora da tela */
-            visibility: hidden;
-            opacity: 0;
-            transition: visibility 0s, opacity 0.5s linear;
-        }
-
-        /* Visibilidade do placar de pênaltis quando ativo */
-        .penalty-mode-active .penalty-score-container {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .penalty-score {
-            font-family: 'Roboto Mono', monospace;
-            font-size: 60px;
-            font-weight: 700;
-            color: #e67e22; /* Cor mais para placar de pênaltis */
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-        }
-
-        /* Estilos para animação de gol normal */
-        .team1-shield.goal-animation, .team2-shield.goal-animation {
-            animation: pulse 1s ease-out infinite alternate; /* Animação mais suave */
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.1); filter: brightness(1.5); }
-            100% { transform: scale(1); filter: brightness(1); }
-        }
-
-        /* Animação para gol de pênalti (piscar escudo) */
-        .team1-shield.penalty-goal-animation, .team2-shield.penalty-goal-animation {
-            animation: flicker 0.2s linear 5 alternate; /* 5 vezes para um piscar rápido */
-        }
-
-        @keyframes flicker {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
-        }
-
-        /* Estilos para os Cartões - Visibilidade */
+        /* Estilos para os Cartões */
         .card-container {
             position: absolute;
             display: flex;
@@ -124,47 +84,84 @@
             background-color: yellow;
             border: 2px solid #333;
             box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-            margin-right: -10px; /* Sobrepõe um pouco */
+            margin-right: -10px;
             transition: transform 0.2s ease-out;
         }
         .red-card {
             background-color: red;
         }
-        .card-spacer { /* Para dar um espaço entre amarelo e vermelho */
+        .card-spacer {
             width: 15px; 
         }
 
+        /* Pênaltis - Bolinhas */
+        .penalty-container {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            visibility: hidden; /* Escondido por padrão */
+            opacity: 0;
+            transition: visibility 0s, opacity 0.5s linear;
+        }
 
-        /* Temas (serão adicionados via JS) */
-        /* .container.theme-dark, .container.theme-blue, etc. */
+        .penalty-mode-active .penalty-container {
+            visibility: visible;
+            opacity: 1;
+        }
 
-        /* Layouts (serão adicionados via JS para posicionamento) */
+        .penalty-ball {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            background-color: #555; /* Cor padrão para pênalti ainda não batido */
+            display: inline-block;
+            margin: 0 2px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .penalty-ball.green {
+            background-color: #27ae60; /* Gol */
+            border-color: #1e8449;
+        }
+
+        .penalty-ball.red {
+            background-color: #e74c3c; /* Erro */
+            border-color: #c0392b;
+        }
+
+        /* Animação de Gol (aplica-se ao escudo do time) */
+        .goal-animation {
+            animation: pulse 1s ease-out infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.1); filter: brightness(1.5); }
+            100% { transform: scale(1); filter: brightness(1); }
+        }
+
+        /* Temas (usando variáveis CSS para as cores de fundo) */
+        .theme-0 { --bg-color: rgba(44, 62, 80, var(--bg-opacity, 0.9)); }
+        .theme-1 { --bg-color: rgba(52, 152, 219, var(--bg-opacity, 0.9)); }
+        .theme-2 { --bg-color: rgba(46, 204, 113, var(--bg-opacity, 0.9)); }
+        .theme-3 { --bg-color: rgba(231, 76, 60, var(--bg-opacity, 0.9)); }
+        .theme-4 { --bg-color: rgba(243, 156, 18, var(--bg-opacity, 0.9)); }
+
+        /* Layout Básico */
         .layout-basic .team1-name { top: 50px; left: 50px; }
         .layout-basic .team2-name { top: 50px; right: 50px; text-align: right; }
         .layout-basic .score-container { position: absolute; top: 120px; left: 50%; transform: translateX(-50%); display: flex; gap: 40px; }
-        .layout-basic .score1 { }
+        .layout-basic .score1 {}
         .layout-basic .separator { font-size: 120px; color: #ffffff; }
-        .layout-basic .score2 { }
+        .layout-basic .score2 {}
         .layout-basic .timer { bottom: 50px; left: 50%; transform: translateX(-50%); }
         .layout-basic .period { top: 20px; left: 20px; }
         .layout-basic .team1-shield { top: 45px; left: 380px; }
         .layout-basic .team2-shield { top: 45px; right: 380px; }
-        .layout-basic .overlay-logo { bottom: 20px; right: 20px; height: 60px; width: auto; }
-        .layout-basic .penalty-score-container { 
-            position: absolute; 
-            top: 250px; /* Ajuste a posição para o placar de pênaltis */
-            left: 50%; 
-            transform: translateX(-50%); 
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .layout-basic .penalty-score-container h3 { 
-            font-size: 40px; 
-            color: #ffffff;
-            margin: 0;
-            white-space: nowrap;
-        }
+        .layout-basic .overlay-logo { bottom: 20px; right: 20px; height: var(--image-size, 60px); width: auto; max-height: var(--image-size, 60px); }
+
         .layout-basic .team1-cards {
             position: absolute;
             top: 190px;
@@ -176,16 +173,24 @@
             right: 50px;
         }
 
-
-        /* Adicione outros layouts aqui (moderno, retro, etc.) e ajuste as posições dos elementos */
-
+        /* Posição dos containers de pênalti no layout básico */
+        .layout-basic .penalty-container.team1-penalties {
+            top: 250px; 
+            left: 50px;
+        }
+        .layout-basic .penalty-container.team2-penalties {
+            top: 250px; 
+            right: 50px;
+            flex-direction: row-reverse; /* Para as bolinhas irem da direita para a esquerda */
+        }
+        
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container layout-basic">
         <div class="team1-name">Time 1</div>
         <div class="team2-name">Time 2</div>
-        <div class="score-container layout-basic">
+        <div class="score-container">
             <span class="score score1">0</span>
             <span class="score separator">-</span>
             <span class="score score2">0</span>
@@ -196,12 +201,8 @@
         <img class="team2-shield" src="" alt="Escudo Time 2">
         <img class="overlay-logo" src="" alt="Logo Overlay">
         
-        <div class="penalty-score-container">
-            <h3>Pênaltis:</h3>
-            <span class="penalty-score penalty-score1">0</span>
-            <span class="penalty-score">-</span>
-            <span class="penalty-score penalty-score2">0</span>
-        </div>
+        <div class="penalty-container team1-penalties"></div>
+        <div class="penalty-container team2-penalties"></div>
 
         <div class="card-container team1-cards"></div>
         <div class="card-container team2-cards"></div>
@@ -263,28 +264,28 @@
             document.querySelector('.team2-shield').src = state.escudo2 || '';
             document.querySelector('.overlay-logo').src = state.logoOverlay || '';
             
-            // Atualiza placares de pênalti
-            document.querySelector('.penalty-score1').innerText = state.penaltyScore['1'];
-            document.querySelector('.penalty-score2').innerText = state.penaltyScore['2'];
-
             const container = document.querySelector('.container');
-            container.className = 'container'; // Reset classes
-            container.classList.add(`theme-${getThemeClass(state.placarThemeIndex)}`);
-            container.classList.add(`layout-${getLayoutClass(state.currentLayoutIndex)}`);
             
             // Gerencia visibilidade da overlay
             if (state.isVisible) {
-                document.body.style.opacity = state.placarOpacity / 100;
                 document.body.style.visibility = 'visible';
+                container.style.setProperty('--bg-opacity', (state.placarOpacity / 100).toFixed(2));
+                container.classList.remove('theme-0', 'theme-1', 'theme-2', 'theme-3', 'theme-4');
+                container.classList.add(`theme-${state.placarThemeIndex}`);
             } else {
-                document.body.style.opacity = 0;
                 document.body.style.visibility = 'hidden';
             }
 
-            // Aplica cor da fonte globalmente ou por tema, se necessário
-            document.body.style.color = state.fontColor;
+            // Aplica cor da fonte globalmente
+            container.style.color = state.fontColor;
+            document.querySelector('.score1').style.color = state.fontColor;
+            document.querySelector('.score2').style.color = state.fontColor;
+            document.querySelector('.timer').style.color = state.fontColor;
+            document.querySelector('.period').style.color = state.fontColor;
+            document.querySelector('.separator').style.color = state.fontColor;
 
-            // Gerencia a visibilidade do placar de pênaltis
+
+            // Gerencia o modo pênaltis (visibilidade do container de pênaltis)
             if (state.penaltyModeActive) {
                 container.classList.add('penalty-mode-active');
             } else {
@@ -292,39 +293,35 @@
             }
 
             // Animação de Gol
-            document.querySelector('.team1-shield').classList.remove('goal-animation', 'penalty-goal-animation');
-            document.querySelector('.team2-shield').classList.remove('goal-animation', 'penalty-goal-animation');
-            if (state.activeAnimation) {
-                if (state.activeAnimation.type === 'goalAnimation') {
-                    const teamShield = state.activeAnimation.team === '1' ? document.querySelector('.team1-shield') : document.querySelector('.team2-shield');
-                    teamShield.classList.add('goal-animation');
-                } else if (state.activeAnimation.type === 'penaltyGoalAnimation') {
-                    const teamShield = state.activeAnimation.team === '1' ? document.querySelector('.team1-shield') : document.querySelector('.team2-shield');
-                    teamShield.classList.add('penalty-goal-animation');
-                }
+            const team1Shield = document.querySelector('.team1-shield');
+            const team2Shield = document.querySelector('.team2-shield');
+            
+            team1Shield.classList.remove('goal-animation');
+            team2Shield.classList.remove('goal-animation');
+
+            if (state.activeAnimation === 'goalAnimation1') {
+                team1Shield.classList.add('goal-animation');
+            } else if (state.activeAnimation === 'goalAnimation2') {
+                team2Shield.classList.add('goal-animation');
             }
 
             // Ajuste do tamanho das imagens
-            const shields = document.querySelectorAll('.team1-shield, .team2-shield');
-            const logo = document.querySelector('.overlay-logo');
-            const size = state.imageSize + 'px';
-            shields.forEach(shield => {
-                shield.style.height = size;
-                shield.style.width = size;
-            });
-            if (logo) {
-                logo.style.maxHeight = size;
-                logo.style.width = 'auto'; // Manter a proporção
-            }
+            const imageSizePx = state.imageSize + 'px';
+            container.style.setProperty('--image-size', imageSizePx);
+
 
             // Renderiza os cartões
             renderCards(state.cards['1'].amarelo, state.cards['1'].vermelho, '.team1-cards');
             renderCards(state.cards['2'].amarelo, state.cards['2'].vermelho, '.team2-cards');
+
+            // Renderiza as bolinhas de pênaltis
+            renderPenaltyBalls(state.penalties['1'], '.team1-penalties');
+            renderPenaltyBalls(state.penalties['2'], '.team2-penalties');
         }
 
         function renderCards(yellowCount, redCount, containerSelector) {
             const container = document.querySelector(containerSelector);
-            container.innerHTML = ''; // Limpa cartões existentes
+            container.innerHTML = ''; 
 
             for (let i = 0; i < yellowCount; i++) {
                 const card = document.createElement('div');
@@ -345,6 +342,23 @@
             }
         }
 
+        function renderPenaltyBalls(penaltyResults, containerSelector) {
+            const container = document.querySelector(containerSelector);
+            container.innerHTML = ''; // Limpa as bolinhas existentes
+
+            // Cria as bolinhas com base nos resultados armazenados
+            penaltyResults.forEach(result => {
+                const ball = document.createElement('span');
+                ball.classList.add('penalty-ball');
+                if (result === 'green') {
+                    ball.classList.add('green');
+                } else if (result === 'red') {
+                    ball.classList.add('red');
+                }
+                container.appendChild(ball);
+            });
+        }
+
 
         function formatTime(s) {
             const min = String(Math.floor(s / 60)).padStart(2, '0');
@@ -356,34 +370,21 @@
             0: 'Parado', 1: '1º T', 2: '2º T', 3: 'Prorrog', 4: 'Int', 5: 'T. Extra'
         };
 
-        function getThemeClass(index) {
-            const themes = ['dark', 'blue', 'green', 'red', 'yellow'];
-            return themes[index] || 'dark';
-        }
-
-        function getLayoutClass(index) {
-            const layouts = ['basic', 'modern', 'retro', 'futuristic', 'custom'];
-            return layouts[index] || 'basic';
-        }
-
         // Ajustar o tamanho do container para diferentes resoluções
         function resizeContainer() {
             const container = document.querySelector('.container');
-            // Calcula a escala baseada na largura e altura da janela
             const scaleX = window.innerWidth / 1920;
             const scaleY = window.innerHeight / 1080;
-            const scale = Math.min(scaleX, scaleY); // Usa a menor escala para garantir que tudo caiba
+            const scale = Math.min(scaleX, scaleY); 
 
-            // Aplica a transformação de escala
             container.style.transform = `scale(${scale})`;
-            // Centraliza o container na tela
             container.style.left = `${(window.innerWidth - (1920 * scale)) / 2}px`;
             container.style.top = `${(window.innerHeight - (1080 * scale)) / 2}px`;
         }
 
         window.onload = initializeFirebaseAndListeners;
         window.addEventListener('resize', resizeContainer);
-        resizeContainer(); // Ajustar no carregamento inicial
+        resizeContainer();
     </script>
 </body>
 </html>
