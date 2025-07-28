@@ -177,7 +177,7 @@
       flex-shrink: 0;
       white-space: nowrap;
       color: var(--placar-text);
-      transition: all 0.4s ease-in-out; /* Adicionado transição para suavizar mudanças */
+      transition: all 0.4s ease-in-out;
     }
 
     #cronometro_display,
@@ -192,7 +192,7 @@
       text-shadow: 0 0 5px rgba(0, 0, 0, 0.6);
       flex-shrink: 0;
       font-family: 'Roboto Mono', monospace;
-      transition: all 0.4s ease-in-out; /* Adicionado transição para suavizar mudanças */
+      transition: all 0.4s ease-in-out;
     }
     #periodoDisplay_display {
         font-size: 18px;
@@ -209,6 +209,7 @@
       width: unset;
       flex-shrink: 0;
       gap: 3px;
+      margin-top: 5px; /* Adicionado para afastar dos nomes/placares */
     }
     .card-indicator {
       width: 18px;
@@ -217,7 +218,7 @@
       margin: 0;
       border: 1px solid #777;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      transition: all 0.4s ease-in-out; /* Adicionado transição para suavizar mudanças */
+      transition: all 0.4s ease-in-out;
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
@@ -283,9 +284,6 @@
         padding: 5px 10px;
         border-radius: 8px;
     }
-    .placar-main-line.layout-modern .cards-display {
-        margin-top: 5px;
-    }
 
     /* Layout Retrô */
     .placar-main-line.layout-retro {
@@ -340,82 +338,237 @@
         border-radius: 4px;
         border: 1px solid var(--placar-text);
     }
-    .placar-main-line.layout-retro .cards-display {
-        margin-top: 2px;
-    }
     .placar-main-line.layout-retro .card-indicator {
         border: 1px solid var(--placar-text);
         box-shadow: none;
     }
 
-    /* Layout Profissional (inspirado no Paulistão 2025) */
-    .placar-main-line.layout-profissional {
-        gap: 25px; /* Mais espaço entre os elementos */
-        padding: 10px 0;
-        font-family: 'Open Sans', sans-serif; /* Fonte limpa e moderna */
-        color: white; /* Cor de texto padrão */
+    /* Layout Profissional (inspirado no Paulistão 2025) - imagem 1 */
+    .placar-main-line.layout-paulistao {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr; /* Time 1 | Cronômetro/Logo | Time 2 */
+        grid-template-rows: auto auto; /* Placar/nomes/escudos | Cartões */
+        gap: 5px 15px; /* Espaço entre linhas e colunas */
+        padding: 10px 15px;
+        font-family: 'Open Sans', sans-serif;
+        color: white;
         text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
     }
-    .placar-main-line.layout-profissional .placar-group {
-        gap: 8px;
+    .placar-main-line.layout-paulistao .placar-group {
+        gap: 5px;
         min-height: unset;
+        justify-content: center;
+        padding-bottom: 0;
     }
-    .placar-main-line.layout-profissional .placar-group-score {
-        gap: 15px;
+    .placar-main-line.layout-paulistao .placar-group-score {
+        gap: 10px;
+        flex-direction: column; /* Escudo/Nome/Placar em coluna */
     }
-    .placar-main-line.layout-profissional .placar-numero {
-        font-size: 58px; /* Placar maior */
+    .placar-main-line.layout-paulistao .placar-group:nth-child(1) { /* Time 1 */
+        grid-column: 1 / 2;
+        grid-row: 1 / 2;
+    }
+    .placar-main-line.layout-paulistao .placar-group:nth-child(3) { /* Time 2 */
+        grid-column: 3 / 4;
+        grid-row: 1 / 2;
+    }
+    .placar-main-line.layout-paulistao .placar-numero {
+        font-size: 58px;
         font-weight: 800;
-        background: rgba(0, 0, 0, 0.3); /* Fundo sutil */
+        background: rgba(0, 0, 0, 0.3);
         border-radius: 10px;
         padding: 5px 15px;
-        min-width: 80px; /* Maior largura para os números */
+        min-width: 80px;
         text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
-    .placar-main-line.layout-profissional .team-name-abbr {
-        font-size: 26px; /* Nome menor que o placar, mas visível */
+    .placar-main-line.layout-paulistao .team-name-abbr {
+        font-size: 26px;
         font-weight: 700;
         background: none;
         padding: 0;
         border-radius: 0;
-        border-bottom: 3px solid var(--placar-text); /* Linha sutil embaixo */
+        border-bottom: 3px solid var(--placar-text);
         text-transform: uppercase;
-        color: var(--placar-text); /* Usa a cor do tema */
+        color: var(--placar-text);
     }
-    .placar-main-line.layout-profissional .escudo {
-        width: calc(var(--image-base-size) * 1.3); /* Escudo um pouco maior */
+    .placar-main-line.layout-paulistao .escudo {
+        width: calc(var(--image-base-size) * 1.3);
         height: calc(var(--image-base-size) * 1.3);
         filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.6));
     }
-    .placar-main-line.layout-profissional .logo-central img {
-        width: calc(var(--image-base-size) * 1.8); /* Logo central bem proeminente */
+    .placar-main-line.layout-paulistao .logo-central {
+        grid-column: 2 / 3;
+        grid-row: 1 / 2;
+        align-self: center;
+        min-width: unset; /* Permite que ocupe menos espaço horizontal se a imagem for pequena */
+        min-height: unset;
+        padding: 0;
+    }
+    .placar-main-line.layout-paulistao .logo-central img {
+        width: calc(var(--image-base-size) * 1.8);
         height: calc(var(--image-base-size) * 1.8);
         filter: drop-shadow(0 0 7px rgba(0, 0, 0, 0.8));
     }
-    .placar-main-line.layout-profissional .placar-group.timer-period-group {
-        flex-direction: column;
-        gap: 5px;
+    .placar-main-line.layout-paulistao .placar-group.timer-period-group {
+        grid-column: 1 / 4; /* Ocupa todas as colunas */
+        grid-row: 2 / 3;
+        display: flex; /* Garante que os elementos do timer estejam em linha */
+        flex-direction: row;
+        gap: 15px;
+        justify-content: center;
+        align-items: center;
         min-height: unset;
         top: 0;
+        padding-top: 5px;
+        border-top: 1px solid rgba(255,255,255,0.1); /* Separador visual */
     }
-    .placar-main-line.layout-profissional #cronometro_display,
-    .placar-main-line.layout-profissional #periodoDisplay_display {
-        font-size: 22px; /* Cronômetro e período claros */
+    .placar-main-line.layout-paulistao #cronometro_display,
+    .placar-main-line.layout-paulistao #periodoDisplay_display {
+        font-size: 22px;
         background: rgba(0, 0, 0, 0.5);
         padding: 5px 10px;
         border-radius: 8px;
-        color: var(--placar-timer-color); /* Usa a cor do tema para o timer */
+        color: var(--placar-timer-color);
         border: 1px solid rgba(255, 255, 255, 0.1);
         font-family: 'Roboto Mono', monospace;
     }
-    .placar-main-line.layout-profissional .cards-display {
-        margin-top: 5px;
+    .placar-main-line.layout-paulistao .cards-display {
+        grid-column: 1 / 2; /* Cartões do time 1 */
+        grid-row: 1 / 2;
+        align-self: flex-end; /* Alinha na parte inferior do grupo */
+        justify-self: flex-start; /* Alinha à esquerda no grid */
+        margin-left: calc(var(--image-base-size) * 0.7); /* Ajusta posição para ficar abaixo do escudo */
+        margin-bottom: -5px; /* Puxa para cima um pouco */
+        z-index: 1; /* Garante que fique por cima de outros elementos */
     }
-    .placar-main-line.layout-profissional .card-indicator {
+    .placar-main-line.layout-paulistao .cards-display:nth-of-type(2) { /* Cartões do time 2 */
+        grid-column: 3 / 4;
+        grid-row: 1 / 2;
+        align-self: flex-end;
+        justify-self: flex-end;
+        margin-right: calc(var(--image-base-size) * 0.7); /* Ajusta posição para ficar abaixo do escudo */
+        margin-bottom: -5px;
+    }
+    .placar-main-line.layout-paulistao .card-indicator {
         border: 1px solid #aaa;
         box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
     }
+    /* Inverte a ordem do nome/placar para o time 2 */
+    .placar-main-line.layout-paulistao .placar-group:nth-child(3) .placar-group-score {
+        flex-direction: column;
+        order: unset; /* Remove order para permitir a organização do CSS grid */
+    }
+
+    /* Layout Barra Minimalista - imagem 2 */
+    .placar-main-line.layout-minimal-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 15px;
+        background: black; /* Fundo preto conforme a imagem */
+        border-radius: 50px; /* Bordas arredondadas */
+        height: 80px; /* Altura da barra */
+        width: 100%;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        position: relative;
+        overflow: visible; /* Para o círculo do cronômetro sair da barra */
+        color: white;
+        text-shadow: 0 0 3px rgba(0,0,0,0.5);
+    }
+    .placar-main-line.layout-minimal-bar .placar-group {
+        display: flex;
+        flex-direction: row; /* Elementos em linha */
+        align-items: center;
+        gap: 8px;
+        min-height: unset;
+        padding-bottom: 0;
+        flex-grow: 1;
+        justify-content: flex-start; /* Alinha time 1 à esquerda */
+    }
+    .placar-main-line.layout-minimal-bar .placar-group:nth-child(2) { /* Time 2 */
+        justify-content: flex-end; /* Alinha time 2 à direita */
+    }
+    .placar-main-line.layout-minimal-bar .placar-numero {
+        font-size: 45px;
+        font-weight: 800;
+        background: none;
+        padding: 0;
+        min-width: unset;
+        color: var(--placar-text); /* Usa a cor do tema */
+        text-shadow: none;
+    }
+    .placar-main-line.layout-minimal-bar .team-name-abbr {
+        font-size: 26px;
+        font-weight: 700;
+        background: none;
+        padding: 0;
+        border-radius: 0;
+        text-transform: uppercase;
+        color: var(--placar-text); /* Usa a cor do tema */
+    }
+    .placar-main-line.layout-minimal-bar .escudo {
+        width: calc(var(--image-base-size) * 1.1);
+        height: calc(var(--image-base-size) * 1.1);
+        filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.4));
+    }
+    .placar-main-line.layout-minimal-bar .logo-central {
+        display: none; /* Não há logo central neste layout */
+    }
+    .placar-main-line.layout-minimal-bar .placar-group.timer-period-group {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--placar-timer-color); /* Fundo do círculo com a cor do timer */
+        border-radius: 50%;
+        width: 100px; /* Tamanho do círculo */
+        height: 100px; /* Tamanho do círculo */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+        z-index: 10;
+        gap: 0px;
+    }
+    .placar-main-line.layout-minimal-bar #cronometro_display {
+        font-size: 28px;
+        font-weight: 800;
+        color: black; /* Texto preto para contraste no círculo colorido */
+        background: none;
+        padding: 0;
+        text-shadow: none;
+        margin-bottom: -5px; /* Ajusta o espaçamento entre cronômetro e período */
+    }
+    .placar-main-line.layout-minimal-bar #periodoDisplay_display {
+        font-size: 16px;
+        color: black; /* Texto preto para contraste no círculo colorido */
+        background: none;
+        padding: 0;
+        text-shadow: none;
+    }
+    /* Inverte a ordem do time 2 para o layout minimalista */
+    .placar-main-line.layout-minimal-bar .placar-group:nth-child(2) .placar-group-score {
+        flex-direction: row-reverse; /* Escudo à direita do nome/placar */
+    }
+    .placar-main-line.layout-minimal-bar .cards-display {
+        position: absolute; /* Posição absoluta para ficar fora da barra principal */
+        bottom: -25px; /* Ajuste para aparecer abaixo da barra */
+        z-index: 5;
+    }
+    .placar-main-line.layout-minimal-bar .cards-display:first-of-type { /* Cartões Time 1 */
+        left: 10px;
+    }
+    .placar-main-line.layout-minimal-bar .cards-display:last-of-type { /* Cartões Time 2 */
+        right: 10px;
+    }
+    .placar-main-line.layout-minimal-bar .card-indicator {
+        width: 16px;
+        height: 16px;
+        border-width: 1px;
+    }
+
 
     /* --- FIM DOS LAYOUTS ESPECÍFICOS --- */
 
@@ -592,13 +745,35 @@
         .placar-main-line.layout-retro .escudo { width: calc(var(--image-base-size) * 0.8); height: calc(var(--image-base-size) * 0.8); }
         .placar-main-line.layout-retro .logo-central img { width: calc(var(--image-base-size) * 1.0); height: calc(var(--image-base-size) * 1.0); }
 
-        /* Ajustes para layout Profissional em mobile */
-        .placar-main-line.layout-profissional .placar-numero { font-size: 48px; min-width: 60px;}
-        .placar-main-line.layout-profissional .team-name-abbr { font-size: 20px; }
-        .placar-main-line.layout-profissional #cronometro_display,
-        .placar-main-line.layout-profissional #periodoDisplay_display { font-size: 18px; }
-        .placar-main-line.layout-profissional .escudo { width: calc(var(--image-base-size) * 1.1); height: calc(var(--image-base-size) * 1.1); }
-        .placar-main-line.layout-profissional .logo-central img { width: calc(var(--image-base-size) * 1.5); height: calc(var(--image-base-size) * 1.5); }
+        /* Ajustes para layout Profissional (Paulistão) em mobile */
+        .placar-main-line.layout-paulistao .placar-numero { font-size: 48px; min-width: 60px;}
+        .placar-main-line.layout-paulistao .team-name-abbr { font-size: 20px; }
+        .placar-main-line.layout-paulistao #cronometro_display,
+        .placar-main-line.layout-paulistao #periodoDisplay_display { font-size: 18px; }
+        .placar-main-line.layout-paulistao .escudo { width: calc(var(--image-base-size) * 1.1); height: calc(var(--image-base-size) * 1.1); }
+        .placar-main-line.layout-paulistao .logo-central img { width: calc(var(--image-base-size) * 1.5); height: calc(var(--image-base-size) * 1.5); }
+        .placar-main-line.layout-paulistao .cards-display {
+            margin-left: calc(var(--image-base-size) * 0.5);
+            margin-right: calc(var(--image-base-size) * 0.5);
+        }
+
+        /* Ajustes para layout Barra Minimalista em mobile */
+        .placar-main-line.layout-minimal-bar {
+            height: 65px;
+            padding: 5px 10px;
+        }
+        .placar-main-line.layout-minimal-bar .placar-numero { font-size: 35px; }
+        .placar-main-line.layout-minimal-bar .team-name-abbr { font-size: 20px; }
+        .placar-main-line.layout-minimal-bar .escudo { width: calc(var(--image-base-size) * 0.9); height: calc(var(--image-base-size) * 0.9); }
+        .placar-main-line.layout-minimal-bar .placar-group.timer-period-group {
+            width: 80px;
+            height: 80px;
+        }
+        .placar-main-line.layout-minimal-bar #cronometro_display { font-size: 22px; }
+        .placar-main-line.layout-minimal-bar #periodoDisplay_display { font-size: 14px; }
+        .placar-main-line.layout-minimal-bar .cards-display {
+            bottom: -20px;
+        }
 
 
         .animated-goal-container {
@@ -708,32 +883,57 @@
                 </div>
             </div>
 
-            <div class="placar-main-line layout-profissional" id="layoutProfissional_display" style="display: none;">
+            <div class="placar-main-line layout-paulistao" id="layoutPaulistao_display" style="display: none;">
                 <div class="placar-group">
                     <div class="placar-group-score">
-                        <img id="escudo1_profissional_display" class="escudo" src="" alt="Escudo Time 1">
-                        <span id="nomeAbbr1_profissional_display" class="team-name-abbr">T1</span>
-                        <span id="placar1_profissional_display" class="placar-numero">0</span>
+                        <img id="escudo1_paulistao_display" class="escudo" src="" alt="Escudo Time 1">
+                        <span id="nomeAbbr1_paulistao_display" class="team-name-abbr">T1</span>
+                        <span id="placar1_paulistao_display" class="placar-numero">0</span>
                     </div>
-                    <div id="cardsDisplay1_profissional_display" class="cards-display"></div>
-                </div>
-
-                <div class="placar-group timer-period-group">
-                    <div id="cronometro_profissional_display">00:00</div>
-                    <div id="periodoDisplay_profissional_display" class="periodo">1º T</div>
+                    <div id="cardsDisplay1_paulistao_display" class="cards-display"></div>
                 </div>
 
                 <div class="logo-central">
-                    <img id="logoOverlay_profissional_display" src="" alt="Sua Logo">
+                    <img id="logoOverlay_paulistao_display" src="" alt="Sua Logo">
+                </div>
+                
+                <div class="placar-group">
+                    <div class="placar-group-score">
+                        <span id="placar2_paulistao_display" class="placar-numero">0</span>
+                        <span id="nomeAbbr2_paulistao_display" class="team-name-abbr">T2</span>
+                        <img id="escudo2_paulistao_display" class="escudo" src="" alt="Escudo Time 2">
+                    </div>
+                    <div id="cardsDisplay2_paulistao_display" class="cards-display"></div>
+                </div>
+
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_paulistao_display">00:00</div>
+                    <div id="periodoDisplay_paulistao_display" class="periodo">1º T</div>
+                </div>
+            </div>
+
+            <div class="placar-main-line layout-minimal-bar" id="layoutMinimalBar_display" style="display: none;">
+                <div class="placar-group">
+                    <div class="placar-group-score">
+                        <img id="escudo1_minimalbar_display" class="escudo" src="" alt="Escudo Time 1">
+                        <span id="nomeAbbr1_minimalbar_display" class="team-name-abbr">T1</span>
+                        <span id="placar1_minimalbar_display" class="placar-numero">0</span>
+                    </div>
+                    <div id="cardsDisplay1_minimalbar_display" class="cards-display"></div>
+                </div>
+                
+                <div class="placar-group timer-period-group">
+                    <div id="cronometro_minimalbar_display">00:00</div>
+                    <div id="periodoDisplay_minimalbar_display" class="periodo">1º T</div>
                 </div>
 
                 <div class="placar-group">
                     <div class="placar-group-score">
-                        <span id="placar2_profissional_display" class="placar-numero">0</span>
-                        <span id="nomeAbbr2_profissional_display" class="team-name-abbr">T2</span>
-                        <img id="escudo2_profissional_display" class="escudo" src="" alt="Escudo Time 2">
+                        <span id="placar2_minimalbar_display" class="placar-numero">0</span>
+                        <span id="nomeAbbr2_minimalbar_display" class="team-name-abbr">T2</span>
+                        <img id="escudo2_minimalbar_display" class="escudo" src="" alt="Escudo Time 2">
                     </div>
-                    <div id="cardsDisplay2_profissional_display" class="cards-display"></div>
+                    <div id="cardsDisplay2_minimalbar_display" class="cards-display"></div>
                 </div>
             </div>
 
@@ -817,7 +1017,7 @@
       escudo2: '', // Será a string Base64
       logoOverlay: '', // Será a string Base64
       isVisible: true,
-      currentLayoutIndex: 0, // 0 = Básico, 1 = Moderno, 2 = Retrô, 3 = Profissional
+      currentLayoutIndex: 0, // 0 = Básico, 1 = Moderno, 2 = Retrô, 3 = Paulistão, 4 = Barra Minimalista
       imageSize: 50 // Novo: Tamanho base dos escudos em pixels
     };
 
@@ -979,7 +1179,7 @@
     // Função para animar o escudo do time
     function triggerShieldJump(teamId) {
         // Encontra todos os elementos de escudo que correspondem ao ID do time
-        const escudosToAnimate = document.querySelectorAll(`[id^="escudo${teamId}"]`); 
+        const escudosToAnimate = document.querySelectorAll(`[id^="escudo${teamId}_"]`); 
         
         escudosToAnimate.forEach(el => {
             if (el) {
@@ -1001,12 +1201,38 @@
         // Atualiza a variável CSS para o tamanho das imagens
         document.documentElement.style.setProperty('--image-base-size', `${overlayState.imageSize}px`);
 
-        // Arrays de IDs para atualizar todos os elementos, independente do layout
-        const placar1Elements = document.querySelectorAll('[id^="placar1_"]');
-        const placar2Elements = document.querySelectorAll('[id^="placar2_"]');
-        const nomeAbbr1Elements = document.querySelectorAll('[id^="nomeAbbr1_"]');
-        const nomeAbbr2Elements = document.querySelectorAll('[id^="nomeAbbr2_"]');
-        
+        // Array de sufixos de layout para iterar sobre todos os elementos
+        const layoutSuffixes = ['basic', 'modern', 'retro', 'paulistao', 'minimalbar'];
+
+        // Atualiza texto e imagens para todos os elementos relevantes em todos os layouts
+        layoutSuffixes.forEach(suffix => {
+            const placar1Element = document.getElementById(`placar1_${suffix}_display`);
+            const placar2Element = document.getElementById(`placar2_${suffix}_display`);
+            const nomeAbbr1Element = document.getElementById(`nomeAbbr1_${suffix}_display`);
+            const nomeAbbr2Element = document.getElementById(`nomeAbbr2_${suffix}_display`);
+            const escudo1Element = document.getElementById(`escudo1_${suffix}_display`);
+            const escudo2Element = document.getElementById(`escudo2_${suffix}_display`);
+            const logoOverlayElement = document.getElementById(`logoOverlay_${suffix}_display`);
+            const cronometroElement = document.getElementById(`cronometro_${suffix}_display`);
+            const periodoElement = document.getElementById(`periodoDisplay_${suffix}_display`);
+
+            if (placar1Element) placar1Element.innerText = overlayState.placar['1'];
+            if (placar2Element) placar2Element.innerText = overlayState.placar['2'];
+            if (nomeAbbr1Element) nomeAbbr1Element.innerText = overlayState.nomeAbbr1 || 'T1';
+            if (nomeAbbr2Element) nomeAbbr2Element.innerText = overlayState.nomeAbbr2 || 'T2';
+            
+            if (escudo1Element) escudo1Element.src = overlayState.escudo1 || defaultEscudo1;
+            if (escudo2Element) escudo2Element.src = overlayState.escudo2 || defaultEscudo1;
+            if (logoOverlayElement) logoOverlayElement.src = overlayState.logoOverlay || defaultLogo;
+            
+            if (cronometroElement) cronometroElement.innerText = formatTime(localSeconds);
+            if (periodoElement) periodoElement.innerText = periodNames[overlayState.currentPeriod] || 'N/A';
+
+            // Renderiza cartões para cada layout
+            renderCards('1', suffix);
+            renderCards('2', suffix);
+        });
+
         // IDs específicos para o modo pênalti
         const escudoPenalty1Element = document.getElementById('escudoPenalty1_display');
         const nomePenalty1Element = document.getElementById('nomePenalty1_display');
@@ -1014,42 +1240,11 @@
         const nomePenalty2Element = document.getElementById('nomePenalty2_display');
         const logoOverlayPenaltyElement = document.getElementById('logoOverlayPenalty_display');
 
-        const escudo1Elements = document.querySelectorAll('[id^="escudo1_"]');
-        const escudo2Elements = document.querySelectorAll('[id^="escudo2_"]');
-        const logoOverlayElements = document.querySelectorAll('[id^="logoOverlay_"]');
-        const cronometroDisplays = document.querySelectorAll('[id^="cronometro_"]');
-        const periodoDisplays = document.querySelectorAll('[id^="periodoDisplay_"]');
-
-        // Atualiza texto e imagens para todos os elementos relevantes em todos os layouts
-        placar1Elements.forEach(el => el.innerText = overlayState.placar['1']);
-        placar2Elements.forEach(el => el.innerText = overlayState.placar['2']);
-        nomeAbbr1Elements.forEach(el => el.innerText = overlayState.nomeAbbr1 || 'T1');
-        nomeAbbr2Elements.forEach(el => el.innerText = overlayState.nomeAbbr2 || 'T2');
-        
-        // Atualiza elementos específicos do modo pênalti
         if (escudoPenalty1Element) escudoPenalty1Element.src = overlayState.escudo1 || defaultEscudo1;
         if (nomePenalty1Element) nomePenalty1Element.innerText = overlayState.nome1 || 'Time 1';
         if (escudoPenalty2Element) escudoPenalty2Element.src = overlayState.escudo2 || defaultEscudo1;
         if (nomePenalty2Element) nomePenalty2Element.innerText = overlayState.nome2 || 'Time 2';
         if (logoOverlayPenaltyElement) logoOverlayPenaltyElement.src = overlayState.logoOverlay || defaultLogo;
-
-
-        escudo1Elements.forEach(el => el.src = overlayState.escudo1 || defaultEscudo1);
-        escudo2Elements.forEach(el => el.src = overlayState.escudo2 || defaultEscudo1);
-        logoOverlayElements.forEach(el => el.src = overlayState.logoOverlay || defaultLogo);
-        
-        cronometroDisplays.forEach(el => el.innerText = formatTime(localSeconds));
-        periodoDisplays.forEach(el => el.innerText = periodNames[overlayState.currentPeriod] || 'N/A');
-
-        // Renderiza cartões para todos os displays de cartão em todos os layouts
-        renderCards('1', 'basic');
-        renderCards('2', 'basic');
-        renderCards('1', 'modern');
-        renderCards('2', 'modern');
-        renderCards('1', 'retro');
-        renderCards('2', 'retro');
-        renderCards('1', 'profissional'); // ATUALIZADO
-        renderCards('2', 'profissional'); // ATUALIZADO
 
         // Renderiza as bolinhas de pênalti
         renderPenalties('1');
@@ -1101,8 +1296,8 @@
                 document.getElementById('layoutBasic_display').style.display = 'none';
                 document.getElementById('layoutModern_display').style.display = 'none';
                 document.getElementById('layoutRetro_display').style.display = 'none';
-                // ATUALIZADO PARA PROFISSIONAL
-                document.getElementById('layoutProfissional_display').style.display = 'none';
+                document.getElementById('layoutPaulistao_display').style.display = 'none'; // Novo
+                document.getElementById('layoutMinimalBar_display').style.display = 'none'; // Novo
 
                 // Mostra apenas o layout selecionado como 'flex'
                 switch (overlayState.currentLayoutIndex) {
@@ -1115,8 +1310,11 @@
                     case 2:
                         document.getElementById('layoutRetro_display').style.display = 'flex';
                         break;
-                    case 3: // Este agora é o Layout Profissional
-                        document.getElementById('layoutProfissional_display').style.display = 'flex'; // ATUALIZADO
+                    case 3: 
+                        document.getElementById('layoutPaulistao_display').style.display = 'grid'; // Layout Paulistão usa Grid
+                        break;
+                    case 4: 
+                        document.getElementById('layoutMinimalBar_display').style.display = 'flex';
                         break;
                     default: // Fallback para o layout básico
                         document.getElementById('layoutBasic_display').style.display = 'flex';
@@ -1151,15 +1349,18 @@
     }
 
     // Função renderCards modificada para aceitar o sufixo do ID do layout
-    function renderCards(time, layoutSuffix) {
-        const displayElementId = `cardsDisplay${time}_${layoutSuffix}`;
+    function renderCards(team, layoutSuffix) {
+        const displayElementId = `cardsDisplay${team}_${layoutSuffix}_display`; // Corrigido o ID completo
         const displayElement = document.getElementById(displayElementId);
         
-        if (!displayElement) return; // Se o elemento não existe para este layout/time, sai
+        if (!displayElement) {
+            console.warn(`Elemento de cartão não encontrado: ${displayElementId}`);
+            return; // Se o elemento não existe para este layout/time, sai
+        }
 
         displayElement.innerHTML = '';
-        const amarelos = (overlayState.cards[time] && typeof overlayState.cards[time].amarelo === 'number') ? overlayState.cards[time].amarelo : 0;
-        const vermelhos = (overlayState.cards[time] && typeof overlayState.cards[time].vermelho === 'number') ? overlayState.cards[time].vermelho : 0;
+        const amarelos = (overlayState.cards[team] && typeof overlayState.cards[team].amarelo === 'number') ? overlayState.cards[team].amarelo : 0;
+        const vermelhos = (overlayState.cards[team] && typeof overlayState.cards[team].vermelho === 'number') ? overlayState.cards[team].vermelho : 0;
 
         for (let i = 0; i < amarelos; i++) {
             const cardDiv = document.createElement('div');
@@ -1173,13 +1374,13 @@
         }
     }
 
-    function renderPenalties(time) {
-      const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${time}_display`);
+    function renderPenalties(team) {
+      const penaltyBallsContainer = document.getElementById(`penaltiesDisplay${team}_display`);
       if (!penaltyBallsContainer) return; // Garante que o elemento existe
 
       penaltyBallsContainer.innerHTML = '';
 
-      const penalties = overlayState.penalties && Array.isArray(overlayState.penalties[time]) ? overlayState.penalties[time] : [];
+      const penalties = overlayState.penalties && Array.isArray(overlayState.penalties[team]) ? overlayState.penalties[team] : [];
 
       penalties.forEach(result => {
         const ballDiv = document.createElement('div');
@@ -1189,4 +1390,4 @@
     }
   </script>
 </body>
-                      </html>
+                  </html>
