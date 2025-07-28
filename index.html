@@ -3,358 +3,589 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Overlay de Transmissão</title>
+    <title>Controlador de Transmissão</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            overflow: hidden; /* Evita barras de rolagem */
-            background-color: rgba(0, 0, 0, 0); /* Fundo transparente para OBS */
-            color: white;
+            background-color: #2c3e50; /* Fundo escuro */
+            color: #ecf0f1; /* Texto claro */
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            justify-content: space-between; /* Espaçamento entre placar, centro e cartões */
+            min-height: 100vh;
         }
 
-        #placar {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+        /* Estilo das abas de navegação (horizontal) */
+        .tab-bar {
             display: flex;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 10;
-        }
-
-        .time-info {
-            display: flex;
-            align-items: center;
-            margin: 0 15px;
-        }
-
-        .time-info img {
-            width: 50px;
-            height: 50px;
-            margin-right: 10px;
-            object-fit: contain;
-        }
-
-        .time-info .nome-time {
-            font-size: 1.8em;
-            font-weight: bold;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
-        }
-
-        .gols {
-            font-size: 3em;
-            font-weight: bold;
-            margin: 0 10px;
-            color: #f39c12; /* Cor destacada para os gols */
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
-        }
-
-        /* Animação de Gol */
-        #animacao-gol {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(46, 204, 113, 0.9); /* Verde vibrante */
-            padding: 30px 60px;
-            border-radius: 15px;
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.7);
-            text-align: center;
+            background-color: #34495e;
+            padding: 5px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
             z-index: 1000;
-            display: none; /* Esconde por padrão */
-            opacity: 0;
-            animation-duration: 3s; /* Duração total da animação */
-            animation-timing-function: ease-out;
-            animation-fill-mode: forwards;
+            justify-content: flex-start;
+            flex-wrap: wrap;
         }
 
-        #animacao-gol.show {
-            animation-name: fadeInOut;
+        .tab-button {
+            background-color: #4a6680;
+            color: #ecf0f1;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, color 0.3s ease, border-bottom 0.3s ease;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        .tab-button:hover {
+            background-color: #5d7a98;
         }
 
-        #animacao-gol h1 {
-            font-size: 5em;
+        .tab-button.active {
+            background-color: #2980b9;
             color: white;
-            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
-            margin: 0;
-            letter-spacing: 5px;
-        }
-
-        #animacao-gol .escudo-gol {
-            width: 100px;
-            height: 100px;
-            margin-top: 15px;
-            object-fit: contain;
-            border-radius: 50%; /* Opcional: para escudos redondos */
-            border: 3px solid white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Seção de Cartões */
-        #cartoes-container {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 50;
-        }
-
-        .cartao {
-            display: flex;
-            align-items: center;
-            padding: 8px 15px;
-            border-radius: 8px;
-            color: black;
+            border-bottom: 3px solid #2980b9;
             font-weight: bold;
-            font-size: 1.1em;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-            animation: slideInLeft 0.5s ease-out forwards; /* Animação ao aparecer */
-            min-width: 200px; /* Largura mínima para o cartão */
         }
 
-        .cartao.amarelo {
-            background-color: #f1c40f; /* Amarelo */
+        .tab-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: none;
+            background-color: #34495e;
+            border-radius: 0 0 8px 8px;
+            margin: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
-        .cartao.vermelho {
-            background-color: #e74c3c; /* Vermelho */
-            color: white; /* Texto branco para cartão vermelho */
+        .tab-content.active {
+            display: block;
         }
 
-        .cartao img.escudo-time {
-            width: 30px;
-            height: 30px;
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="number"],
+        .input-group select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #5d7a98;
+            border-radius: 4px;
+            background-color: #4a6680;
+            color: #ecf0f1;
+            font-size: 1em;
+            box-sizing: border-box; /* Garante que o padding não aumente a largura */
+        }
+
+        .input-group input[type="text"]:focus,
+        .input-group input[type="number"]:focus,
+        .input-group select:focus {
+            border-color: #2980b9;
+            outline: none;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
             margin-right: 10px;
-            object-fit: contain;
+            margin-top: 5px; /* Pequeno espaçamento para botões */
         }
 
-        .cartao .icone-cartao {
-            width: 25px;
-            height: 25px;
-            margin-left: 10px;
-            object-fit: contain;
+        button:hover {
+            background-color: #218838;
         }
 
-        @keyframes slideInLeft {
-            from {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        button.danger {
+            background-color: #dc3545;
         }
 
-        @keyframes slideOutLeft {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
+        button.danger:hover {
+            background-color: #c82333;
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4a6680;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        /* Estilo para a caixa do link da Overlay */
+        .link-overlay-box {
+            background-color: #2c3e50;
+            border: 1px solid #5d7a98;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: flex; /* Para alinhar input e botão */
+            align-items: center;
+        }
+
+        .link-overlay-box label {
+            font-weight: bold;
+            margin-right: 10px; /* Espaço entre label e input */
+            white-space: nowrap; /* Evita quebra de linha do label */
+        }
+
+        .link-overlay-box input[type="text"] {
+            flex-grow: 1; /* O input ocupa o máximo de espaço disponível */
+            padding: 8px;
+            border: 1px solid #5d7a98;
+            border-radius: 4px;
+            background-color: #4a6680;
+            color: #ecf0f1;
+            font-size: 0.9em;
+            margin-right: 10px; /* Espaço entre input e botão */
+            cursor: text; /* Indica que é um campo de texto, embora readonly */
+        }
+
+        .link-overlay-box button {
+            padding: 8px 12px;
+            font-size: 0.9em;
+            margin-top: 0; /* Remove margin-top padrão de botões */
+        }
+
+        /* Estilos adicionais para o modo pênaltis */
+        .penalties-section {
+            margin-top: 20px;
+            border-top: 1px solid #5d7a98;
+            padding-top: 15px;
+        }
+
+        .penalty-scores {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+        }
+
+        .penalty-scores div {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <div id="placar">
-        <div class="time-info">
-            <img id="escudoCasa" src="https://via.placeholder.com/50x50?text=Casa" alt="Escudo Time Casa">
-            <span id="nomeCasa" class="nome-time">Time A</span>
+    <div class="tab-bar">
+        <button class="tab-button active" onclick="openTab(event, 'Placar')">Placar</button>
+        <button class="tab-button" onclick="openTab(event, 'Cartoes')">Cartões</button>
+        <button class="tab-button" onclick="openTab(event, 'Eventos')">Eventos</button>
+        <button class="tab-button" onclick="openTab(event, 'Penaltis')">Pênaltis</button>
+        <button class="tab-button" onclick="openTab(event, 'Configuracoes')">Configurações</button>
+        <button class="tab-button" onclick="openTab(event, 'Login')">Login</button>
+    </div>
+
+    <div id="Placar" class="tab-content active">
+        <h2>Controle de Placar</h2>
+        <div class="input-group">
+            <label for="timeCasaNome">Nome Time Casa:</label>
+            <input type="text" id="timeCasaNome" value="Time A">
         </div>
-        <span id="golsCasa" class="gols">0</span>
-        <span class="gols">X</span>
-        <span id="golsVisitante" class="gols">0</span>
-        <div class="time-info">
-            <span id="nomeVisitante" class="nome-time">Time B</span>
-            <img id="escudoVisitante" src="https://via.placeholder.com/50x50?text=Vis" alt="Escudo Time Visitante">
+        <div class="input-group">
+            <label for="escudoCasaUrl">URL Escudo Casa:</label>
+            <input type="text" id="escudoCasaUrl" value="https://via.placeholder.com/50x50?text=Casa">
+        </div>
+        <div class="input-group">
+            <label for="golsCasa">Gols Casa:</label>
+            <input type="number" id="golsCasa" value="0">
+        </div>
+        <hr style="border-color: #5d7a98; margin: 20px 0;">
+        <div class="input-group">
+            <label for="timeVisitanteNome">Nome Time Visitante:</label>
+            <input type="text" id="timeVisitanteNome" value="Time B">
+        </div>
+        <div class="input-group">
+            <label for="escudoVisitanteUrl">URL Escudo Visitante:</label>
+            <input type="text" id="escudoVisitanteUrl" value="https://via.placeholder.com/50x50?text=Vis">
+        </div>
+        <div class="input-group">
+            <label for="golsVisitante">Gols Visitante:</label>
+            <input type="number" id="golsVisitante" value="0">
+        </div>
+        <button onclick="atualizarPlacar()">Atualizar Placar</button>
+        <button onclick="resetarPlacar()" class="danger">Resetar Placar</button>
+        <div class="status-message" id="placarStatus"></div>
+    </div>
+
+    <div id="Cartoes" class="tab-content">
+        <h2>Controle de Cartões</h2>
+        <div class="input-group">
+            <label for="jogadorCartao">Nome do Jogador:</label>
+            <input type="text" id="jogadorCartao">
+        </div>
+        <div class="input-group">
+            <label for="timeCartao">Time:</label>
+            <select id="timeCartao">
+                <option value="casa">Casa</option>
+                <option value="visitante">Visitante</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="tipoCartao">Tipo de Cartão:</label>
+            <select id="tipoCartao">
+                <option value="amarelo">Amarelo</option>
+                <option value="vermelho">Vermelho</option>
+            </select>
+        </div>
+        <button onclick="enviarCartao()">Enviar Cartão</button>
+        <button onclick="limparCartoes()" class="danger">Limpar Cartões</button>
+        <div class="status-message" id="cartaoStatus"></div>
+        
+        <div class="penalty-scores" style="margin-top: 20px; background-color: #2c3e50; padding: 10px; border-radius: 5px;">
+            <div>Placar Atual: <span id="currentGolsCasaPrev">0</span> x <span id="currentGolsVisitantePrev">0</span></div>
         </div>
     </div>
 
-    <div id="animacao-gol">
-        <h1>GOOOOL!</h1>
-        <img id="escudoAnimacaoGol" class="escudo-gol" src="" alt="Escudo do Time do Gol" style="display: none;">
+    <div id="Eventos" class="tab-content">
+        <h2>Controle de Eventos</h2>
+        <p>Aqui você pode gerenciar eventos da partida, como início/fim de jogo, gols, etc.</p>
+        <button onclick="enviarGol()">Enviar Gol</button> <button onclick="enviarEvento('inicio_jogo')">Início de Jogo</button>
+        <button onclick="enviarEvento('fim_jogo')">Fim de Jogo</button>
+        <div class="status-message" id="eventoStatus"></div>
+        
+        <div class="input-group" style="margin-top: 20px;">
+            <label for="timeGol">Time que fez o gol:</label>
+            <select id="timeGol">
+                <option value="casa">Casa</option>
+                <option value="visitante">Visitante</option>
+            </select>
+        </div>
     </div>
 
-    <div id="cartoes-container">
+    <div id="Penaltis" class="tab-content">
+        <h2>Controle de Pênaltis</h2>
+        <div class="penalty-scores">
+            <div>Time Casa: <span id="penaltiesCasa">0</span></div>
+            <div>Time Visitante: <span id="penaltiesVisitante">0</span></div>
         </div>
+        <button onclick="adicionarPenalty('casa')">Gol Casa</button>
+        <button onclick="adicionarPenalty('visitante')">Gol Visitante</button>
+        <button onclick="resetarPenaltis()" class="danger">Resetar Pênaltis</button>
+        <div class="status-message" id="penaltisStatus"></div>
+    </div>
+
+    <div id="Configuracoes" class="tab-content">
+        <h2>Configurações</h2>
+        <p>Ajuste as configurações gerais da transmissão.</p>
+        <div class="input-group">
+            <label for="linkOverlayConfig">Link da Overlay (para configuração futura):</label>
+            <input type="text" id="linkOverlayConfig" value="http://localhost:8080/overlay" readonly>
+        </div>
+        <button onclick="salvarConfiguracoes()">Salvar Configurações</button>
+        <div class="status-message" id="configStatus"></div>
+    </div>
+
+    <div id="Login" class="tab-content">
+        <h2>Login e Informações</h2>
+        <p>Gerencie o acesso e obtenha links importantes.</p>
+        <div class="input-group">
+            <label for="username">Usuário:</label>
+            <input type="text" id="username">
+        </div>
+        <div class="input-group">
+            <label for="password">Senha:</label>
+            <input type="password" id="password">
+        </div>
+        <button onclick="fazerLogin()">Login</button>
+        <div class="status-message" id="loginStatus"></div>
+
+        <div class="link-overlay-box">
+            <label for="overlayLinkInput">Link da Overlay para OBS/Streamlabs:</label>
+            <input type="text" id="overlayLinkInput" value="http://localhost:8080/overlay" readonly>
+            <button onclick="copyOverlayLink()">Copiar Link</button>
+        </div>
+    </div>
 
     <script>
-        // Função para atualizar o placar na overlay
-        function atualizarPlacar(data) {
-            document.getElementById('nomeCasa').innerText = data.timeCasa || 'Time A';
-            document.getElementById('nomeVisitante').innerText = data.timeVisitante || 'Time B';
-            document.getElementById('golsCasa').innerText = data.golsCasa !== undefined ? data.golsCasa : '0';
-            document.getElementById('golsVisitante').innerText = data.golsVisitante !== undefined ? data.golsVisitante : '0';
+        // Variáveis de estado para o placar e pênaltis
+        let currentGolsCasa = 0;
+        let currentGolsVisitante = 0;
+        let penaltiesCasa = 0;
+        let penaltiesVisitante = 0;
 
-            // Atualiza os escudos, se os links forem fornecidos
-            document.getElementById('escudoCasa').src = data.escudoCasa || 'https://via.placeholder.com/50x50?text=Casa';
-            document.getElementById('escudoVisitante').src = data.escudoVisitante || 'https://via.placeholder.com/50x50?text=Vis';
-        }
-
-        // Função para mostrar a animação de gol
-        // Adicionamos o parâmetro 'escudoSrc' para o caminho do escudo
-        function mostrarAnimacaoGol(escudoSrc) {
-            const animacaoGol = document.getElementById('animacao-gol');
-            const escudoAnimacaoGol = document.getElementById('escudoAnimacaoGol');
-
-            if (escudoSrc) {
-                escudoAnimacaoGol.src = escudoSrc;
-                escudoAnimacaoGol.style.display = 'block'; // Mostra o escudo
-            } else {
-                escudoAnimacaoGol.style.display = 'none'; // Esconde se não houver escudo
+        // Função para abrir abas
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
             }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
 
-            animacaoGol.classList.add('show');
-            setTimeout(() => {
-                animacaoGol.classList.remove('show');
-                escudoAnimacaoGol.style.display = 'none'; // Garante que o escudo desaparece junto
-            }, 3000); // Remove a classe 'show' após 3 segundos (duração da animação)
+            // Atualiza prévia do placar ao abrir aba Cartões
+            if (tabName === 'Cartoes') {
+                document.getElementById('currentGolsCasaPrev').innerText = currentGolsCasa;
+                document.getElementById('currentGolsVisitantePrev').innerText = currentGolsVisitante;
+            }
+            // Atualiza placar de pênaltis ao abrir aba Pênaltis
+            if (tabName === 'Penaltis') {
+                document.getElementById('penaltiesCasa').innerText = penaltiesCasa;
+                document.getElementById('penaltiesVisitante').innerText = penaltiesVisitante;
+            }
         }
 
-        // Variável global para armazenar cartões ativos (evita duplicação visual e ajuda a gerenciar)
-        let cartoesAtivos = {};
+        // Função para copiar o link da overlay
+        function copyOverlayLink() {
+            var copyText = document.getElementById("overlayLinkInput");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            alert("Link da Overlay copiado: " + copyText.value);
+        }
 
-        // Função para adicionar um cartão
-        function adicionarCartao(data) {
-            const container = document.getElementById('cartoes-container');
-            const cardId = `${data.jogador.replace(/\s/g, '-')}-${data.tipo}-${data.time}`; // ID único para o cartão
+        // --- Funções de Controle do Placar ---
+        function atualizarPlacar() {
+            const timeCasaNome = document.getElementById('timeCasaNome').value;
+            const escudoCasaUrl = document.getElementById('escudoCasaUrl').value;
+            const golsCasa = parseInt(document.getElementById('golsCasa').value, 10);
+            
+            const timeVisitanteNome = document.getElementById('timeVisitanteNome').value;
+            const escudoVisitanteUrl = document.getElementById('escudoVisitanteUrl').value;
+            const golsVisitante = parseInt(document.getElementById('golsVisitante').value, 10);
 
-            // Verifica se o cartão já existe para evitar duplicação
-            if (cartoesAtivos[cardId]) {
-                console.warn(`Cartão para ${data.jogador} (${data.tipo}) já existe.`);
-                // Opcional: Piscar o cartão existente ou atualizar se for o caso
+            // Atualiza variáveis de estado
+            currentGolsCasa = golsCasa;
+            currentGolsVisitante = golsVisitante;
+
+            const placarData = {
+                type: 'atualizar_placar',
+                timeCasa: timeCasaNome,
+                escudoCasa: escudoCasaUrl,
+                golsCasa: golsCasa,
+                timeVisitante: timeVisitanteNome,
+                escudoVisitante: escudoVisitanteUrl,
+                golsVisitante: golsVisitante
+            };
+
+            console.log('Dados do Placar para enviar:', placarData);
+            document.getElementById('placarStatus').innerText = 'Placar atualizado!';
+            // Simulação de envio para a overlay (substituir por WebSocket/Fetch)
+            enviarDadosParaOverlay(placarData);
+
+            // Atualiza prévia na aba Cartões
+            document.getElementById('currentGolsCasaPrev').innerText = currentGolsCasa;
+            document.getElementById('currentGolsVisitantePrev').innerText = currentGolsVisitante;
+        }
+
+        function resetarPlacar() {
+            document.getElementById('golsCasa').value = 0;
+            document.getElementById('golsVisitante').value = 0;
+            currentGolsCasa = 0;
+            currentGolsVisitante = 0;
+            atualizarPlacar(); // Envia os zeros para a overlay
+            console.log('Placar resetado.');
+            document.getElementById('placarStatus').innerText = 'Placar resetado!';
+        }
+
+        // --- Funções de Controle de Cartões ---
+        function enviarCartao() {
+            const jogador = document.getElementById('jogadorCartao').value;
+            const time = document.getElementById('timeCartao').value;
+            const tipo = document.getElementById('tipoCartao').value;
+
+            if (jogador.trim() === '') {
+                alert('Por favor, insira o nome do jogador para o cartão.');
                 return;
             }
 
-            const cartaoDiv = document.createElement('div');
-            cartaoDiv.className = `cartao ${data.tipo}`;
-            cartaoDiv.id = cardId; // Define o ID
+            const escudoTimeSrc = (time === 'casa') ? document.getElementById('escudoCasaUrl').value : document.getElementById('escudoVisitanteUrl').value;
+            const nomeTime = (time === 'casa') ? document.getElementById('timeCasaNome').value : document.getElementById('timeVisitanteNome').value;
 
-            const escudoTimeSrc = data.time === 'casa' ? data.escudoCasa : data.escudoVisitante;
-            const iconeCartaoSrc = data.tipo === 'amarelo' ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Yellow_card.svg/1200px-Yellow_card.svg.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Red_card.svg/1200px-Red_card.svg.png';
+            const cartaoData = {
+                type: 'enviar_cartao',
+                jogador: jogador,
+                time: time,
+                tipo: tipo,
+                escudoTime: escudoTimeSrc,
+                nomeTime: nomeTime,
+                // Incluindo placar atual para contexto se a overlay precisar
+                golsCasa: currentGolsCasa,
+                golsVisitante: currentGolsVisitante
+            };
 
-            cartaoDiv.innerHTML = `
-                ${escudoTimeSrc ? `<img src="${escudoTimeSrc}" alt="Escudo Time" class="escudo-time">` : ''}
-                <span>${data.jogador}</span>
-                <img src="${iconeCartaoSrc}" alt="Cartão ${data.tipo}" class="icone-cartao">
-            `;
-            container.appendChild(cartaoDiv);
-
-            cartoesAtivos[cardId] = cartaoDiv; // Adiciona ao controle de cartões ativos
-
-            // Opcional: remover o cartão após alguns segundos
-            setTimeout(() => {
-                removerCartao(cardId);
-            }, 8000); // Cartão desaparece após 8 segundos
+            console.log('Dados do Cartão para enviar:', cartaoData);
+            document.getElementById('cartaoStatus').innerText = `Cartão ${tipo} enviado para ${jogador}!`;
+            enviarDadosParaOverlay(cartaoData);
         }
 
-        // Função para remover um cartão (com animação)
-        function removerCartao(cardId) {
-            const cartaoDiv = document.getElementById(cardId);
-            if (cartaoDiv) {
-                cartaoDiv.style.animation = 'slideOutLeft 0.5s ease-out forwards';
-                setTimeout(() => {
-                    cartaoDiv.remove();
-                    delete cartoesAtivos[cardId]; // Remove do controle de cartões ativos
-                }, 500); // Espera a animação de saída terminar
+        function limparCartoes() {
+            console.log('Limpar Cartões solicitado.');
+            document.getElementById('cartaoStatus').innerText = 'Solicitação para limpar cartões enviada!';
+            enviarDadosParaOverlay({ type: 'limpar_cartoes' });
+        }
+
+        // --- Funções de Controle de Eventos ---
+        function enviarGol() {
+            const timeGol = document.getElementById('timeGol').value;
+            let escudoGol = '';
+            let golsCasa = currentGolsCasa;
+            let golsVisitante = currentGolsVisitante;
+
+            if (timeGol === 'casa') {
+                golsCasa++;
+                escudoGol = document.getElementById('escudoCasaUrl').value;
+                document.getElementById('golsCasa').value = golsCasa; // Atualiza o input no controlador
+            } else {
+                golsVisitante++;
+                escudoGol = document.getElementById('escudoVisitanteUrl').value;
+                document.getElementById('golsVisitante').value = golsVisitante; // Atualiza o input no controlador
+            }
+
+            // Atualiza variáveis de estado
+            currentGolsCasa = golsCasa;
+            currentGolsVisitante = golsVisitante;
+
+            const golData = {
+                type: 'mostrar_gol',
+                timeQueFezGol: timeGol,
+                escudoGol: escudoGol,
+                golsCasa: golsCasa, // Envia o placar atualizado com o gol
+                golsVisitante: golsVisitante
+            };
+            
+            console.log('Dados do Gol para enviar:', golData);
+            document.getElementById('eventoStatus').innerText = `Gol para ${timeGol.toUpperCase()}!`;
+            enviarDadosParaOverlay(golData);
+
+            // Automaticamente atualiza o placar na overlay após o gol
+            atualizarPlacar(); 
+        }
+
+        function enviarEvento(evento) {
+            console.log(`Evento enviado: ${evento}`);
+            document.getElementById('eventoStatus').innerText = `Evento "${evento}" enviado!`;
+            enviarDadosParaOverlay({ type: evento }); // Envia o tipo de evento para a overlay
+        }
+
+        // --- Funções de Controle de Pênaltis ---
+        function adicionarPenalty(time) {
+            if (time === 'casa') {
+                penaltiesCasa++;
+            } else {
+                penaltiesVisitante++;
+            }
+            document.getElementById('penaltiesCasa').innerText = penaltiesCasa;
+            document.getElementById('penaltiesVisitante').innerText = penaltiesVisitante;
+
+            const penaltiesData = {
+                type: 'atualizar_penalties',
+                penaltiesCasa: penaltiesCasa,
+                penaltiesVisitante: penaltiesVisitante,
+                // Inclui informações dos times para a overlay renderizar corretamente
+                timeCasaNome: document.getElementById('timeCasaNome').value,
+                escudoCasaUrl: document.getElementById('escudoCasaUrl').value,
+                timeVisitanteNome: document.getElementById('timeVisitanteNome').value,
+                escudoVisitanteUrl: document.getElementById('escudoVisitanteUrl').value
+            };
+            console.log('Dados de Pênaltis para enviar:', penaltiesData);
+            document.getElementById('penaltisStatus').innerText = `Pênalti para ${time.toUpperCase()}!`;
+            enviarDadosParaOverlay(penaltiesData);
+        }
+
+        function resetarPenaltis() {
+            penaltiesCasa = 0;
+            penaltiesVisitante = 0;
+            document.getElementById('penaltiesCasa').innerText = penaltiesCasa;
+            document.getElementById('penaltiesVisitante').innerText = penaltiesVisitante;
+
+            const penaltiesData = {
+                type: 'atualizar_penalties',
+                penaltiesCasa: penaltiesCasa,
+                penaltiesVisitante: penaltiesVisitante,
+                timeCasaNome: document.getElementById('timeCasaNome').value,
+                escudoCasaUrl: document.getElementById('escudoCasaUrl').value,
+                timeVisitanteNome: document.getElementById('timeVisitanteNome').value,
+                escudoVisitanteUrl: document.getElementById('escudoVisitanteUrl').value
+            };
+            console.log('Pênaltis resetados.');
+            document.getElementById('penaltisStatus').innerText = 'Pênaltis resetados!';
+            enviarDadosParaOverlay(penaltiesData);
+        }
+
+        // --- Funções de Configurações ---
+        function salvarConfiguracoes() {
+            const linkOverlay = document.getElementById('linkOverlayConfig').value;
+            console.log(`Configurações salvas. Link da Overlay: ${linkOverlay}`);
+            document.getElementById('configStatus').innerText = 'Configurações salvas!';
+            // Adicione aqui a lógica para salvar configurações, se necessário
+        }
+
+        // --- Funções de Login ---
+        function fazerLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            console.log(`Tentativa de login com: ${username}`);
+            // Aqui você faria uma chamada real para autenticação
+            if (username === 'admin' && password === 'admin') { // Exemplo simples
+                document.getElementById('loginStatus').innerText = 'Login realizado com sucesso!';
+            } else {
+                document.getElementById('loginStatus').innerText = 'Usuário ou senha inválidos.';
             }
         }
 
-        // Função para limpar todos os cartões (ex: ao final do jogo)
-        function limparTodosCartoes() {
-            const container = document.getElementById('cartoes-container');
-            container.innerHTML = ''; // Remove todos os elementos filhos
-            cartoesAtivos = {}; // Reseta o controle de cartões ativos
+        // --- FUNÇÃO CENTRAL PARA ENVIAR DADOS PARA A OVERLAY ---
+        // Esta é uma SIMULAÇÃO. Você precisará implementar a comunicação REAL (WebSocket/Fetch API)
+        function enviarDadosParaOverlay(data) {
+            // Em um ambiente real, você usaria um WebSocket ou Fetch para enviar para um backend/servidor de overlay
+            // Exemplo conceitual com WebSockets:
+            /*
+            if (window.overlaySocket && window.overlaySocket.readyState === WebSocket.OPEN) {
+                window.overlaySocket.send(JSON.stringify(data));
+            } else {
+                console.warn('WebSocket para overlay não está conectado. Dados não enviados:', data);
+                // Ou você pode tentar reconectar aqui
+            }
+            */
+            // Por enquanto, vamos simular chamando diretamente as funções da overlay se ela estiver na mesma página (apenas para teste em um único HTML)
+            // Em produção, isso NÃO DEVE ser feito assim.
+            if (window.parent && window.parent.handleOverlayData) {
+                window.parent.handleOverlayData(data);
+            } else {
+                console.log('Simulando envio de dados para overlay:', data);
+                // Se você estiver testando o controlador e a overlay em arquivos HTML separados sem um backend,
+                // você precisará de uma forma de comunicação (WebSockets é o mais comum).
+                // Abaixo, um hack para testes rápidos se ambos estiverem na mesma origem e você puder simular um evento:
+                const overlayWindow = window.open('about:blank', 'overlayTarget', 'width=800,height=600');
+                if (overlayWindow && overlayWindow.location.href.includes('overlay.html')) { // Verifique o URL da sua overlay
+                     overlayWindow.postMessage(data, '*'); // PostMessage é uma alternativa simples para iframes ou janelas abertas
+                }
+            }
         }
 
-        // --- Simulação de Recebimento de Dados (Você substituirá isso por WebSocket/API) ---
+        // Inicializa a primeira aba
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.tab-button').click();
+            // Carrega os valores iniciais dos gols nos inputs
+            document.getElementById('golsCasa').value = currentGolsCasa;
+            document.getElementById('golsVisitante').value = currentGolsVisitante;
+        });
 
-        // Exemplo: Simular uma atualização de placar
-        setTimeout(() => {
-            atualizarPlacar({
-                timeCasa: 'Grêmio',
-                golsCasa: 1,
-                timeVisitante: 'Internacional',
-                golsVisitante: 0,
-                escudoCasa: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png', // Exemplo de URL de escudo
-                escudoVisitante: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png'
-            });
-        }, 1000);
-
-        // Exemplo: Simular um gol do Time da Casa
-        setTimeout(() => {
-            mostrarAnimacaoGol('https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png');
-            atualizarPlacar({
-                timeCasa: 'Grêmio',
-                golsCasa: 2,
-                timeVisitante: 'Internacional',
-                golsVisitante: 0,
-                escudoCasa: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png',
-                escudoVisitante: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png'
-            });
-        }, 5000);
-
-        // Exemplo: Simular um cartão amarelo para o time da casa
-        setTimeout(() => {
-            adicionarCartao({
-                jogador: 'Jogador X',
-                time: 'casa',
-                tipo: 'amarelo',
-                escudoCasa: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png',
-                escudoVisitante: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png'
-            });
-        }, 8000);
-
-        // Exemplo: Simular um cartão vermelho para o time visitante
-        setTimeout(() => {
-            adicionarCartao({
-                jogador: 'Jogador Y',
-                time: 'visitante',
-                tipo: 'vermelho',
-                escudoCasa: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png',
-                escudoVisitante: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png'
-            });
-        }, 10000);
-
-        // Exemplo: Simular um gol do Time Visitante
-        setTimeout(() => {
-            mostrarAnimacaoGol('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png');
-            atualizarPlacar({
-                timeCasa: 'Grêmio',
-                golsCasa: 2,
-                timeVisitante: 'Internacional',
-                golsVisitante: 1,
-                escudoCasa: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png',
-                escudoVisitante: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png'
-            });
-        }, 13000);
-
-        // Exemplo: Limpar todos os cartões após um tempo
-        setTimeout(() => {
-            limparTodosCartoes();
-        }, 20000); // Limpa cartões após 20 segundos
     </script>
 </body>
-</html>
+                </html>
