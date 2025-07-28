@@ -73,18 +73,24 @@
       justify-content: center;
     }
 
-    /* Contêineres que serão exibidos ou ocultados */
+    /* Contêineres que serão exibidos ou ocultados - Centraliza aqui o controle */
     #normalLayoutsContainer,
-    #penaltyPlacarContent_display {
+    #penaltyPlacarContent_display,
+    #lineupDisplayContainer {
         width: 100%;
         display: none; /* Escondido por padrão, JS controla */
         padding: 5px 0; /* Padding consistente */
+        transition: opacity 0.3s ease-in-out; /* Transição para suavizar a troca */
     }
 
-    /* Sempre visível quando ativo */
-    #normalLayoutsContainer.active-display,
-    #penaltyPlacarContent_display.active-display {
+    /* Classes para controle de visibilidade */
+    .content-active {
         display: flex; /* Ou block, dependendo do conteúdo */
+        opacity: 1;
+    }
+    .content-hidden {
+        display: none;
+        opacity: 0;
     }
 
     /* Estilos base para todos os layouts normais (não-penaltis) */
@@ -467,6 +473,77 @@
         transform: scale(1.1); /* Um pequeno destaque */
     }
 
+    /* --- Estilos para o Display de Escalações --- */
+    #lineupDisplayContainer {
+        flex-direction: column; /* Coloca os times um abaixo do outro */
+        gap: 20px;
+        padding: 15px;
+        min-height: 200px; /* Altura mínima para o container de escalação */
+    }
+    .lineup-team-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 15px;
+        border-radius: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid var(--placar-border);
+    }
+    .lineup-team-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+    .lineup-team-header .team-name-display {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--placar-text);
+        text-transform: uppercase;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+    .lineup-team-header .escudo {
+        width: calc(var(--image-base-size) * 1.2); /* Escudo um pouco maior na escalação */
+        height: calc(var(--image-base-size) * 1.2);
+    }
+    .player-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Duas colunas para jogadores */
+        gap: 8px 20px; /* Espaço entre linhas e colunas */
+        width: 100%;
+    }
+    .player-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 18px;
+        color: var(--placar-text);
+        padding: 4px 0;
+        border-bottom: 1px dotted rgba(var(--placar-text), 0.3); /* Linha pontilhada */
+    }
+    .player-number {
+        font-family: 'Roboto Mono', monospace;
+        font-weight: 700;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 2px 6px;
+        border-radius: 4px;
+        min-width: 30px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+    .player-name {
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 600;
+    }
+    
     /* ANIMAÇÃO DO ESCUDO DE PULO (mantida) */
     @keyframes jumpAndBounce {
       0% { transform: translateY(0) scale(1); }
@@ -555,6 +632,20 @@
         .penalty-team-display {
             min-width: unset;
         }
+        .lineup-team-header .escudo {
+             width: calc(var(--image-base-size) * 1.0);
+             height: calc(var(--image-base-size) * 1.0);
+        }
+        .lineup-team-header .team-name-display {
+            font-size: 20px;
+        }
+        .player-list {
+            grid-template-columns: 1fr; /* Uma coluna em telas menores */
+        }
+        .player-item {
+            font-size: 16px;
+        }
+
 
         /* Ajustes para layout moderno em mobile */
         .placar-main-line.layout-modern .placar-numero { font-size: 38px; }
@@ -595,7 +686,7 @@
 <body>
   <div class="visual-overlay-container" id="visualOverlayContainer">
     <div class="placar" id="placarPrincipal">
-      <div id="normalLayoutsContainer" class="active-display">
+      <div id="normalLayoutsContainer" class="content-active">
           <div class="placar-main-line layout-basic" id="layoutBasic_display">
             <div class="placar-group timer-period-group">
               <div id="cronometro_basic_display">00:00</div>
@@ -716,7 +807,7 @@
           </div>
       </div> 
 
-      <div class="penalty-shootout-placar" id="penaltyPlacarContent_display">
+      <div class="penalty-shootout-placar content-hidden" id="penaltyPlacarContent_display">
         <div class="penalty-team-display">
           <img id="escudoPenalty1_display" class="escudo" src="" alt="Escudo Time 1">
           <span id="nomePenalty1_display" class="team-name-display">Time 1</span>
@@ -729,6 +820,26 @@
           <img id="escudoPenalty2_display" class="escudo" src="" alt="Escudo Time 2">
           <span id="nomePenalty2_display" class="team-name-display">Time 2</span>
           <div class="penalty-balls-container" id="penaltiesDisplay2_display"></div>
+        </div>
+      </div>
+
+      <div class="lineup-display-container content-hidden" id="lineupDisplayContainer">
+        <div class="lineup-team-section">
+            <div class="lineup-team-header">
+                <img id="lineupEscudo1_display" class="escudo" src="" alt="Escudo Time 1">
+                <span id="lineupTeamName1_display" class="team-name-display">Time 1</span>
+            </div>
+            <div class="player-list" id="lineupPlayers1_display">
+                </div>
+        </div>
+
+        <div class="lineup-team-section">
+            <div class="lineup-team-header">
+                <img id="lineupEscudo2_display" class="escudo" src="" alt="Escudo Time 2">
+                <span id="lineupTeamName2_display" class="team-name-display">Time 2</span>
+            </div>
+            <div class="player-list" id="lineupPlayers2_display">
+                </div>
         </div>
       </div>
       
@@ -762,19 +873,17 @@
     }
 
     // Fallback se não encontrar em nenhum lugar
-    if (!NARRATOR_ID || NARRATOR_ID === 'SEU_ID_UNICO_AQUI_PADRAO') { // Adicionado um valor padrão seguro
-        NARRATOR_ID = 'DEFAULT_NARRATOR_ID'; // Mude para um ID padrão que você controle ou configure
+    if (!NARRATOR_ID || NARRATOR_ID === 'SEU_ID_UNICO_AQUI_PADRAO' || NARRATOR_ID === 'DEFAULT_NARRATOR_ID') {
+        NARRATOR_ID = 'TEST_NARRATOR_ID'; // Mude para um ID padrão que você controle ou configure
         console.warn("Nenhum Narrator ID encontrado ou ID padrão detectado. Usando: " + NARRATOR_ID);
-        // O ideal é que o usuário sempre venha de um link com o narratorId
     }
-
 
     // Inicialize o Firebase
     const app = firebase.initializeApp(firebaseConfig);
     let database = app.database();
     let overlayStateRef = database.ref(`narrators/${NARRATOR_ID}/overlayState`);
 
-    // Estado local da overlay (refletirá o Firebase, mas o cronômetro é local)
+    // Estado local da overlay
     let overlayState = {
       placar: { '1': 0, '2': 0 },
       cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
@@ -785,24 +894,29 @@
       placarOpacity: 90,
       fontColor: '#E0E0E0',
       penaltyModeActive: false,
+      lineupModeActive: false, // NOVO: Flag para modo escalação
       activeAnimation: null,
       currentPeriod: 1,
       nome1: '',
       nome2: '',
       nomeAbbr1: 'T1',
       nomeAbbr2: 'T2',
-      escudo1: '', // Será a string Base64
-      escudo2: '', // Será a string Base64
-      logoOverlay: '', // Será a string Base64
+      escudo1: '', 
+      escudo2: '', 
+      logoOverlay: '', 
       isVisible: true,
-      currentLayoutIndex: 0, // 0 = Básico, 1 = Moderno, 2 = Retrô, 3 = Futurista
-      imageSize: 50 // Novo: Tamanho base dos escudos em pixels
+      currentLayoutIndex: 0, 
+      imageSize: 50,
+      lineups: { // NOVO: Estrutura para escalações
+          '1': Array.from({ length: 15 }, (_, i) => ({ number: (i + 1).toString(), name: `Jogador ${i + 1}` })),
+          '2': Array.from({ length: 15 }, (_, i) => ({ number: (i + 1).toString(), name: `Jogador ${i + 1}` }))
+      }
     };
 
     let timerInterval = null;
     let localSeconds = 0;
 
-    // Temas de placar pré-definidos
+    // Temas de placar pré-definidos (mantidos)
     const placarThemes = [
       { rgb: '34, 34, 34', text: 'white', border: '#555', timerColor: '#0ff' }, /* Default (Escuro) */
       { rgb: '0, 123, 255', text: 'white', border: '#0056b3', timerColor: '#fff' }, /* Azul */
@@ -811,7 +925,7 @@
       { rgb: '255, 193, 7', text: 'black', border: '#e0a800', timerColor: '#333' } /* Amarelo (texto escuro) */
     ];
 
-    // Nomes dos períodos do jogo
+    // Nomes dos períodos do jogo (mantidos)
     const periodNames = {
         0: 'Parado',
         1: '1º T',
@@ -821,7 +935,7 @@
         5: 'T. Extra'
     };
 
-    // Mapeamento dos elementos para cada layout
+    // Mapeamento dos elementos para cada layout (mantido)
     const layoutElements = {
         0: { // Básico
             placar1: document.getElementById('placar1_basic_display'),
@@ -893,6 +1007,17 @@
         container: document.getElementById('penaltyPlacarContent_display')
     };
 
+    // NOVO: Elementos da escalação
+    const lineupElements = {
+        escudo1: document.getElementById('lineupEscudo1_display'),
+        teamName1: document.getElementById('lineupTeamName1_display'),
+        players1: document.getElementById('lineupPlayers1_display'),
+        escudo2: document.getElementById('lineupEscudo2_display'),
+        teamName2: document.getElementById('lineupTeamName2_display'),
+        players2: document.getElementById('lineupPlayers2_display'),
+        container: document.getElementById('lineupDisplayContainer')
+    };
+
     // Outros elementos globais
     const visualOverlayContainer = document.getElementById('visualOverlayContainer');
     const goalAnimationElement = document.getElementById('goalAnimation_display');
@@ -903,7 +1028,7 @@
     document.addEventListener('DOMContentLoaded', initializeApp);
 
     function initializeApp() {
-        if (NARRATOR_ID === 'DEFAULT_NARRATOR_ID') {
+        if (NARRATOR_ID === 'TEST_NARRATOR_ID') {
              document.getElementById('placarPrincipal').innerHTML = `<div style="color: red; font-size: 20px; text-align: center; padding: 20px;">
                 Por favor, defina seu ID de Narrador no Controlador e recarregue esta página, ou acesse pelo link gerado.
             </div>`;
@@ -914,10 +1039,8 @@
             if (event.animationName === 'fadeInScaleOut') {
                 goalAnimationElement.style.visibility = 'hidden';
                 goalAnimationElement.classList.remove('active');
-                // Garante que o placar normal volte a aparecer após a animação de gol
-                if (!overlayState.penaltyModeActive) { // Só volta se não estiver no modo pênalti
-                     normalLayoutsContainer.classList.add('active-display');
-                }
+                // Após a animação de gol, reavalia qual modo deve ser mostrado
+                updateDisplayMode(); 
             }
         });
         
@@ -933,11 +1056,19 @@
             if (snapshot.exists()) {
                 const newState = snapshot.val();
 
-                // Guarda o placar atual ANTES de atualizar o estado para detectar mudanças
                 previousPlacar1 = overlayState.placar['1'];
                 previousPlacar2 = overlayState.placar['2'];
 
-                // Mapeia os dados do Firebase para o estado local, garantindo valores padrão
+                // Garante que a estrutura de lineups exista no estado do Firebase, se não, inicializa com padrão
+                if (!newState.lineups || !newState.lineups['1'] || !newState.lineups['2']) {
+                    newState.lineups = {
+                        '1': Array.from({ length: 15 }, (_, i) => ({ number: (i + 1).toString(), name: `Jogador ${i + 1}` })),
+                        '2': Array.from({ length: 15 }, (_, i) => ({ number: (i + 1).toString(), name: `Jogador ${i + 1}` }))
+                    };
+                    // Opcional: Persistir essa inicialização de volta no Firebase, se você quer que o controlador comece com ela
+                    // overlayStateRef.update({ lineups: newState.lineups });
+                }
+
                 overlayState = { ...overlayState, ...newState };
 
                 // Aplica o tema
@@ -948,22 +1079,8 @@
                 visualOverlayContainer.style.transition = 'opacity 0.5s ease-in-out, transform 0.5s ease-out';
                 visualOverlayContainer.style.pointerEvents = overlayState.isVisible ? 'auto' : 'none';
 
-
-                // Lógica de exibição/ocultação entre placar normal e pênaltis
-                if (overlayState.penaltyModeActive) {
-                    normalLayoutsContainer.classList.remove('active-display');
-                    penaltyElements.container.classList.add('active-display');
-                    updatePenaltyDisplay(); // Atualiza o placar de pênaltis
-                } else {
-                    normalLayoutsContainer.classList.add('active-display');
-                    penaltyElements.container.classList.remove('active-display');
-                    updateNormalLayouts(overlayState.currentLayoutIndex); // Atualiza o layout normal
-                }
-
-                // Animação de Gol (só se não estiver no modo pênalti)
-                if (!overlayState.penaltyModeActive && newState.activeAnimation && newState.activeAnimation.type === 'goalAnimation') {
-                    handleGoalAnimation(newState.activeAnimation.team, newState.activeAnimation.escudo);
-                }
+                // Decide qual conteúdo mostrar (Placar Normal, Pênaltis ou Escalação)
+                updateDisplayMode();
                 
                 // Jump Animation (escudo de time)
                 if (newState.activeAnimation && newState.activeAnimation.type === 'jumpAnimation') {
@@ -977,30 +1094,68 @@
                             escudoToAnimate.classList.remove('jump-animation');
                             // Limpa a animação do Firebase após um tempo se necessário
                             // overlayStateRef.update({ 'activeAnimation': null });
-                        }, 700); // Duração da animação
+                        }, 700); 
                     }
                 }
 
             } else {
                 console.log("Nenhum dado encontrado para o ID do narrador:", NARRATOR_ID);
-                // Opcional: Mostrar uma mensagem na overlay se não houver dados
             }
         });
     }
 
+    function updateDisplayMode() {
+        // Esconde todos os contêineres de conteúdo primeiro
+        normalLayoutsContainer.classList.remove('content-active');
+        normalLayoutsContainer.classList.add('content-hidden');
+        
+        penaltyElements.container.classList.remove('content-active');
+        penaltyElements.container.classList.add('content-hidden');
+
+        lineupElements.container.classList.remove('content-active');
+        lineupElements.container.classList.add('content-hidden');
+
+        // Se uma animação de gol está ativa, não mostre nada por enquanto
+        if (overlayState.activeAnimation && overlayState.activeAnimation.type === 'goalAnimation' && goalAnimationElement.classList.contains('active')) {
+             return; // A animação de gol está no controle, não mostra nenhum outro placar
+        }
+
+        // Decide qual contêiner ativar com base nas flags do estado
+        if (overlayState.penaltyModeActive) {
+            penaltyElements.container.classList.remove('content-hidden');
+            penaltyElements.container.classList.add('content-active');
+            updatePenaltyDisplay();
+        } else if (overlayState.lineupModeActive) { // NOVO: Verifica o modo escalação
+            lineupElements.container.classList.remove('content-hidden');
+            lineupElements.container.classList.add('content-active');
+            updateLineupDisplay();
+        }
+        else {
+            normalLayoutsContainer.classList.remove('content-hidden');
+            normalLayoutsContainer.classList.add('content-active');
+            updateNormalLayouts(overlayState.currentLayoutIndex);
+        }
+
+        // Animação de Gol (só é iniciada se não estiver no modo pênalti ou escalação)
+        if (!overlayState.penaltyModeActive && !overlayState.lineupModeActive && overlayState.activeAnimation && overlayState.activeAnimation.type === 'goalAnimation') {
+            handleGoalAnimation(overlayState.activeAnimation.team, overlayState.activeAnimation.escudo);
+        }
+    }
+
+
     function applyTheme(themeIndex, opacity, fontColor) {
-        const theme = placarThemes[themeIndex] || placarThemes[0]; // Fallback para o default
+        const theme = placarThemes[themeIndex] || placarThemes[0]; 
 
         document.documentElement.style.setProperty('--placar-bg-rgb', theme.rgb);
         document.documentElement.style.setProperty('--placar-opacity', opacity / 100);
-        document.documentElement.style.setProperty('--placar-text', fontColor); // Usar fontColor do Firebase
+        document.documentElement.style.setProperty('--placar-text', fontColor); 
         document.documentElement.style.setProperty('--placar-border', theme.border);
         document.documentElement.style.setProperty('--placar-timer-color', theme.timerColor);
-        document.documentElement.style.setProperty('--highlight-color', fontColor); // Destaque usa a cor da fonte
+        document.documentElement.style.setProperty('--highlight-color', fontColor); 
     }
 
     function updateNormalLayouts(layoutIndex) {
-        // Esconde todos os layouts primeiro
+        // Esconde todos os layouts específicos primeiro
         Object.values(layoutElements).forEach(elements => {
             elements.container.style.display = 'none';
         });
@@ -1008,20 +1163,20 @@
         // Mostra apenas o layout ativo
         const currentLayout = layoutElements[layoutIndex];
         if (currentLayout) {
-            currentLayout.container.style.display = 'flex'; // ou block, dependendo do CSS do layout
+            currentLayout.container.style.display = 'flex'; 
             
             // Atualiza elementos do layout ativo
             currentLayout.placar1.innerText = overlayState.placar['1'];
             currentLayout.placar2.innerText = overlayState.placar['2'];
             currentLayout.nomeAbbr1.innerText = overlayState.nomeAbbr1;
             currentLayout.nomeAbbr2.innerText = overlayState.nomeAbbr2;
-            currentLayout.cronometro.innerText = formatTime(overlayState.seconds);
+            currentLayout.cronometro.innerText = formatTime(localSeconds); // Usa localSeconds
             currentLayout.periodo.innerText = periodNames[overlayState.currentPeriod];
 
             // Escudos e Logos
             updateImageSrcAndVisibility(currentLayout.escudo1, overlayState.escudo1, overlayState.imageSize);
             updateImageSrcAndVisibility(currentLayout.escudo2, overlayState.escudo2, overlayState.imageSize);
-            updateImageSrcAndVisibility(currentLayout.logo, overlayState.logoOverlay, overlayState.imageSize * 1.2); // Logo central maior
+            updateImageSrcAndVisibility(currentLayout.logo, overlayState.logoOverlay, overlayState.imageSize * 1.2); 
 
             renderCards(overlayState.cards['1'], currentLayout.cards1);
             renderCards(overlayState.cards['2'], currentLayout.cards2);
@@ -1045,8 +1200,35 @@
         renderPenaltyBalls(overlayState.penalties['2'], penaltyElements.penalties2);
     }
 
+    // NOVO: Função para atualizar o display de escalação
+    function updateLineupDisplay() {
+        // Atualiza nomes e escudos dos times na escalação
+        updateImageSrcAndVisibility(lineupElements.escudo1, overlayState.escudo1, overlayState.imageSize * 1.2);
+        updateImageSrcAndVisibility(lineupElements.escudo2, overlayState.escudo2, overlayState.imageSize * 1.2);
+        lineupElements.teamName1.innerText = overlayState.nome1 || overlayState.nomeAbbr1;
+        lineupElements.teamName2.innerText = overlayState.nome2 || overlayState.nomeAbbr2;
+
+        // Renderiza os jogadores
+        renderPlayers(overlayState.lineups['1'], lineupElements.players1);
+        renderPlayers(overlayState.lineups['2'], lineupElements.players2);
+    }
+
+    // NOVO: Função para renderizar jogadores
+    function renderPlayers(playersArray, containerElement) {
+        containerElement.innerHTML = ''; // Limpa jogadores existentes
+        playersArray.forEach(player => {
+            const playerItem = document.createElement('div');
+            playerItem.classList.add('player-item');
+            playerItem.innerHTML = `
+                <span class="player-number">${player.number}</span>
+                <span class="player-name">${player.name}</span>
+            `;
+            containerElement.appendChild(playerItem);
+        });
+    }
+
     function renderPenaltyBalls(penaltiesArray, containerElement) {
-        containerElement.innerHTML = ''; // Limpa as bolinhas existentes
+        containerElement.innerHTML = ''; 
         penaltiesArray.forEach(status => {
             const ball = document.createElement('div');
             ball.classList.add('penalty-ball');
@@ -1064,12 +1246,11 @@
             if (base64String) {
                 imgElement.src = base64String;
                 imgElement.style.display = 'block';
-                imgElement.style.width = `${size}px`;
-                imgElement.style.height = `${size}px`;
-                imgElement.style.setProperty('--image-base-size', `${size}px`); /* Atualiza a variável CSS */
+                // Certifica-se de que as propriedades CSS customizadas sejam aplicadas
+                imgElement.style.setProperty('--image-base-size', `${size}px`); 
             } else {
-                imgElement.src = ''; // Limpa a fonte
-                imgElement.style.display = 'none'; // Esconde se não houver imagem
+                imgElement.src = ''; 
+                imgElement.style.display = 'none'; 
             }
         }
     }
@@ -1098,11 +1279,11 @@
 
     function updateLocalTimer(running, secondsFromFirebase) {
         if (running && !timerInterval) {
-            localSeconds = secondsFromFirebase; // Sincroniza o cronômetro local com o Firebase
+            localSeconds = secondsFromFirebase; 
             timerInterval = setInterval(() => {
                 localSeconds++;
                 // Atualiza o display do cronômetro para o layout ativo
-                if (!overlayState.penaltyModeActive) {
+                if (!overlayState.penaltyModeActive && !overlayState.lineupModeActive) { // Não atualiza se não for modo normal
                     const currentLayout = layoutElements[overlayState.currentLayoutIndex];
                     if (currentLayout && currentLayout.cronometro) {
                         currentLayout.cronometro.innerText = formatTime(localSeconds);
@@ -1113,38 +1294,41 @@
             clearInterval(timerInterval);
             timerInterval = null;
             // Garante que o display esteja sincronizado com o Firebase ao parar
-            if (!overlayState.penaltyModeActive) {
+            if (!overlayState.penaltyModeActive && !overlayState.lineupModeActive) {
                 const currentLayout = layoutElements[overlayState.currentLayoutIndex];
                 if (currentLayout && currentLayout.cronometro) {
                     currentLayout.cronometro.innerText = formatTime(secondsFromFirebase);
                 }
             }
         }
-         // Se o cronômetro local estiver muito dessincronizado com o Firebase (mais de 1s), reseta.
         if (Math.abs(localSeconds - secondsFromFirebase) > 1) {
             localSeconds = secondsFromFirebase;
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
-                updateLocalTimer(running, secondsFromFirebase); // Reinicia o timer
+                updateLocalTimer(running, secondsFromFirebase); 
             }
         }
     }
 
     function handleGoalAnimation(team, escudoUrl) {
-        goalAnimationElement.classList.remove('active'); // Resetar a animação
-        void goalAnimationElement.offsetWidth; // Trigger reflow to restart animation
+        goalAnimationElement.classList.remove('active'); 
+        void goalAnimationElement.offsetWidth; 
         
         goalTeamEscudo.src = escudoUrl;
-        goalTeamEscudo.style.display = escudoUrl ? 'block' : 'none'; // Mostra escudo se houver
+        goalTeamEscudo.style.display = escudoUrl ? 'block' : 'none'; 
         
-        // Esconde o placar normal antes de iniciar a animação
-        normalLayoutsContainer.classList.remove('active-display');
-        penaltyElements.container.classList.remove('active-display'); // Garante que pênalti esteja escondido
+        // Esconde todos os outros modos antes de iniciar a animação
+        normalLayoutsContainer.classList.remove('content-active');
+        normalLayoutsContainer.classList.add('content-hidden');
+        penaltyElements.container.classList.remove('content-active');
+        penaltyElements.container.classList.add('content-hidden');
+        lineupElements.container.classList.remove('content-active');
+        lineupElements.container.classList.add('content-hidden');
 
         goalAnimationElement.classList.add('active');
     }
 
   </script>
 </body>
-                    </html>
+  </html>
