@@ -3,361 +3,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controlador de Transmissão</title>
+    <title>Overlay de Transmissão</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background-color: #2c3e50; /* Fundo escuro */
-            color: #ecf0f1; /* Texto claro */
+            overflow: hidden; /* Evita barras de rolagem */
+            background-color: rgba(0, 0, 0, 0); /* Fundo transparente para OBS */
+            color: white;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            height: 100vh;
+            justify-content: space-between; /* Espaçamento entre placar, centro e cartões */
         }
 
-        /* Estilo das abas de navegação */
-        .tab-bar {
-            display: flex; /* Para colocar as abas na horizontal */
-            background-color: #34495e; /* Fundo da barra de abas */
-            padding: 5px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            position: sticky; /* Abas fixas no topo */
-            top: 0;
-            z-index: 1000;
-            justify-content: flex-start; /* Alinha as abas ao início */
-            flex-wrap: wrap; /* Permite quebrar linha se muitas abas */
-        }
-
-        .tab-button {
-            background-color: #4a6680; /* Cor da aba */
-            color: #ecf0f1;
-            border: none;
+        #placar {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
             padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease, color 0.3s ease, border-bottom 0.3s ease;
-            border-radius: 5px 5px 0 0; /* Bordas arredondadas no topo */
-            margin-right: 5px; /* Espaçamento entre as abas */
-            flex-shrink: 0; /* Não encolhe as abas */
-            white-space: nowrap; /* Não quebra texto */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 10;
         }
 
-        .tab-button:hover {
-            background-color: #5d7a98; /* Cor ao passar o mouse */
+        .time-info {
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
         }
 
-        .tab-button.active {
-            background-color: #2980b9; /* Cor da aba ativa */
-            color: white;
-            border-bottom: 3px solid #2980b9; /* Linha de destaque na aba ativa */
-            font-weight: bold;
-        }
-
-        .tab-content {
-            padding: 20px;
-            flex-grow: 1; /* Ocupa o espaço restante */
-            display: none; /* Esconde todas as abas por padrão */
-            background-color: #34495e; /* Fundo do conteúdo da aba */
-            border-radius: 0 0 8px 8px;
-            margin: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-
-        .tab-content.active {
-            display: block; /* Mostra a aba ativa */
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .input-group input[type="text"],
-        .input-group input[type="number"],
-        .input-group select {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border: 1px solid #5d7a98;
-            border-radius: 4px;
-            background-color: #4a6680;
-            color: #ecf0f1;
-            font-size: 1em;
-        }
-
-        .input-group input[type="text"]:focus,
-        .input-group input[type="number"]:focus,
-        .input-group select:focus {
-            border-color: #2980b9;
-            outline: none;
-        }
-
-        button {
-            background-color: #28a745; /* Botão de ação */
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s ease;
+        .time-info img {
+            width: 50px;
+            height: 50px;
             margin-right: 10px;
+            object-fit: contain;
         }
 
-        button:hover {
-            background-color: #218838;
-        }
-
-        button.danger {
-            background-color: #dc3545;
-        }
-
-        button.danger:hover {
-            background-color: #c82333;
-        }
-
-        .status-message {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #4a6680;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        /* Estilo para a caixa do link da Overlay */
-        .link-overlay-box {
-            background-color: #2c3e50;
-            border: 1px solid #5d7a98;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        .link-overlay-box label {
+        .time-info .nome-time {
+            font-size: 1.8em;
             font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
         }
 
-        .link-overlay-box input[type="text"] {
-            width: calc(100% - 110px); /* Ajuste para o botão ao lado */
-            padding: 8px;
-            border: 1px solid #5d7a98;
-            border-radius: 4px;
-            background-color: #4a6680;
-            color: #ecf0f1;
-            font-size: 0.9em;
-            margin-right: 5px;
-            cursor: pointer; /* Indica que é clicável para copiar */
+        .gols {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 0 10px;
+            color: #f39c12; /* Cor destacada para os gols */
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
         }
 
-        .link-overlay-box button {
-            padding: 8px 12px;
-            font-size: 0.9em;
-            margin-top: 0;
+        /* Animação de Gol */
+        #animacao-gol {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(46, 204, 113, 0.9); /* Verde vibrante */
+            padding: 30px 60px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.7);
+            text-align: center;
+            z-index: 1000;
+            display: none; /* Esconde por padrão */
+            opacity: 0;
+            animation-duration: 3s; /* Duração total da animação */
+            animation-timing-function: ease-out;
+            animation-fill-mode: forwards;
+        }
+
+        #animacao-gol.show {
+            animation-name: fadeInOut;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+
+        #animacao-gol h1 {
+            font-size: 5em;
+            color: white;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);
+            margin: 0;
+            letter-spacing: 5px;
+        }
+
+        #animacao-gol .escudo-gol {
+            width: 100px;
+            height: 100px;
+            margin-top: 15px;
+            object-fit: contain;
+            border-radius: 50%; /* Opcional: para escudos redondos */
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Seção de Cartões */
+        #cartoes-container {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 50;
+        }
+
+        .cartao {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: black;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+            animation: slideInLeft 0.5s ease-out forwards; /* Animação ao aparecer */
+            min-width: 200px; /* Largura mínima para o cartão */
+        }
+
+        .cartao.amarelo {
+            background-color: #f1c40f; /* Amarelo */
+        }
+
+        .cartao.vermelho {
+            background-color: #e74c3c; /* Vermelho */
+            color: white; /* Texto branco para cartão vermelho */
+        }
+
+        .cartao img.escudo-time {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            object-fit: contain;
+        }
+
+        .cartao .icone-cartao {
+            width: 25px;
+            height: 25px;
+            margin-left: 10px;
+            object-fit: contain;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutLeft {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="tab-bar">
-        <button class="tab-button active" onclick="openTab(event, 'Placar')">Placar</button>
-        <button class="tab-button" onclick="openTab(event, 'Cartoes')">Cartões</button>
-        <button class="tab-button" onclick="openTab(event, 'Eventos')">Eventos</button>
-        <button class="tab-button" onclick="openTab(event, 'Configuracoes')">Configurações</button>
-        <button class="tab-button" onclick="openTab(event, 'Login')">Login</button>
-    </div>
-
-    <div id="Placar" class="tab-content active">
-        <h2>Controle de Placar</h2>
-        <div class="input-group">
-            <label for="timeCasa">Time da Casa:</label>
-            <input type="text" id="timeCasa" value="Time A">
+    <div id="placar">
+        <div class="time-info">
+            <img id="escudoCasa" src="https://via.placeholder.com/50x50?text=Casa" alt="Escudo Time Casa">
+            <span id="nomeCasa" class="nome-time">Time A</span>
         </div>
-        <div class="input-group">
-            <label for="timeVisitante">Time Visitante:</label>
-            <input type="text" id="timeVisitante" value="Time B">
-        </div>
-        <div class="input-group">
-            <label for="golsCasa">Gols Casa:</label>
-            <input type="number" id="golsCasa" value="0">
-        </div>
-        <div class="input-group">
-            <label for="golsVisitante">Gols Visitante:</label>
-            <input type="number" id="golsVisitante" value="0">
-        </div>
-        <button onclick="atualizarPlacar()">Atualizar Placar</button>
-        <button onclick="resetarPlacar()" class="danger">Resetar Placar</button>
-        <div class="status-message" id="placarStatus"></div>
-    </div>
-
-    <div id="Cartoes" class="tab-content">
-        <h2>Controle de Cartões</h2>
-        <div class="input-group">
-            <label for="jogadorCartao">Nome do Jogador:</label>
-            <input type="text" id="jogadorCartao">
-        </div>
-        <div class="input-group">
-            <label for="timeCartao">Time:</label>
-            <select id="timeCartao">
-                <option value="casa">Casa</option>
-                <option value="visitante">Visitante</option>
-            </select>
-        </div>
-        <div class="input-group">
-            <label for="tipoCartao">Tipo de Cartão:</label>
-            <select id="tipoCartao">
-                <option value="amarelo">Amarelo</option>
-                <option value="vermelho">Vermelho</option>
-            </select>
-        </div>
-        <button onclick="enviarCartao()">Enviar Cartão</button>
-        <button onclick="limparCartoes()" class="danger">Limpar Cartões</button>
-        <div class="status-message" id="cartaoStatus"></div>
-    </div>
-
-    <div id="Eventos" class="tab-content">
-        <h2>Controle de Eventos</h2>
-        <p>Aqui você pode gerenciar eventos da partida, como início/fim de jogo, gols, etc.</p>
-        <button onclick="enviarEvento('gol')">Enviar Gol</button>
-        <button onclick="enviarEvento('inicio_jogo')">Início de Jogo</button>
-        <button onclick="enviarEvento('fim_jogo')">Fim de Jogo</button>
-        <div class="status-message" id="eventoStatus"></div>
-    </div>
-
-    <div id="Configuracoes" class="tab-content">
-        <h2>Configurações</h2>
-        <p>Ajuste as configurações gerais da transmissão.</p>
-        <div class="input-group">
-            <label for="linkOverlayConfig">Link da Overlay (para configuração futura):</label>
-            <input type="text" id="linkOverlayConfig" value="http://localhost:8080/overlay" readonly>
-        </div>
-        <button onclick="salvarConfiguracoes()">Salvar Configurações</button>
-        <div class="status-message" id="configStatus"></div>
-    </div>
-
-    <div id="Login" class="tab-content">
-        <h2>Login e Informações</h2>
-        <p>Gerencie o acesso e obtenha links importantes.</p>
-        <div class="input-group">
-            <label for="username">Usuário:</label>
-            <input type="text" id="username">
-        </div>
-        <div class="input-group">
-            <label for="password">Senha:</label>
-            <input type="password" id="password">
-        </div>
-        <button onclick="fazerLogin()">Login</button>
-        <div class="status-message" id="loginStatus"></div>
-
-        <div class="link-overlay-box">
-            <label for="overlayLinkInput">Link da Overlay para OBS/Streamlabs:</label>
-            <input type="text" id="overlayLinkInput" value="http://localhost:8080/overlay" readonly>
-            <button onclick="copyOverlayLink()">Copiar Link</button>
+        <span id="golsCasa" class="gols">0</span>
+        <span class="gols">X</span>
+        <span id="golsVisitante" class="gols">0</span>
+        <div class="time-info">
+            <span id="nomeVisitante" class="nome-time">Time B</span>
+            <img id="escudoVisitante" src="https://via.placeholder.com/50x50?text=Vis" alt="Escudo Time Visitante">
         </div>
     </div>
+
+    <div id="animacao-gol">
+        <h1>GOOOOL!</h1>
+        <img id="escudoAnimacaoGol" class="escudo-gol" src="" alt="Escudo do Time do Gol" style="display: none;">
+    </div>
+
+    <div id="cartoes-container">
+        </div>
 
     <script>
-        // Função para abrir abas
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
+        // Função para atualizar o placar na overlay
+        function atualizarPlacar(data) {
+            document.getElementById('nomeCasa').innerText = data.timeCasa || 'Time A';
+            document.getElementById('nomeVisitante').innerText = data.timeVisitante || 'Time B';
+            document.getElementById('golsCasa').innerText = data.golsCasa !== undefined ? data.golsCasa : '0';
+            document.getElementById('golsVisitante').innerText = data.golsVisitante !== undefined ? data.golsVisitante : '0';
+
+            // Atualiza os escudos, se os links forem fornecidos
+            document.getElementById('escudoCasa').src = data.escudoCasa || 'https://via.placeholder.com/50x50?text=Casa';
+            document.getElementById('escudoVisitante').src = data.escudoVisitante || 'https://via.placeholder.com/50x50?text=Vis';
+        }
+
+        // Função para mostrar a animação de gol
+        // Adicionamos o parâmetro 'escudoSrc' para o caminho do escudo
+        function mostrarAnimacaoGol(escudoSrc) {
+            const animacaoGol = document.getElementById('animacao-gol');
+            const escudoAnimacaoGol = document.getElementById('escudoAnimacaoGol');
+
+            if (escudoSrc) {
+                escudoAnimacaoGol.src = escudoSrc;
+                escudoAnimacaoGol.style.display = 'block'; // Mostra o escudo
+            } else {
+                escudoAnimacaoGol.style.display = 'none'; // Esconde se não houver escudo
             }
-            tablinks = document.getElementsByClassName("tab-button");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
+
+            animacaoGol.classList.add('show');
+            setTimeout(() => {
+                animacaoGol.classList.remove('show');
+                escudoAnimacaoGol.style.display = 'none'; // Garante que o escudo desaparece junto
+            }, 3000); // Remove a classe 'show' após 3 segundos (duração da animação)
         }
 
-        // Função para copiar o link da overlay
-        function copyOverlayLink() {
-            var copyText = document.getElementById("overlayLinkInput");
-            copyText.select();
-            copyText.setSelectionRange(0, 99999); /* Para dispositivos móveis */
-            document.execCommand("copy");
-            alert("Link da Overlay copiado: " + copyText.value);
-        }
+        // Variável global para armazenar cartões ativos (evita duplicação visual e ajuda a gerenciar)
+        let cartoesAtivos = {};
 
-        // Funções de controle do placar (exemplo, você precisará integrar com seu backend)
-        function atualizarPlacar() {
-            const golsCasa = document.getElementById('golsCasa').value;
-            const golsVisitante = document.getElementById('golsVisitante').value;
-            const timeCasa = document.getElementById('timeCasa').value;
-            const timeVisitante = document.getElementById('timeVisitante').value;
+        // Função para adicionar um cartão
+        function adicionarCartao(data) {
+            const container = document.getElementById('cartoes-container');
+            const cardId = `${data.jogador.replace(/\s/g, '-')}-${data.tipo}-${data.time}`; // ID único para o cartão
 
-            // Exemplo de como você enviaria esses dados para o backend ou WebSocket
-            console.log(`Atualizar placar: ${timeCasa} ${golsCasa} x ${golsVisitante} ${timeVisitante}`);
-            document.getElementById('placarStatus').innerText = 'Placar atualizado!';
-            // Adicione aqui a lógica para enviar os dados para a overlay
-            // Ex: fetch('/api/atualizar_placar', { method: 'POST', body: JSON.stringify({ golsCasa, golsVisitante, timeCasa, timeVisitante }) });
-        }
-
-        function resetarPlacar() {
-            document.getElementById('golsCasa').value = 0;
-            document.getElementById('golsVisitante').value = 0;
-            console.log('Placar resetado.');
-            document.getElementById('placarStatus').innerText = 'Placar resetado!';
-            // Adicione aqui a lógica para resetar o placar na overlay
-        }
-
-        // Funções de controle de cartões (exemplo)
-        function enviarCartao() {
-            const jogador = document.getElementById('jogadorCartao').value;
-            const time = document.getElementById('timeCartao').value;
-            const tipo = document.getElementById('tipoCartao').value;
-
-            if (jogador.trim() === '') {
-                alert('Por favor, insira o nome do jogador.');
+            // Verifica se o cartão já existe para evitar duplicação
+            if (cartoesAtivos[cardId]) {
+                console.warn(`Cartão para ${data.jogador} (${data.tipo}) já existe.`);
+                // Opcional: Piscar o cartão existente ou atualizar se for o caso
                 return;
             }
 
-            console.log(`Cartão ${tipo} para ${jogador} do time ${time}.`);
-            document.getElementById('cartaoStatus').innerText = `Cartão ${tipo} enviado para ${jogador}!`;
-            // Adicione aqui a lógica para enviar os dados do cartão para a overlay
-            // Ex: fetch('/api/enviar_cartao', { method: 'POST', body: JSON.stringify({ jogador, time, tipo }) });
+            const cartaoDiv = document.createElement('div');
+            cartaoDiv.className = `cartao ${data.tipo}`;
+            cartaoDiv.id = cardId; // Define o ID
+
+            const escudoTimeSrc = data.time === 'casa' ? data.escudoCasa : data.escudoVisitante;
+            const iconeCartaoSrc = data.tipo === 'amarelo' ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Yellow_card.svg/1200px-Yellow_card.svg.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Red_card.svg/1200px-Red_card.svg.png';
+
+            cartaoDiv.innerHTML = `
+                ${escudoTimeSrc ? `<img src="${escudoTimeSrc}" alt="Escudo Time" class="escudo-time">` : ''}
+                <span>${data.jogador}</span>
+                <img src="${iconeCartaoSrc}" alt="Cartão ${data.tipo}" class="icone-cartao">
+            `;
+            container.appendChild(cartaoDiv);
+
+            cartoesAtivos[cardId] = cartaoDiv; // Adiciona ao controle de cartões ativos
+
+            // Opcional: remover o cartão após alguns segundos
+            setTimeout(() => {
+                removerCartao(cardId);
+            }, 8000); // Cartão desaparece após 8 segundos
         }
 
-        function limparCartoes() {
-            console.log('Cartões limpos.');
-            document.getElementById('cartaoStatus').innerText = 'Cartões limpos!';
-            // Adicione aqui a lógica para limpar os cartões na overlay
-        }
-
-        // Funções de controle de eventos (exemplo)
-        function enviarEvento(evento) {
-            console.log(`Evento enviado: ${evento}`);
-            document.getElementById('eventoStatus').innerText = `Evento "${evento}" enviado!`;
-            // Adicione aqui a lógica para enviar eventos para a overlay (ex: animação de gol, início/fim de jogo)
-        }
-
-        // Funções de configurações (exemplo)
-        function salvarConfiguracoes() {
-            const linkOverlay = document.getElementById('linkOverlayConfig').value;
-            console.log(`Configurações salvas. Link da Overlay: ${linkOverlay}`);
-            document.getElementById('configStatus').innerText = 'Configurações salvas!';
-            // Adicione aqui a lógica para salvar configurações, se necessário
-        }
-
-        // Funções de login (exemplo)
-        function fazerLogin() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            console.log(`Tentativa de login com: ${username}`);
-            // Aqui você faria uma chamada real para autenticação
-            if (username === 'admin' && password === 'admin') { // Exemplo simples
-                document.getElementById('loginStatus').innerText = 'Login realizado com sucesso!';
-            } else {
-                document.getElementById('loginStatus').innerText = 'Usuário ou senha inválidos.';
+        // Função para remover um cartão (com animação)
+        function removerCartao(cardId) {
+            const cartaoDiv = document.getElementById(cardId);
+            if (cartaoDiv) {
+                cartaoDiv.style.animation = 'slideOutLeft 0.5s ease-out forwards';
+                setTimeout(() => {
+                    cartaoDiv.remove();
+                    delete cartoesAtivos[cardId]; // Remove do controle de cartões ativos
+                }, 500); // Espera a animação de saída terminar
             }
         }
+
+        // Função para limpar todos os cartões (ex: ao final do jogo)
+        function limparTodosCartoes() {
+            const container = document.getElementById('cartoes-container');
+            container.innerHTML = ''; // Remove todos os elementos filhos
+            cartoesAtivos = {}; // Reseta o controle de cartões ativos
+        }
+
+        // --- Simulação de Recebimento de Dados (Você substituirá isso por WebSocket/API) ---
+
+        // Exemplo: Simular uma atualização de placar
+        setTimeout(() => {
+            atualizarPlacar({
+                timeCasa: 'Grêmio',
+                golsCasa: 1,
+                timeVisitante: 'Internacional',
+                golsVisitante: 0,
+                escudoCasa: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png', // Exemplo de URL de escudo
+                escudoVisitante: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png'
+            });
+        }, 1000);
+
+        // Exemplo: Simular um gol do Time da Casa
+        setTimeout(() => {
+            mostrarAnimacaoGol('https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png');
+            atualizarPlacar({
+                timeCasa: 'Grêmio',
+                golsCasa: 2,
+                timeVisitante: 'Internacional',
+                golsVisitante: 0,
+                escudoCasa: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png',
+                escudoVisitante: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png'
+            });
+        }, 5000);
+
+        // Exemplo: Simular um cartão amarelo para o time da casa
+        setTimeout(() => {
+            adicionarCartao({
+                jogador: 'Jogador X',
+                time: 'casa',
+                tipo: 'amarelo',
+                escudoCasa: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png',
+                escudoVisitante: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png'
+            });
+        }, 8000);
+
+        // Exemplo: Simular um cartão vermelho para o time visitante
+        setTimeout(() => {
+            adicionarCartao({
+                jogador: 'Jogador Y',
+                time: 'visitante',
+                tipo: 'vermelho',
+                escudoCasa: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png',
+                escudoVisitante: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png'
+            });
+        }, 10000);
+
+        // Exemplo: Simular um gol do Time Visitante
+        setTimeout(() => {
+            mostrarAnimacaoGol('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png');
+            atualizarPlacar({
+                timeCasa: 'Grêmio',
+                golsCasa: 2,
+                timeVisitante: 'Internacional',
+                golsVisitante: 1,
+                escudoCasa: 'https://upload.wikimedia.org/wikipedia/commons/e/e3/Escudo_do_Gr%C3%AAmio.png',
+                escudoVisitante: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Escudo_do_Sport_Club_Internacional.svg/1200px-Escudo_do_Sport_Club_Internacional.svg.png'
+            });
+        }, 13000);
+
+        // Exemplo: Limpar todos os cartões após um tempo
+        setTimeout(() => {
+            limparTodosCartoes();
+        }, 20000); // Limpa cartões após 20 segundos
     </script>
 </body>
 </html>
