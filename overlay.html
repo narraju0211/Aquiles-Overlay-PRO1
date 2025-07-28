@@ -29,14 +29,14 @@
       display: flex;
       justify-content: center;
       align-items: flex-start; /* Alinha o placar ao topo do container */
-      padding-top: 3px; /* Reduzido para um espaçamento mínimo do topo */
+      padding-top: 1px; /* **Padding MÍNIMO do topo para ajustar a visualização** */
       box-sizing: border-box;
     }
 
     .visual-overlay-container {
       width: 100%;
-      /* **SUPER REDUZIDO** para ser proporcional à animação GOOOOL! */
-      max-width: 380px; /* **Chave para o tamanho!** Reduzido de 500px para 380px */
+      /* **AGORA SIM, SUPER REDUZIDO para caber na sua tela** */
+      max-width: 280px; /* **Chave para o tamanho! REDUZIDO DE NOVO (era 380px)** */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -63,15 +63,15 @@
       flex-direction: column;
       align-items: center;
       background: rgba(var(--placar-bg-rgb), var(--placar-opacity));
-      padding: 1px 3px; /* **Padding mínimo para compactar** */
-      border-radius: 6px; /* Borda menor */
+      padding: 0px 1px; /* **Padding ABSOLUTO MÍNIMO** */
+      border-radius: 5px; /* Borda menor */
       width: 100%;
       box-sizing: border-box;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
       position: relative;
       overflow: hidden;
-      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4); /* Sombra mais suave */
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4); /* Sombra mais suave */
       min-height: unset;
       height: fit-content;
       justify-content: center;
@@ -100,9 +100,9 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      gap: 2px; /* **Espaçamento bem reduzido** */
+      gap: 1px; /* **Espaçamento QUASE ZERO** */
       flex-wrap: nowrap;
-      padding: 2px 0; /* **Padding bem reduzido** */
+      padding: 1px 0; /* **Padding QUASE ZERO** */
     }
 
     .placar-group {
@@ -112,17 +112,17 @@
       justify-content: flex-end;
       gap: 0px; /* **Espaçamento ZERO para máxima compactação vertical** */
       flex-shrink: 0;
-      min-height: 40px; /* **Altura mínima ainda mais reduzida** */
+      min-height: 30px; /* **Altura mínima ainda mais reduzida** */
       box-sizing: border-box;
       flex-grow: 0;
       flex-basis: auto;
-      padding-bottom: 1px; /* **Padding mínimo** */
+      padding-bottom: 0px; /* **Padding ABSOLUTO MÍNIMO** */
     }
 
     .placar-group-score {
       display: flex;
       align-items: center;
-      gap: 2px; /* **Espaçamento reduzido** */
+      gap: 1px; /* **Espaçamento mínimo** */
       flex-shrink: 0;
       justify-content: center;
     }
@@ -132,43 +132,43 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      padding: 0 2px; /* **Padding reduzido** */
-      min-width: calc(35px * var(--global-shield-size) / 100); /* **Ajustado para ser menor** */
-      min-height: calc(45px * var(--global-shield-size) / 100); /* **Ajustado para ser menor** */
+      padding: 0 1px; /* **Padding ABSOLUTO MÍNIMO** */
+      min-width: calc(28px * var(--global-shield-size) / 100); /* **Ainda menor** */
+      min-height: calc(35px * var(--global-shield-size) / 100); /* **Ainda menor** */
       box-sizing: border-box;
     }
     .logo-central img {
-      width: calc(35px * var(--global-shield-size) / 100); /* **Ajustado** */
-      height: calc(35px * var(--global-shield-size) / 100); /* **Ajustado** */
+      width: calc(28px * var(--global-shield-size) / 100); /* **Ainda menor** */
+      height: calc(28px * var(--global-shield-size) / 100); /* **Ainda menor** */
       object-fit: contain;
-      filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.6));
+      filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5));
     }
 
     .escudo {
-      width: calc(28px * var(--global-shield-size) / 100); /* **Reduzido de 32px** */
-      height: calc(28px * var(--global-shield-size) / 100); /* **Reduzido de 32px** */
+      width: calc(22px * var(--global-shield-size) / 100); /* **Reduzido de 28px** */
+      height: calc(22px * var(--global-shield-size) / 100); /* **Reduzido de 28px** */
       object-fit: contain;
       flex-shrink: 0;
-      filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.4));
+      filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.3));
       transition: transform 0.2s ease-out;
     }
     .placar-numero {
-      font-size: 22px; /* **Reduzido de 26px - para parecer com a animação** */
+      font-size: 18px; /* **Reduzido de 22px para caber** */
       font-weight: 800;
-      margin: 0 1px; /* **Margem mínima** */
-      min-width: 24px; /* **Reduzido de 28px** */
+      margin: 0; /* **Margem ZERO** */
+      min-width: 20px; /* **Reduzido de 24px** */
       text-align: center;
       flex-shrink: 0;
-      text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+      text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
       font-family: 'Roboto Mono', monospace;
       color: var(--placar-text);
     }
 
     .team-name-abbr {
-      font-size: 14px; /* **Reduzido de 16px - para parecer com a animação** */
+      font-size: 12px; /* **Reduzido de 14px para caber** */
       font-weight: 600;
       background: rgba(0, 0, 0, 0.4);
-      padding: 0px 3px; /* **Padding mínimo** */
+      padding: 0px 2px; /* **Padding ABSOLUTO MÍNIMO** */
       border-radius: 2px;
       text-transform: uppercase;
       flex-shrink: 0;
@@ -178,28 +178,28 @@
 
     #cronometro_display,
     #periodoDisplay_display {
-      font-size: 12px; /* **Reduzido de 14px** */
+      font-size: 10px; /* **Reduzido de 12px** */
       font-weight: 700;
       color: var(--placar-timer-color);
       background: rgba(0, 0, 0, 0.6);
-      padding: 0px 4px; /* **Padding mínimo** */
-      border-radius: 3px;
+      padding: 0px 3px; /* **Padding ABSOLUTO MÍNIMO** */
+      border-radius: 2px;
       white-space: nowrap;
-      text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+      text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
       flex-shrink: 0;
       font-family: 'Roboto Mono', monospace;
     }
     #periodoDisplay_display {
-        font-size: 10px; /* **Reduzido de 12px** */
-        background: rgba(0, 0, 0, 0.4);
+        font-size: 9px; /* **Reduzido de 10px** */
+        background: rgba(0, 0, 0, 0.3);
         color: var(--placar-text);
         font-family: 'Montserrat', sans-serif;
     }
     /* Estilos específicos para o grupo do cronômetro/período */
     .timer-period-section {
         display: flex;
-        gap: 5px; /* **Espaço reduzido** */
-        margin-top: 1px; /* **Espaçamento mínimo do placar principal** */
+        gap: 3px; /* **Espaço bem reduzido** */
+        margin-top: 0px; /* **Margem ZERO do placar principal** */
         justify-content: center;
         align-items: center;
         width: 100%;
@@ -209,7 +209,7 @@
     /* Cartões */
     .cards-display {
       display: flex;
-      min-height: 12px; /* **Ajustado** */
+      min-height: 10px; /* **Ajustado** */
       align-items: center;
       justify-content: center;
       width: unset;
@@ -217,12 +217,12 @@
       gap: 0px; /* Espaçamento mínimo */
     }
     .card-indicator {
-      width: 10px; /* **Ajustado** */
-      height: 10px; /* **Ajustado** */
-      border-radius: 2px;
+      width: 8px; /* **Ajustado** */
+      height: 8px; /* **Ajustado** */
+      border-radius: 1px;
       margin: 0;
-      border: 1px solid #777;
-      box-shadow: 0 0px 1px rgba(0, 0, 0, 0.3);
+      border: 1px solid #666;
+      box-shadow: 0 0px 1px rgba(0, 0, 0, 0.2);
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
@@ -237,20 +237,20 @@
         gap: 0px;
     }
     .placar-main-line.compact-layout .placar-numero {
-        font-size: 20px; /* **Reduzido de 22px** */
-        min-width: 20px; /* **Reduzido de 24px** */
+        font-size: 16px; /* **Reduzido de 20px** */
+        min-width: 18px; /* **Reduzido de 20px** */
     }
     .placar-main-line.compact-layout .team-name-abbr {
-        font-size: 12px; /* **Reduzido de 14px** */
-        padding: 0px 2px;
+        font-size: 10px; /* **Reduzido de 12px** */
+        padding: 0px 1px;
     }
     .placar-main-line.compact-layout .escudo {
-        width: calc(25px * var(--global-shield-size) / 100); /* **Reduzido de 28px** */
-        height: calc(25px * var(--global-shield-size) / 100); /* **Reduzido de 28px** */
+        width: calc(20px * var(--global-shield-size) / 100); /* **Reduzido de 25px** */
+        height: calc(20px * var(--global-shield-size) / 100); /* **Reduzido de 25px** */
     }
     .placar-main-line.compact-layout .logo-central img {
-        width: calc(30px * var(--global-shield-size) / 100); /* **Reduzido de 38px** */
-        height: calc(30px * var(--global-shield-size) / 100); /* **Reduzido de 38px** */
+        width: calc(25px * var(--global-shield-size) / 100); /* **Reduzido de 30px** */
+        height: calc(25px * var(--global-shield-size) / 100); /* **Reduzido de 30px** */
     }
     .placar-main-line.compact-layout .cards-display {
         margin-top: 0px; /* Ajuste mínimo */
@@ -264,31 +264,31 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        gap: 4px; /* **Reduzido** */
-        padding: 2px 0; /* **Reduzido** */
+        gap: 3px; /* **Reduzido** */
+        padding: 1px 0; /* **Reduzido** */
     }
     .penalty-team-display {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 0px; /* **Reduzido** */
-        min-width: 70px; /* **Ajustado** */
+        min-width: 60px; /* **Ajustado** */
         justify-content: center;
         flex-grow: 1;
     }
     .penalty-team-display .team-name-display {
-        font-size: 10px; /* **Reduzido de 12px** */
+        font-size: 9px; /* **Reduzido de 10px** */
         font-weight: 600;
         margin-top: 0px; /* **Reduzido** */
         background: rgba(0, 0, 0, 0.4);
-        padding: 0px 4px; /* **Reduzido** */
+        padding: 0px 3px; /* **Reduzido** */
         border-radius: 2px;
         white-space: nowrap;
         color: var(--placar-text);
     }
     .penalty-team-display .escudo {
-        width: calc(28px * var(--global-shield-size) / 100); /* **Reduzido** */
-        height: calc(28px * var(--global-shield-size) / 100); /* **Reduzido** */
+        width: calc(22px * var(--global-shield-size) / 100); /* **Reduzido** */
+        height: calc(22px * var(--global-shield-size) / 100); /* **Reduzido** */
     }
     .penalty-balls-container {
         display: flex;
@@ -298,52 +298,52 @@
         justify-content: center;
     }
     .penalty-ball {
-        width: 10px; /* **Reduzido de 12px** */
-        height: 10px; /* **Reduzido de 12px** */
+        width: 8px; /* **Reduzido de 10px** */
+        height: 8px; /* **Reduzido de 10px** */
         border-radius: 50%;
         border: 1px solid white;
         background-color: transparent;
-        box-shadow: 0 0px 2px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 0px 1px rgba(0, 0, 0, 0.3);
         transition: width 0.3s ease, height 0.3s ease, border-width 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
     }
     .penalty-ball.green {
         background-color: #28a745;
         border-color: #28a745;
-        width: 14px; /* **Reduzido de 16px** */
-        height: 14px; /* **Reduzido de 16px** */
-        border-width: 2px;
+        width: 10px; /* **Reduzido de 14px** */
+        height: 10px; /* **Reduzido de 14px** */
+        border-width: 1px;
     }
     .penalty-ball.red {
         background-color: #dc3545;
         border-color: #dc3545;
-        width: 14px; /* **Reduzido de 16px** */
-        height: 14px; /* **Reduzido de 16px** */
-        border-width: 2px;
+        width: 10px; /* **Reduzido de 14px** */
+        height: 10px; /* **Reduzido de 14px** */
+        border-width: 1px;
     }
 
     /* --- Animações --- */
     @keyframes jumpAndBounce {
       0% { transform: translateY(0) scale(1); }
-      25% { transform: translateY(-8px) scale(1.05); } /* **Menos salto** */
-      50% { transform: translateY(0) scale(1.02); }
-      75% { transform: translateY(-4px) scale(1.01); }
+      25% { transform: translateY(-7px) scale(1.04); } /* **Menos salto** */
+      50% { transform: translateY(0) scale(1.01); }
+      75% { transform: translateY(-3px) scale(1.00); }
       100% { transform: translateY(0) scale(1); }
     }
 
     .escudo.jump-animation {
-      animation: jumpAndBounce 0.4s ease-out forwards; /* **Duração ainda menor** */
+      animation: jumpAndBounce 0.3s ease-out forwards; /* **Duração ainda menor** */
     }
 
-    /* Animação GOOOOL! com Escudo - MANTIDA PARA REFERÊNCIA DE PROPORÇÃO */
+    /* Animação GOOOOL! com Escudo - Mantida para referência e ajustada para este tamanho de placar */
     .animated-goal-container {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.3); /* Escala inicial para a animação */
-      font-size: 40px; /* Tamanho da fonte na animação - **este é o alvo para o placar** */
+      transform: translate(-50%, -50%) scale(0.2); /* Escala inicial BEM pequena */
+      font-size: 30px; /* **Ajustado para 30px, pois seu placar será menor agora** */
       font-weight: 900;
       color: var(--highlight-color);
-      text-shadow: 0 0 10px var(--highlight-color), 0 0 5px rgba(0, 0, 0, 0.6);
+      text-shadow: 0 0 8px var(--highlight-color), 0 0 4px rgba(0, 0, 0, 0.5);
       opacity: 0;
       visibility: hidden;
       animation-fill-mode: forwards;
@@ -354,94 +354,49 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px; /* Espaço entre escudo e texto na animação */
+      gap: 4px; /* Espaço entre escudo e texto na animação */
     }
 
     .animated-goal-container img {
-        height: 40px; /* Tamanho do escudo na animação - **este é o alvo para os escudos do placar** */
-        width: 40px;
+        height: 30px; /* **Ajustado para 30px, pois seu placar será menor agora** */
+        width: 30px;
         object-fit: contain;
-        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.7));
+        filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
     }
 
     @keyframes fadeInScaleOut {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); visibility: hidden; }
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2); visibility: hidden; }
       1% { visibility: visible; }
-      20% { opacity: 1; transform: translate(-50%, -50%) scale(0.9); }
-      80% { opacity: 1; transform: translate(-50%, -50%) scale(0.85); }
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(0.8); } /* Escala final menor */
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(0.75); }
       99% { opacity: 0; visibility: visible; }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.75); visibility: hidden;}
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.65); visibility: hidden;}
     }
 
     .animated-goal-container.active {
-      animation: fadeInScaleOut 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      animation: fadeInScaleOut 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Duração mais curta */
     }
 
     /* --- Media Queries para Responsividade (ajustadas para tamanhos ainda menores) --- */
-    @media (max-width: 380px) { /* **Breakpoint principal agora é o max-width do container** */
+    @media (max-width: 280px) { /* **Breakpoint principal é o max-width do container** */
         .visual-overlay-container {
             max-width: 98%; /* Ocupa quase toda a largura para telas muito pequenas */
-            padding-top: 2px; /* Menos padding do topo */
+            padding-top: 1px; /* Mínimo padding do topo */
         }
         .placar-numero {
-            font-size: 20px;
-            min-width: 22px;
-        }
-        .team-name-abbr {
-            font-size: 13px;
-        }
-        #cronometro_display, #periodoDisplay_display {
-            font-size: 11px;
-            padding: 0px 3px;
-        }
-        .escudo {
-            width: calc(26px * var(--global-shield-size) / 100);
-            height: calc(26px * var(--global-shield-size) / 100);
-        }
-        .logo-central img {
-            width: calc(32px * var(--global-shield-size) / 100);
-            height: calc(32px * var(--global-shield-size) / 100);
-        }
-        .animated-goal-container {
-            font-size: 35px; /* Reduz a animação para caber ainda mais */
-            gap: 3px;
-        }
-        .animated-goal-container img {
-            height: 35px;
-            width: 35px;
-        }
-        .penalty-team-display .team-name-display {
-            font-size: 9px;
-        }
-        .penalty-ball {
-            width: 9px;
-            height: 9px;
-        }
-        .penalty-ball.green, .penalty-ball.red {
-            width: 12px;
-            height: 12px;
-        }
-    }
-
-    @media (max-width: 300px) { /* Para celulares muito pequenos ou em janelas muito estreitas */
-        .placar {
-            padding: 0px 2px; /* Reduzir ainda mais o padding */
-        }
-        .placar-numero {
-            font-size: 18px; /* **Ainda menor** */
+            font-size: 16px;
             min-width: 18px;
         }
         .team-name-abbr {
-            font-size: 10px; /* **Ainda menor** */
-            padding: 0px 1px;
+            font-size: 11px;
         }
         #cronometro_display, #periodoDisplay_display {
-            font-size: 10px;
+            font-size: 9px;
             padding: 0px 2px;
         }
         .escudo {
-            width: calc(22px * var(--global-shield-size) / 100);
-            height: calc(22px * var(--global-shield-size) / 100);
+            width: calc(20px * var(--global-shield-size) / 100);
+            height: calc(20px * var(--global-shield-size) / 100);
         }
         .logo-central img {
             width: calc(25px * var(--global-shield-size) / 100);
@@ -449,27 +404,70 @@
         }
         .animated-goal-container {
             font-size: 28px;
-            gap: 2px;
+            gap: 3px;
         }
         .animated-goal-container img {
             height: 28px;
             width: 28px;
         }
-        .card-indicator {
+        .penalty-team-display .team-name-display {
+            font-size: 8px;
+        }
+        .penalty-ball {
             width: 7px;
             height: 7px;
         }
-        .penalty-team-display .team-name-display {
+        .penalty-ball.green, .penalty-ball.red {
+            width: 9px;
+            height: 9px;
+        }
+    }
+
+    @media (max-width: 200px) { /* Para janelas REALMENTE pequenas */
+        .placar {
+            padding: 0px; /* Remover todo padding do placar */
+            border: none; /* Remover borda para economizar espaço */
+            box-shadow: none; /* Remover sombra */
+        }
+        .placar-numero {
+            font-size: 14px; /* **Ainda menor** */
+            min-width: 16px;
+        }
+        .team-name-abbr {
+            font-size: 9px; /* **Ainda menor** */
+            padding: 0px 1px;
+        }
+        #cronometro_display, #periodoDisplay_display {
             font-size: 8px;
-            padding: 0px 2px;
+            padding: 0px 1px;
+        }
+        .escudo {
+            width: calc(18px * var(--global-shield-size) / 100);
+            height: calc(18px * var(--global-shield-size) / 100);
+        }
+        .logo-central img {
+            width: calc(20px * var(--global-shield-size) / 100);
+            height: calc(20px * var(--global-shield-size) / 100);
+        }
+        .animated-goal-container {
+            font-size: 20px;
+            gap: 2px;
+        }
+        .animated-goal-container img {
+            height: 20px;
+            width: 20px;
+        }
+        .card-indicator {
+            width: 6px;
+            height: 6px;
         }
         .penalty-ball {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
         .penalty-ball.green, .penalty-ball.red {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
         }
     }
 
@@ -766,7 +764,7 @@
             // Remove a classe após a animação para que possa ser acionada novamente
             setTimeout(() => {
                 escudoElement.classList.remove('jump-animation');
-            }, 400); // Ajuste para a nova duração da animação (0.4s)
+            }, 300); // Ajuste para a nova duração da animação (0.3s)
         }
     }
 
@@ -927,4 +925,4 @@
 
   </script>
 </body>
-</html>
+  </html>
