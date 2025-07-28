@@ -4,487 +4,342 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aquiles Placar PRO - Controlador</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 20px;
             background-color: #2c3e50;
             color: #ecf0f1;
+            margin: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
         }
-        h1, h2, h3 {
-            color: #3498db;
-            text-align: center;
-            margin-bottom: 20px;
+
+        h1 {
+            color: #f39c12;
+            margin-bottom: 30px;
         }
-        .container {
-            background-color: #34495e;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+
+        /* Estilos para as Abas */
+        .tab-buttons {
+            display: flex;
             width: 100%;
             max-width: 800px;
             margin-bottom: 20px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        input[type="text"],
-        input[type="number"],
-        input[type="color"],
-        select,
-        textarea {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border: 1px solid #7f8c8d;
-            border-radius: 5px;
-            background-color: #4a647d;
-            color: #ecf0f1;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield; /* Remove setas em Firefox */
-        }
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-            margin-right: 10px;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        button.danger {
-            background-color: #e74c3c;
-        }
-        button.danger:hover {
-            background-color: #c0392b;
-        }
-        button.secondary {
-            background-color: #7f8c8d;
-        }
-        button.secondary:hover {
-            background-color: #5d6d7e;
-        }
-        .score-buttons, .card-buttons, .timer-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        .score-buttons button, .card-buttons button {
-            flex: 1;
-            min-width: 100px;
-        }
-        .logo-upload-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .logo-upload-section input[type="file"] {
-            flex-grow: 1;
-        }
-        .logo-preview {
-            width: 60px;
-            height: 60px;
-            border: 1px solid #7f8c8d;
-            border-radius: 5px;
-            background-color: #4a647d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-        .logo-preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .copy-link-section {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px dashed #7f8c8d;
-        }
-        #overlayLink {
-            background-color: #4a647d;
-            border: 1px solid #7f8c8d;
-            padding: 10px;
-            border-radius: 5px;
-            word-break: break-all;
-            margin-bottom: 10px;
-            display: block;
-        }
-        .toggle-section {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 20px;
-        }
-        .toggle-section button {
-            flex: 1;
-            margin: 0 5px;
-        }
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #3498db;
-            width: 100%;
-            box-sizing: border-box;
-            justify-content: center;
-        }
-        .tab-button {
             background-color: #34495e;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 10px;
+            background-color: #4a6279;
             color: #ecf0f1;
-            padding: 10px 15px;
             border: none;
             cursor: pointer;
-            font-size: 16px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-            margin-right: 5px;
+            font-size: 1em;
+            font-weight: 700;
             transition: background-color 0.3s ease, color 0.3s ease;
+            text-align: center;
         }
+
+        .tab-button:hover {
+            background-color: #5d7a96;
+        }
+
         .tab-button.active {
             background-color: #3498db;
             color: white;
-            font-weight: 600;
+            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4);
         }
+
         .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
+            width: 100%;
+            max-width: 800px;
         }
 
-        /* Styles for Penalty Tab */
-        .penalty-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .tab-pane {
+            display: none; /* Esconde todas as abas por padrão */
+            background-color: #34495e;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            box-sizing: border-box;
         }
-        .penalty-team-control {
-            background-color: #4a647d;
-            padding: 15px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+
+        .tab-pane.active {
+            display: block; /* Mostra a aba ativa */
         }
-        .penalty-team-control h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #ecf0f1;
+
+
+        .section-title {
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5em;
         }
-        .penalty-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .penalty-buttons button {
-            flex: 1;
-            min-width: 80px;
-        }
-        .penalty-balls-preview {
+
+        .team-input-group, .score-controls, .timer-controls, .card-controls, .penalty-controls, .theme-controls, .general-controls, .layout-controls {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 10px;
-            min-height: 30px;
-            border: 1px dashed #7f8c8d;
-            padding: 5px;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .input-field, .button, .select-field {
+            padding: 10px 15px;
             border-radius: 5px;
-            justify-content: center;
-        }
-        .penalty-ball-preview {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 1px solid #ccc;
-            background-color: transparent;
-        }
-        .penalty-ball-preview.green { background-color: #28a745; border-color: #28a745; }
-        .penalty-ball-preview.red { background-color: #dc3545; border-color: #dc3545; }
-
-        /* Styles for Lineup Tab */
-        .lineup-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .lineup-team-section {
-            background-color: #4a647d;
-            padding: 15px;
-            border-radius: 8px;
-        }
-        .lineup-team-section h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
+            border: 1px solid #7f8c8d;
+            background-color: #2c3e50;
             color: #ecf0f1;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            font-size: 1em;
+            box-sizing: border-box;
         }
-        .player-input-grid {
-            display: grid;
-            grid-template-columns: 0.5fr 3fr; /* Number | Name */
-            gap: 10px;
-            align-items: center;
-        }
-        .player-input-grid label {
-            text-align: right;
-            margin-bottom: 0;
-        }
-        .player-input-grid input {
-            width: calc(100% - 10px); /* Ajuste para espaçamento */
-        }
-        .player-row {
-            display: contents; /* Makes grid children act like direct children of the grid */
-        }
-        .player-row input[type="number"] {
-            max-width: 60px; /* Smaller width for number input */
-            text-align: center;
-        }
-        .player-row input[type="text"] {
-            width: calc(100% - 10px);
+
+        .input-field {
+            flex-grow: 1;
+            min-width: 150px;
         }
         
-        .section-header {
+        .file-upload-wrapper {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
             align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #7f8c8d;
-            padding-bottom: 10px;
+            width: 100%;
+            margin-bottom: 10px;
         }
-        .section-header h2 {
-            margin: 0;
+        .file-upload-wrapper label {
+            flex-basis: 100%;
+            text-align: left;
+        }
+        .file-upload-wrapper input[type="file"] {
+            flex-grow: 1;
+            min-width: 150px;
+            border: 1px solid #7f8c8d;
+            border-radius: 5px;
+            padding: 8px 10px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            cursor: pointer;
+        }
+        .file-upload-wrapper img {
+            height: 50px;
+            width: 50px;
+            object-fit: contain;
+            background: #eee;
+            border-radius: 5px;
         }
 
-        /* Tooltip */
-        .tooltip-container {
-            position: relative;
-            display: inline-block;
-            cursor: help;
+
+        .button {
+            background-color: #27ae60;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
         }
-        .tooltip-text {
-            visibility: hidden;
-            width: 200px;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px 0;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%; /* Posição acima do elemento */
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 14px;
+
+        .button.red { background-color: #e74c3c; }
+        .button.orange { background-color: #f39c12; }
+        .button.blue { background-color: #3498db; }
+        .button.purple { background-color: #9b59b6; }
+        .button.gray { background-color: #7f8c8d; }
+
+        .button:hover {
+            opacity: 0.9;
         }
-        .tooltip-container:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
+
+        .score-buttons, .card-buttons, .penalty-input {
+            display: flex;
+            gap: 10px;
         }
-        .tooltip-text::after {
-            content: "";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #555 transparent transparent transparent;
+
+        .score-display, .timer-display, .current-period-display {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #f1c40f;
+            margin-left: 10px;
         }
+
+        label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .flex-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .flex-row.space-between {
+            justify-content: space-between;
+        }
+
+        .penalty-input {
+            width: 100%;
+            justify-content: space-between;
+        }
+        .penalty-input .button {
+            flex-grow: 1;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .color-picker {
+            width: 50px;
+            height: 35px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            padding: 0;
+            margin: 0;
+            background: transparent;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .slider-group input[type="range"] {
+            flex-grow: 1;
+        }
+
+        .slider-group span {
+            min-width: 40px;
+            text-align: right;
+        }
+
     </style>
 </head>
 <body>
     <h1>Aquiles Placar PRO - Controlador</h1>
 
-    <div class="container">
-        <div class="copy-link-section">
-            <label>Link da Overlay para OBS/Streamlabs:</label>
-            <div id="overlayLink"></div>
-            <button onclick="copyOverlayLink()">Copiar Link</button>
-            <p style="font-size: 0.9em; color: #bbb;">Cole este link como uma nova 'Fonte de Navegador' no seu software de transmissão.</p>
-        </div>
+    <div class="tab-buttons">
+        <button class="tab-button active" onclick="showTab('conexao')">Conexão & Visibilidade</button>
+        <button class="tab-button" onclick="showTab('times')">Configurar Times</button>
+        <button class="tab-button" onclick="showTab('placar')">Placar & Cartões</button>
+        <button class="tab-button" onclick="showTab('cronometro')">Cronômetro & Período</button>
+        <button class="tab-button" onclick="showTab('penaltis')">Pênaltis</button>
+        <button class="tab-button" onclick="showTab('temas')">Temas & Cores</button>
     </div>
 
-    <div class="container">
-        <div class="section-header">
-            <h2>Configurações Gerais</h2>
-            <div class="form-group">
-                <label for="visibilityToggle">Visibilidade da Overlay:</label>
-                <button id="visibilityToggle" onclick="toggleVisibility()">ON</button>
+    <div class="tab-content">
+        <div id="conexao" class="tab-pane active">
+            <h2 class="section-title">Configurações de Conexão</h2>
+            <div class="flex-row">
+                <label for="narratorIdInput">Seu ID de Narrador:</label>
+                <input type="text" id="narratorIdInput" class="input-field" placeholder="Ex: MeuIDUnico">
+                <button class="button blue" id="setNarratorIdBtn">Salvar ID</button>
+            </div>
+            <p><strong>ID Atual:</strong> <span id="displayNarratorId"></span></p>
+            <p>Certifique-se de que a Overlay (página do placar) use o mesmo ID. Ele é salvo no seu navegador.</p>
+            <h2 class="section-title">Visibilidade da Overlay</h2>
+            <div class="general-controls">
+                <button class="button blue" id="toggleVisibilityBtn">Mostrar/Ocultar Overlay</button>
             </div>
         </div>
-        
-        <div class="form-group">
-            <label for="narratorIdDisplay">Seu ID de Narrador:</label>
-            <input type="text" id="narratorIdDisplay" readonly>
-            <span class="tooltip-container">
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iI2ZjZjZmNiIgY2xhc3M9ImJpIGJpLWluZm8tY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+CiAgPHBhdGggZD0iTTE2IDhBOGE4IDggMCAxIDEtMTYgMCA4IDggMCAwIDEgMTYgMFptLTkgMTAuNVY4YS41LjUgMCAwIDEtLjUuNVoiLz4KPC9zdmc+" alt="Info" style="width: 16px; height: 16px; vertical-align: middle; margin-left: 5px;">
-                <span class="tooltip-text">Este é o ID único que conecta este controlador à sua overlay. Não altere a menos que saiba o que está fazendo.</span>
-            </span>
+
+        <div id="times" class="tab-pane">
+            <h2 class="section-title">Configuração dos Times</h2>
+            <div class="team-input-group">
+                <label for="team1Name">Time 1 (Nome Completo):</label>
+                <input type="text" id="team1Name" class="input-field" placeholder="Ex: Grêmio">
+                <label for="team1Abbr">Time 1 (Abreviatura):</label>
+                <input type="text" id="team1Abbr" class="input-field" placeholder="Ex: GRE" maxlength="4">
+            </div>
+            <div class="file-upload-wrapper">
+                <label>Escudo 1:</label>
+                <input type="file" id="team1Escudo" accept="image/*">
+                <img id="previewEscudo1" src="" alt="Preview Escudo 1">
+            </div>
+
+            <div class="team-input-group">
+                <label for="team2Name">Time 2 (Nome Completo):</label>
+                <input type="text" id="team2Name" class="input-field" placeholder="Ex: Internacional">
+                <label for="team2Abbr">Time 2 (Abreviatura):</label>
+                <input type="text" id="team2Abbr" class="input-field" placeholder="Ex: INT" maxlength="4">
+            </div>
+            <div class="file-upload-wrapper">
+                <label>Escudo 2:</label>
+                <input type="file" id="team2Escudo" accept="image/*">
+                <img id="previewEscudo2" src="" alt="Preview Escudo 2">
+            </div>
+
+            <div class="file-upload-wrapper">
+                <label>Logo Central (Overlay):</label>
+                <input type="file" id="overlayLogo" accept="image/*">
+                <img id="previewLogoOverlay" src="" alt="Preview Logo">
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="placarTheme">Tema do Placar:</label>
-            <select id="placarTheme" onchange="updateFirebase()">
-                <option value="0">Padrão (Escuro)</option>
-                <option value="1">Azul</option>
-                <option value="2">Verde</option>
-                <option value="3">Vermelho</option>
-                <option value="4">Amarelo</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="placarOpacity">Opacidade do Fundo (%):</label>
-            <input type="range" id="placarOpacity" min="0" max="100" value="90" oninput="updateOpacityDisplay(this.value); updateFirebase()" onchange="updateFirebase()">
-            <span id="opacityValue">90%</span>
-        </div>
-
-        <div class="form-group">
-            <label for="fontColor">Cor da Fonte:</label>
-            <input type="color" id="fontColor" value="#E0E0E0" onchange="updateFirebase()">
-        </div>
-
-        <div class="form-group">
-            <label for="imageSize">Tamanho dos Escudos (px):</label>
-            <input type="number" id="imageSize" min="20" max="200" value="50" oninput="updateFirebase()">
-        </div>
-
-        <div class="form-group">
-            <label for="layoutSelect">Layout do Placar:</label>
-            <select id="layoutSelect" onchange="updateFirebase()">
-                <option value="0">Básico</option>
-                <option value="1">Moderno</option>
-                <option value="2">Retrô</option>
-                <option value="3">Futurista</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="tabs">
-            <button class="tab-button active" onclick="openTab(event, 'main-score')">Placar Principal</button>
-            <button class="tab-button" onclick="openTab(event, 'penalties')">Pênaltis</button>
-            <button class="tab-button" onclick="openTab(event, 'lineups')">Escalações</button>
-        </div>
-
-        <div id="main-score" class="tab-content active">
-            <div class="section-header">
-                <h2>Times e Placar</h2>
-                <div class="form-group">
-                    <button class="danger" onclick="resetAllScoresAndCards()">Zerar Tudo</button>
+        <div id="placar" class="tab-pane">
+            <h2 class="section-title">Placar e Cartões</h2>
+            <div class="flex-row space-between">
+                <div>
+                    <h3>Time 1: <span id="currentScore1">0</span></h3>
+                    <div class="score-controls">
+                        <button class="button" id="score1Plus">Gol (+1)</button>
+                        <button class="button red" id="score1Minus">Remover Gol (-1)</button>
+                    </div>
+                    <div class="card-controls">
+                        <button class="button orange" id="card1Yellow">Amarelo (+1)</button>
+                        <button class="button red" id="card1Red">Vermelho (+1)</button>
+                        <button class="button gray" id="card1Clear">Limpar Cartões</button>
+                    </div>
+                </div>
+                <div>
+                    <h3>Time 2: <span id="currentScore2">0</span></h3>
+                    <div class="score-controls">
+                        <button class="button" id="score2Plus">Gol (+1)</button>
+                        <button class="button red" id="score2Minus">Remover Gol (-1)</button>
+                    </div>
+                    <div class="card-controls">
+                        <button class="button orange" id="card2Yellow">Amarelo (+1)</button>
+                        <button class="button red" id="card2Red">Vermelho (+1)</button>
+                        <button class="button gray" id="card2Clear">Limpar Cartões</button>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="nomeTime1">Nome Time 1:</label>
-                <input type="text" id="nomeTime1" oninput="updateFirebase()" maxlength="25">
-                <label for="nomeAbbr1">Abreviação Time 1 (max 5):</label>
-                <input type="text" id="nomeAbbr1" oninput="updateFirebase()" maxlength="5">
-                <div class="logo-upload-section">
-                    <label for="escudo1Input">Escudo Time 1:</label>
-                    <input type="file" id="escudo1Input" accept="image/*" onchange="uploadImage(this, 'escudo1')">
-                    <div class="logo-preview"><img id="escudo1Preview" src="" alt="Prévia"></div>
-                    <button class="danger" onclick="clearImage('escudo1')">Limpar Escudo</button>
-                </div>
-            </div>
-
-            <div class="score-buttons">
-                <button onclick="changeScore('1', -1)">-1 Time 1</button>
-                <span id="score1Display" style="font-size: 2em; font-weight: bold;">0</span>
-                <button onclick="changeScore('1', 1)">+1 Time 1</button>
-                <button onclick="doGoalAnimation('1')">GOL! Time 1</button>
-            </div>
-
-            <div class="card-buttons">
-                <label>Cartões Time 1:</label>
-                <button class="secondary" onclick="changeCard('1', 'amarelo', -1)">- Amarelo</button>
-                <button class="secondary" onclick="changeCard('1', 'amarelo', 1)">+ Amarelo</button>
-                <button class="danger" onclick="changeCard('1', 'vermelho', 1)">+ Vermelho</button>
-                <button class="danger" onclick="clearCards('1')">Limpar Cartões</button>
-            </div>
-            
-            <hr style="border-color: #555; margin: 20px 0;">
-
-            <div class="form-group">
-                <label for="nomeTime2">Nome Time 2:</label>
-                <input type="text" id="nomeTime2" oninput="updateFirebase()" maxlength="25">
-                <label for="nomeAbbr2">Abreviação Time 2 (max 5):</label>
-                <input type="text" id="nomeAbbr2" id="nomeAbbr2" oninput="updateFirebase()" maxlength="5">
-                <div class="logo-upload-section">
-                    <label for="escudo2Input">Escudo Time 2:</label>
-                    <input type="file" id="escudo2Input" accept="image/*" onchange="uploadImage(this, 'escudo2')">
-                    <div class="logo-preview"><img id="escudo2Preview" src="" alt="Prévia"></div>
-                    <button class="danger" onclick="clearImage('escudo2')">Limpar Escudo</button>
-                </div>
-            </div>
-
-            <div class="score-buttons">
-                <button onclick="changeScore('2', -1)">-1 Time 2</button>
-                <span id="score2Display" style="font-size: 2em; font-weight: bold;">0</span>
-                <button onclick="changeScore('2', 1)">+1 Time 2</button>
-                <button onclick="doGoalAnimation('2')">GOL! Time 2</button>
-            </div>
-
-            <div class="card-buttons">
-                <label>Cartões Time 2:</label>
-                <button class="secondary" onclick="changeCard('2', 'amarelo', -1)">- Amarelo</button>
-                <button class="secondary" onclick="changeCard('2', 'amarelo', 1)">+ Amarelo</button>
-                <button class="danger" onclick="changeCard('2', 'vermelho', 1)">+ Vermelho</button>
-                <button class="danger" onclick="clearCards('2')">Limpar Cartões</button>
-            </div>
-
-            <hr style="border-color: #555; margin: 20px 0;">
-
-            <div class="logo-upload-section">
-                <label for="logoOverlayInput">Logo Central da Overlay:</label>
-                <input type="file" id="logoOverlayInput" accept="image/*" onchange="uploadImage(this, 'logoOverlay')">
-                <div class="logo-preview"><img id="logoOverlayPreview" src="" alt="Prévia"></div>
-                <button class="danger" onclick="clearImage('logoOverlay')">Limpar Logo</button>
-            </div>
-            
-            <div class="section-header">
-                <h2>Cronômetro e Período</h2>
-            </div>
+        <div id="cronometro" class="tab-pane">
+            <h2 class="section-title">Cronômetro e Período</h2>
             <div class="timer-controls">
-                <button onclick="toggleTimer()">Iniciar/Parar Cronômetro</button>
-                <button class="secondary" onclick="resetTimer()">Zerar Cronômetro</button>
-                <input type="number" id="setTimer" placeholder="Segundos" style="width: 80px;" oninput="setTimerValue()">
-                <button class="secondary" onclick="manualSetTimer()">Aplicar Segundos</button>
-                <select id="periodSelect" onchange="updateFirebase()">
+                <button class="button" id="startTimer">Iniciar</button>
+                <button class="button orange" id="pauseTimer">Pausar</button>
+                <button class="button red" id="resetTimer">Zerar</button>
+                <label for="setTimer">Definir (segundos):</label>
+                <input type="number" id="setTimer" class="input-field" value="0" min="0">
+                <button class="button blue" id="applyTimer">Aplicar</button>
+                <span class="timer-display" id="displayTimer">00:00</span>
+            </div>
+            <div class="flex-row">
+                <label for="periodSelect">Período:</label>
+                <select id="periodSelect" class="select-field">
                     <option value="0">Parado</option>
                     <option value="1">1º Tempo</option>
                     <option value="2">2º Tempo</option>
@@ -492,59 +347,68 @@
                     <option value="4">Intervalo</option>
                     <option value="5">Tempo Extra</option>
                 </select>
+                <button class="button blue" id="applyPeriod">Aplicar Período</button>
+                <span class="current-period-display" id="displayPeriod">1º T</span>
             </div>
         </div>
 
-        <div id="penalties" class="tab-content">
-            <div class="section-header">
-                <h2>Controle de Pênaltis</h2>
-                <button id="penaltyModeToggle" onclick="togglePenaltyMode()">Ativar Modo Pênalti</button>
+        <div id="penaltis" class="tab-pane">
+            <h2 class="section-title">Pênaltis</h2>
+            <div class="checkbox-group">
+                <input type="checkbox" id="penaltyModeToggle">
+                <label for="penaltyModeToggle">Ativar Modo Pênaltis</label>
             </div>
-
-            <div class="penalty-controls">
-                <div class="penalty-team-control">
-                    <h3>Pênaltis Time 1</h3>
-                    <div class="penalty-buttons">
-                        <button onclick="addPenalty('1', 'goal')">Gol</button>
-                        <button class="danger" onclick="addPenalty('1', 'miss')">Perdeu</button>
-                        <button class="secondary" onclick="removeLastPenalty('1')">Desfazer Último</button>
-                        <button class="danger" onclick="clearPenalties('1')">Limpar Todos</button>
-                    </div>
-                    <div class="penalty-balls-preview" id="penaltiesPreview1"></div>
+            <div class="flex-row">
+                <h3>Time 1 Penalidades:</h3>
+                <div class="penalty-input">
+                    <button class="button" id="penalty1Goal">Gol</button>
+                    <button class="button red" id="penalty1Miss">Erro</button>
+                    <button class="button orange" id="penalty1Undo">Desfazer</button>
+                    <button class="button gray" id="penalty1ClearAll">Limpar Tudo</button>
                 </div>
-
-                <div class="penalty-team-control">
-                    <h3>Pênaltis Time 2</h3>
-                    <div class="penalty-buttons">
-                        <button onclick="addPenalty('2', 'goal')">Gol</button>
-                        <button class="danger" onclick="addPenalty('2', 'miss')">Perdeu</button>
-                        <button class="secondary" onclick="removeLastPenalty('2')">Desfazer Último</button>
-                        <button class="danger" onclick="clearPenalties('2')">Limpar Todos</button>
-                    </div>
-                    <div class="penalty-balls-preview" id="penaltiesPreview2"></div>
+            </div>
+            <div class="flex-row">
+                <h3>Time 2 Penalidades:</h3>
+                <div class="penalty-input">
+                    <button class="button" id="penalty2Goal">Gol</button>
+                    <button class="button red" id="penalty2Miss">Erro</button>
+                    <button class="button orange" id="penalty2Undo">Desfazer</button>
+                    <button class="button gray" id="penalty2ClearAll">Limpar Tudo</button>
                 </div>
             </div>
         </div>
 
-        <div id="lineups" class="tab-content">
-            <div class="section-header">
-                <h2>Controle de Escalações</h2>
-                <button id="lineupModeToggle" onclick="toggleLineupMode()">Ativar Modo Escalação</button>
+        <div id="temas" class="tab-pane">
+            <h2 class="section-title">Temas e Cores</h2>
+            <div class="theme-controls">
+                <label for="themeSelect">Tema do Placar:</label>
+                <select id="themeSelect" class="select-field">
+                    <option value="0">Padrão (Escuro)</option>
+                    <option value="1">Azul</option>
+                    <option value="2">Verde</option>
+                    <option value="3">Vermelho</option>
+                    <option value="4">Amarelo</option>
+                </select>
+                <button class="button blue" id="applyTheme">Aplicar Tema</button>
             </div>
-
-            <div class="lineup-controls">
-                <div class="lineup-team-section">
-                    <h3>Escalação Time 1</h3>
-                    <div class="player-input-grid" id="playersInput1">
-                        </div>
-                </div>
-
-                <div class="lineup-team-section">
-                    <h3>Escalação Time 2</h3>
-                    <div class="player-input-grid" id="playersInput2">
-                        </div>
-                </div>
-                <button onclick="saveLineups()">Salvar Escalações</button>
+            <div class="layout-controls">
+                <label for="layoutSelect">Layout da Overlay:</label>
+                <select id="layoutSelect" class="select-field">
+                    <option value="0">Padrão</option>
+                    <option value="1">Compacto</option>
+                </select>
+                <button class="button blue" id="applyLayout">Aplicar Layout</button>
+            </div>
+            <div class="slider-group">
+                <label for="opacitySlider">Opacidade do Fundo:</label>
+                <input type="range" id="opacitySlider" min="0" max="100" value="90">
+                <span id="opacityValue">90%</span>
+                <button class="button blue" id="applyOpacity">Aplicar Opacidade</button>
+            </div>
+            <div class="flex-row">
+                <label for="fontColorPicker">Cor da Fonte:</label>
+                <input type="color" id="fontColorPicker" class="color-picker" value="#E0E0E0">
+                <button class="button blue" id="applyFontColor">Aplicar Cor</button>
             </div>
         </div>
     </div>
@@ -555,25 +419,51 @@
     <script>
         // ** SUAS CONFIGURAÇÕES DO FIREBASE ESTÃO AQUI **
         const firebaseConfig = {
-            apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
-            authDomain: "aquilesplacarpro.firebaseapp.com",
-            databaseURL: "https://aquilesplacarpro-default-rtdb.firebaseio.com",
-            projectId: "aquilesplacarpro",
-            messagingSenderId: "922321609151",
-            appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
+          apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
+          authDomain: "aquilesplacarpro.firebaseapp.com",
+          databaseURL: "https://aquilesplacarpro-default-rtdb.firebaseio.com",
+          projectId: "aquilesplacarpro",
+          messagingSenderId: "922321609151",
+          appId: "1:922321609151:web:ba51f5b21b322cf0a4c10a"
         };
 
-        // ** SEU ID DE NARRADOR - MUDE PARA UM ID ÚNICO E SEGURO **
-        const NARRATOR_ID = 'SEU_ID_UNICO_AQUI'; // <-- ALtere ESTE VALOR para o seu ID único!
-        document.getElementById('narratorIdDisplay').value = NARRATOR_ID;
+        let NARRATOR_ID = localStorage.getItem('aquiles_narrator_id') || 'SEU_ID_UNICO_AQUI'; // <-- Valor padrão se não tiver salvo
 
-        // Inicialize o Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const database = app.database();
-        const overlayStateRef = database.ref(`narrators/${NARRATOR_ID}/overlayState`);
+        // Inicializa o Firebase (será reinicializado se o ID mudar)
+        let app = null;
+        let database = null;
+        let overlayStateRef = null;
 
-        // Estado inicial do controlador (será sincronizado com o Firebase)
-        let localState = {
+        function initializeFirebaseAndListeners() {
+            if (app) {
+                // Se já inicializado, apenas reconfigura a referência do banco de dados
+                database = app.database();
+            } else {
+                app = firebase.initializeApp(firebaseConfig);
+                database = app.database();
+            }
+            overlayStateRef = database.ref(`narrators/${NARRATOR_ID}/overlayState`);
+            
+            document.getElementById('displayNarratorId').innerText = NARRATOR_ID;
+            document.getElementById('narratorIdInput').value = NARRATOR_ID;
+
+            // Limpa listeners antigos para evitar duplicação ao mudar o ID
+            overlayStateRef.off('value'); 
+
+            // Listener para atualizar a UI do controlador com base no Firebase
+            overlayStateRef.on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    currentState = snapshot.val();
+                    updateControllerUI();
+                } else {
+                    console.log("Nenhum dado encontrado no Firebase para este Narrator ID. Criando estado inicial...");
+                    writeStateToFirebase(currentState); // Inicializa o estado se não existir
+                }
+            });
+        }
+
+        // Estado atual do controlador (o que está no Firebase)
+        let currentState = {
             placar: { '1': 0, '2': 0 },
             cards: { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } },
             penalties: { '1': [], '2': [] },
@@ -583,489 +473,331 @@
             placarOpacity: 90,
             fontColor: '#E0E0E0',
             penaltyModeActive: false,
-            lineupModeActive: false, // NOVO: Estado para modo escalação
-            activeAnimation: null,
+            activeAnimation: null, // Será um objeto { type: 'goalAnimation', team: '1' }
             currentPeriod: 1,
             nome1: '',
             nome2: '',
             nomeAbbr1: 'T1',
             nomeAbbr2: 'T2',
-            escudo1: '',
-            escudo2: '',
-            logoOverlay: '',
+            escudo1: '', // Será a string Base64
+            escudo2: '', // Será a string Base64
+            logoOverlay: '', // Será a string Base64
             isVisible: true,
-            currentLayoutIndex: 0,
-            imageSize: 50,
-            lineups: { // NOVO: Estrutura inicial para escalações
-                '1': Array.from({ length: 15 }, (_, i) => ({ number: (i + 1).toString(), name: '' })),
-                '2': Array.from({ length: 15 }, (_, i) => ({ number: (i + 1).toString(), name: '' }))
-            }
+            currentLayoutIndex: 0 // Novo: 0 = Padrão, 1 = Compacto
         };
+
+        // --- Funções de Leitura e Escrita no Firebase ---
+        function writeStateToFirebase(newState) {
+            overlayStateRef.set(newState)
+                .then(() => console.log("Estado atualizado no Firebase!"))
+                .catch(error => console.error("Erro ao escrever no Firebase:", error));
+        }
+
+        // Função para ler arquivo e converter para Base64
+        function fileToBase64(file, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                callback(e.target.result);
+            };
+            reader.onerror = function(error) {
+                console.error("Erro ao ler arquivo:", error);
+                alert("Erro ao carregar a imagem. Por favor, tente novamente com um arquivo menor.");
+                callback(''); // Retorna string vazia em caso de erro
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // --- Funções para Atualizar a UI do Controlador ---
+        function updateControllerUI() {
+            document.getElementById('currentScore1').innerText = currentState.placar['1'];
+            document.getElementById('currentScore2').innerText = currentState.placar['2'];
+            document.getElementById('displayTimer').innerText = formatTime(currentState.seconds);
+            document.getElementById('setTimer').value = currentState.seconds;
+            document.getElementById('displayPeriod').innerText = periodNames[currentState.currentPeriod] || 'N/A';
+
+            document.getElementById('team1Name').value = currentState.nome1;
+            document.getElementById('team1Abbr').value = currentState.nomeAbbr1;
+            document.getElementById('previewEscudo1').src = currentState.escudo1 || '';
+
+            document.getElementById('team2Name').value = currentState.nome2;
+            document.getElementById('team2Abbr').value = currentState.nomeAbbr2;
+            document.getElementById('previewEscudo2').src = currentState.escudo2 || '';
+            
+            document.getElementById('previewLogoOverlay').src = currentState.logoOverlay || '';
+
+            document.getElementById('periodSelect').value = currentState.currentPeriod;
+            document.getElementById('penaltyModeToggle').checked = currentState.penaltyModeActive;
+            document.getElementById('themeSelect').value = currentState.placarThemeIndex;
+            document.getElementById('layoutSelect').value = currentState.currentLayoutIndex; // Atualiza o layout selecionado
+            document.getElementById('opacitySlider').value = currentState.placarOpacity;
+            document.getElementById('opacityValue').innerText = `${currentState.placarOpacity}%`;
+            document.getElementById('fontColorPicker').value = currentState.fontColor;
+        }
+
+        // --- Funções Auxiliares ---
+        function formatTime(s) {
+            const min = String(Math.floor(s / 60)).padStart(2, '0');
+            const sec = String(s % 60).padStart(2, '0');
+            return `${min}:${sec}`;
+        }
 
         const periodNames = {
-            0: 'Parado',
-            1: '1º Tempo',
-            2: '2º Tempo',
-            3: 'Prorrogação',
-            4: 'Intervalo',
-            5: 'Tempo Extra'
+            0: 'Parado', 1: '1º T', 2: '2º T', 3: 'Prorrog', 4: 'Int', 5: 'T. Extra'
         };
 
+        // --- Lógica das Abas ---
+        function showTab(tabId) {
+            // Remove 'active' de todos os botões de aba
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            // Esconde todos os painéis de aba
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+
+            // Adiciona 'active' ao botão clicado
+            document.querySelector(`.tab-button[onclick="showTab('${tabId}')"]`).classList.add('active');
+            // Mostra o painel de aba correspondente
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Inicializa a primeira aba ao carregar a página e Firebase
         document.addEventListener('DOMContentLoaded', () => {
-            // Renderiza campos de jogador na inicialização
-            renderLineupInputs('1');
-            renderLineupInputs('2');
-
-            // Ouve as mudanças no Firebase e atualiza a UI do controlador
-            overlayStateRef.on('value', (snapshot) => {
-                const firebaseData = snapshot.val();
-                if (firebaseData) {
-                    // Mescla o estado do Firebase com o estado local para garantir que novas propriedades sejam adicionadas
-                    localState = { ...localState, ...firebaseData };
-                    
-                    // Garante que a estrutura de `lineups` exista e tenha 15 jogadores por time
-                    if (!localState.lineups || !localState.lineups['1'] || !localState.lineups['2'] || localState.lineups['1'].length !== 15 || localState.lineups['2'].length !== 15) {
-                        console.warn("Estrutura de lineups incompleta ou incorreta no Firebase. Reinicializando com padrão.");
-                        localState.lineups = {
-                            '1': Array.from({ length: 15 }, (_, i) => ({ number: (i + 1).toString(), name: '' })),
-                            '2': Array.from({ length: 15 }, (_, i) => ({ number: (i + 1).toString(), name: '' }))
-                        };
-                        // Opcional: Persistir essa correção de volta no Firebase para consistência
-                        // overlayStateRef.update({ lineups: localState.lineups });
-                    }
-
-                    updateUI(); // Atualiza todos os elementos da UI
-                } else {
-                    // Se não houver dados no Firebase, envia o estado inicial para lá
-                    overlayStateRef.set(localState);
-                }
-            });
-
-            // Adiciona listener para input de texto para evitar delay no Firebase
-            document.querySelectorAll('input[type="text"], input[type="number"], input[type="color"], select').forEach(element => {
-                if (element.id !== 'setTimer') { // Excluir o campo de segundos do timer manual
-                    element.addEventListener('input', updateFirebaseDebounced);
-                    element.addEventListener('change', updateFirebaseDebounced); // Para selects e color pickers
-                }
-            });
-
-            // Inicializa a aba ativa
-            openTab(null, 'main-score');
-            generateOverlayLink();
+            initializeFirebaseAndListeners(); // Inicializa Firebase e listeners no DOMContentLoaded
+            showTab('conexao'); 
         });
 
-        // Função de debounce para limitar a frequência de updates no Firebase
-        let debounceTimer;
-        function updateFirebaseDebounced() {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => {
-                updateFirebase();
-            }, 300); // Atraso de 300ms
-        }
+        // --- Event Listeners ---
 
-        // Função principal para atualizar o Firebase
-        function updateFirebase() {
-            const newState = {
-                placar: {
-                    '1': parseInt(document.getElementById('score1Display').innerText),
-                    '2': parseInt(document.getElementById('score2Display').innerText)
-                },
-                cards: {
-                    '1': localState.cards['1'],
-                    '2': localState.cards['2']
-                },
-                penalties: localState.penalties, // Já atualizado pelas funções de pênalti
-                seconds: localState.seconds, // Mantém o valor atualizado pelo timer ou manual
-                timerRunning: localState.timerRunning,
-                placarThemeIndex: parseInt(document.getElementById('placarTheme').value),
-                placarOpacity: parseInt(document.getElementById('placarOpacity').value),
-                fontColor: document.getElementById('fontColor').value,
-                penaltyModeActive: localState.penaltyModeActive, // Novo
-                lineupModeActive: localState.lineupModeActive,   // Novo
-                activeAnimation: localState.activeAnimation,
-                currentPeriod: parseInt(document.getElementById('periodSelect').value),
-                nome1: document.getElementById('nomeTime1').value,
-                nome2: document.getElementById('nomeTime2').value,
-                nomeAbbr1: document.getElementById('nomeAbbr1').value,
-                nomeAbbr2: document.getElementById('nomeAbbr2').value,
-                escudo1: localState.escudo1, // Já Base64
-                escudo2: localState.escudo2, // Já Base64
-                logoOverlay: localState.logoOverlay, // Já Base64
-                isVisible: localState.isVisible,
-                currentLayoutIndex: parseInt(document.getElementById('layoutSelect').value),
-                imageSize: parseInt(document.getElementById('imageSize').value),
-                lineups: getLineupsFromInputs() // Novo: Obtém os dados dos inputs
-            };
-
-            overlayStateRef.set(newState)
-                .then(() => {
-                    // console.log("Estado atualizado no Firebase com sucesso!");
-                })
-                .catch((error) => {
-                    console.error("Erro ao atualizar Firebase:", error);
-                });
-        }
-
-        // Função para atualizar a UI do controlador com base no `localState`
-        function updateUI() {
-            document.getElementById('score1Display').innerText = localState.placar['1'];
-            document.getElementById('score2Display').innerText = localState.placar['2'];
-            document.getElementById('nomeTime1').value = localState.nome1;
-            document.getElementById('nomeTime2').value = localState.nome2;
-            document.getElementById('nomeAbbr1').value = localState.nomeAbbr1;
-            document.getElementById('nomeAbbr2').value = localState.nomeAbbr2;
-            document.getElementById('placarTheme').value = localState.placarThemeIndex;
-            document.getElementById('placarOpacity').value = localState.placarOpacity;
-            updateOpacityDisplay(localState.placarOpacity);
-            document.getElementById('fontColor').value = localState.fontColor;
-            document.getElementById('imageSize').value = localState.imageSize;
-            document.getElementById('layoutSelect').value = localState.currentLayoutIndex;
-            document.getElementById('periodSelect').value = localState.currentPeriod;
-
-            document.getElementById('visibilityToggle').innerText = localState.isVisible ? 'ON' : 'OFF';
-            document.getElementById('visibilityToggle').className = localState.isVisible ? '' : 'danger';
-
-            // Atualiza prévias de imagem
-            updateImagePreview('escudo1Preview', localState.escudo1);
-            updateImagePreview('escudo2Preview', localState.escudo2);
-            updateImagePreview('logoOverlayPreview', localState.logoOverlay);
-
-            // Atualiza o texto do botão de modo pênalti
-            const penaltyToggleBtn = document.getElementById('penaltyModeToggle');
-            penaltyToggleBtn.innerText = localState.penaltyModeActive ? 'Desativar Modo Pênalti' : 'Ativar Modo Pênalti';
-            penaltyToggleBtn.className = localState.penaltyModeActive ? 'danger' : '';
-
-            // Atualiza o texto do botão de modo escalação
-            const lineupToggleBtn = document.getElementById('lineupModeToggle');
-            lineupToggleBtn.innerText = localState.lineupModeActive ? 'Desativar Modo Escalação' : 'Ativar Modo Escalação';
-            lineupToggleBtn.className = localState.lineupModeActive ? 'danger' : '';
-
-            // Renderiza bolinhas de pênalti
-            renderPenaltyBallsPreview('1', localState.penalties['1']);
-            renderPenaltyBallsPreview('2', localState.penalties['2']);
-
-            // Atualiza campos de input da escalação
-            setLineupsToInputs(localState.lineups);
-
-            // Inicia/Para o cronômetro local para manter o valor atualizado na UI
-            updateLocalTimerInController(localState.timerRunning, localState.seconds);
-        }
-
-        function generateOverlayLink() {
-            const currentUrl = window.location.href;
-            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/') + 1);
-            const overlayLink = `${baseUrl}overlay.html?narratorId=${NARRATOR_ID}`;
-            document.getElementById('overlayLink').innerText = overlayLink;
-        }
-
-        function copyOverlayLink() {
-            const overlayLink = document.getElementById('overlayLink').innerText;
-            navigator.clipboard.writeText(overlayLink).then(() => {
-                alert("Link da Overlay copiado para a área de transferência!");
-            }).catch(err => {
-                console.error("Erro ao copiar o link: ", err);
-                alert("Erro ao copiar o link. Por favor, copie manualmente.");
-            });
-        }
-
-        function toggleVisibility() {
-            localState.isVisible = !localState.isVisible;
-            updateFirebase();
-        }
-
-        function changeScore(team, delta) {
-            localState.placar[team] = Math.max(0, localState.placar[team] + delta);
-            updateFirebase();
-        }
-
-        function doGoalAnimation(team) {
-            localState.activeAnimation = {
-                type: 'goalAnimation',
-                team: team,
-                escudo: team === '1' ? localState.escudo1 : localState.escudo2
-            };
-            updateFirebase();
-            // Limpa a animação após um tempo para que possa ser reativada
-            setTimeout(() => {
-                localState.activeAnimation = null;
-                updateFirebase();
-            }, 4000); // Duração da animação na overlay + um pouco
-        }
-
-        function changeCard(team, cardType, delta) {
-            localState.cards[team][cardType] = Math.max(0, localState.cards[team][cardType] + delta);
-            updateFirebase();
-        }
-
-        function clearCards(team) {
-            localState.cards[team] = { 'amarelo': 0, 'vermelho': 0 };
-            updateFirebase();
-        }
-
-        function resetAllScoresAndCards() {
-            if (confirm("Tem certeza que deseja zerar os placares e cartões de ambos os times?")) {
-                localState.placar = { '1': 0, '2': 0 };
-                localState.cards = { '1': { 'amarelo': 0, 'vermelho': 0 }, '2': { 'amarelo': 0, 'vermelho': 0 } };
-                localState.penalties = { '1': [], '2': [] }; // Também zera pênaltis
-                localState.seconds = 0;
-                localState.timerRunning = false;
-                localState.currentPeriod = 1;
-                localState.penaltyModeActive = false; // Garante que saia do modo pênalti
-                localState.lineupModeActive = false; // Garante que saia do modo escalação
-                updateFirebase();
+        // Configuração do Narrator ID
+        document.getElementById('setNarratorIdBtn').addEventListener('click', () => {
+            const newId = document.getElementById('narratorIdInput').value.trim();
+            if (newId && newId !== NARRATOR_ID) {
+                NARRATOR_ID = newId;
+                localStorage.setItem('aquiles_narrator_id', NARRATOR_ID);
+                alert(`ID de Narrador salvo como: ${NARRATOR_ID}. A página será recarregada para aplicar.`);
+                window.location.reload(); // Recarrega para aplicar o novo ID
+            } else if (!newId) {
+                alert("Por favor, digite um ID de Narrador válido.");
             }
-        }
+        });
 
-        let timerInterval = null;
-        function updateLocalTimerInController(running, seconds) {
-            if (running && !timerInterval) {
-                localState.seconds = seconds;
-                timerInterval = setInterval(() => {
-                    localState.seconds++;
-                    document.getElementById('setTimer').value = localState.seconds;
-                }, 1000);
-            } else if (!running && timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-            // Sincroniza o input manual com o valor do Firebase
-            document.getElementById('setTimer').value = seconds;
-        }
 
-        function toggleTimer() {
-            localState.timerRunning = !localState.timerRunning;
-            updateFirebase();
-        }
+        // Atualização em tempo real de nomes
+        document.getElementById('team1Name').addEventListener('input', () => {
+            currentState.nome1 = document.getElementById('team1Name').value;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('team1Abbr').addEventListener('input', () => {
+            currentState.nomeAbbr1 = document.getElementById('team1Abbr').value;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('team2Name').addEventListener('input', () => {
+            currentState.nome2 = document.getElementById('team2Name').value;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('team2Abbr').addEventListener('input', () => {
+            currentState.nomeAbbr2 = document.getElementById('team2Abbr').value;
+            writeStateToFirebase(currentState);
+        });
 
-        function resetTimer() {
-            localState.seconds = 0;
-            localState.timerRunning = false;
-            updateFirebase();
-        }
 
-        function setTimerValue() {
-            // Apenas atualiza o localState.seconds quando o usuário digita
-            const inputVal = parseInt(document.getElementById('setTimer').value);
-            if (!isNaN(inputVal) && inputVal >= 0) {
-                localState.seconds = inputVal;
-            }
-            // Não chama updateFirebase() aqui, apenas no manualSetTimer()
-        }
+        // Visibilidade
+        document.getElementById('toggleVisibilityBtn').addEventListener('click', () => {
+            currentState.isVisible = !currentState.isVisible;
+            writeStateToFirebase(currentState);
+        });
 
-        function manualSetTimer() {
-            // Força a sincronização do valor do input com o Firebase
-            localState.seconds = parseInt(document.getElementById('setTimer').value) || 0;
-            updateFirebase();
-        }
-
-        function updateOpacityDisplay(value) {
-            document.getElementById('opacityValue').innerText = `${value}%`;
-        }
-
-        // Funções para upload de imagem (escudos e logo)
-        function uploadImage(input, type) {
-            const file = input.files[0];
+        // Upload de Escudos (agora via Base64)
+        document.getElementById('team1Escudo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    localState[type] = e.target.result; // Salva o Base64 na localState
-                    updateFirebase(); // Envia para o Firebase
-                    updateImagePreview(type + 'Preview', e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function clearImage(type) {
-            localState[type] = ''; // Limpa o Base64 na localState
-            updateFirebase(); // Envia para o Firebase
-            updateImagePreview(type + 'Preview', '');
-            document.getElementById(type + 'Input').value = ''; // Limpa o input file
-        }
-
-        function updateImagePreview(id, src) {
-            const img = document.getElementById(id);
-            if (img) {
-                img.src = src;
-                img.style.display = src ? 'block' : 'none';
-            }
-        }
-
-        // Funções para controle de abas
-        function openTab(evt, tabName) {
-            let i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-                tabcontent[i].classList.remove('active');
-            }
-            tablinks = document.getElementsByClassName("tab-button");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].classList.remove("active");
-            }
-            document.getElementById(tabName).style.display = "block";
-            document.getElementById(tabName).classList.add('active');
-            if (evt) {
-                evt.currentTarget.classList.add("active");
-            }
-
-            // Desativa modos especiais ao trocar de aba, se for para o placar principal
-            if (tabName === 'main-score') {
-                if (localState.penaltyModeActive || localState.lineupModeActive) {
-                    localState.penaltyModeActive = false;
-                    localState.lineupModeActive = false;
-                    updateFirebase();
-                }
-            } else if (tabName === 'penalties') {
-                // Ao ir para a aba de pênaltis, ativa o modo pênalti e desativa outros
-                if (!localState.penaltyModeActive || localState.lineupModeActive) {
-                    localState.penaltyModeActive = true;
-                    localState.lineupModeActive = false;
-                    updateFirebase();
-                }
-            } else if (tabName === 'lineups') {
-                 // Ao ir para a aba de escalações, ativa o modo escalação e desativa outros
-                 if (!localState.lineupModeActive || localState.penaltyModeActive) {
-                    localState.lineupModeActive = true;
-                    localState.penaltyModeActive = false;
-                    updateFirebase();
-                }
-            }
-        }
-
-        // --- Funções de Pênaltis ---
-        function togglePenaltyMode() {
-            localState.penaltyModeActive = !localState.penaltyModeActive;
-            if (localState.penaltyModeActive) {
-                localState.lineupModeActive = false; // Desativa modo escalação se ativar pênaltis
-            }
-            updateFirebase();
-        }
-
-        function addPenalty(team, status) {
-            localState.penalties[team].push(status);
-            updateFirebase();
-        }
-
-        function removeLastPenalty(team) {
-            if (localState.penalties[team].length > 0) {
-                localState.penalties[team].pop();
-                updateFirebase();
-            }
-        }
-
-        function clearPenalties(team) {
-            localState.penalties[team] = [];
-            updateFirebase();
-        }
-
-        function renderPenaltyBallsPreview(team, penaltiesArray) {
-            const container = document.getElementById(`penaltiesPreview${team}`);
-            container.innerHTML = '';
-            penaltiesArray.forEach(status => {
-                const ball = document.createElement('div');
-                ball.classList.add('penalty-ball-preview');
-                if (status === 'goal') {
-                    ball.classList.add('green');
-                } else if (status === 'miss') {
-                    ball.classList.add('red');
-                }
-                container.appendChild(ball);
-            });
-        }
-
-        // --- Funções de Escalações (NOVO) ---
-        function toggleLineupMode() {
-            localState.lineupModeActive = !localState.lineupModeActive;
-            if (localState.lineupModeActive) {
-                localState.penaltyModeActive = false; // Desativa modo pênalti se ativar escalação
-            }
-            updateFirebase();
-        }
-
-        function renderLineupInputs(team) {
-            const container = document.getElementById(`playersInput${team}`);
-            container.innerHTML = ''; // Limpa os inputs existentes
-
-            // Cria cabeçalhos para colunas
-            container.innerHTML += `
-                <div class="player-row">
-                    <label>#</label>
-                    <label>Nome do Jogador</label>
-                </div>
-            `;
-
-            for (let i = 0; i < 15; i++) {
-                const player = localState.lineups[team][i] || { number: (i + 1).toString(), name: '' };
-
-                const playerRow = document.createElement('div');
-                playerRow.classList.add('player-row');
-                
-                // Input para o número (readonly, mas ajustável na lógica se precisar)
-                const numberInput = document.createElement('input');
-                numberInput.type = 'number';
-                numberInput.value = player.number;
-                numberInput.id = `player${team}Number${i}`;
-                numberInput.readOnly = false; // Deixa editável para o usuário mudar o número se quiser
-                numberInput.oninput = saveLineupsDebounced;
-
-                // Input para o nome
-                const nameInput = document.createElement('input');
-                nameInput.type = 'text';
-                nameInput.value = player.name;
-                nameInput.id = `player${team}Name${i}`;
-                nameInput.oninput = saveLineupsDebounced;
-                nameInput.placeholder = `Nome Jogador ${i + 1}`;
-
-                playerRow.appendChild(numberInput);
-                playerRow.appendChild(nameInput);
-                
-                container.appendChild(playerRow);
-            }
-        }
-
-        // Debounce para salvar escalações, já que são muitos inputs
-        let lineupDebounceTimer;
-        function saveLineupsDebounced() {
-            clearTimeout(lineupDebounceTimer);
-            lineupDebounceTimer = setTimeout(() => {
-                saveLineups();
-            }, 500); // Atraso maior para inputs de texto
-        }
-
-        function getLineupsFromInputs() {
-            const lineups = { '1': [], '2': [] };
-            for (let team of ['1', '2']) {
-                for (let i = 0; i < 15; i++) {
-                    const numberInput = document.getElementById(`player${team}Number${i}`);
-                    const nameInput = document.getElementById(`player${team}Name${i}`);
-                    
-                    lineups[team].push({
-                        number: numberInput ? (numberInput.value || (i + 1).toString()) : (i + 1).toString(),
-                        name: nameInput ? (nameInput.value || '') : ''
-                    });
-                }
-            }
-            return lineups;
-        }
-
-        function setLineupsToInputs(lineupsData) {
-            for (let team of ['1', '2']) {
-                lineupsData[team].forEach((player, i) => {
-                    const numberInput = document.getElementById(`player${team}Number${i}`);
-                    const nameInput = document.getElementById(`player${team}Name${i}`);
-                    if (numberInput) numberInput.value = player.number;
-                    if (nameInput) nameInput.value = player.name;
+                fileToBase64(file, (base64String) => {
+                    currentState.escudo1 = base64String;
+                    document.getElementById('previewEscudo1').src = base64String; // Atualiza preview
+                    writeStateToFirebase(currentState);
                 });
+            } else {
+                currentState.escudo1 = '';
+                document.getElementById('previewEscudo1').src = '';
+                writeStateToFirebase(currentState);
             }
+        });
+
+        document.getElementById('team2Escudo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileToBase64(file, (base64String) => {
+                    currentState.escudo2 = base64String;
+                    document.getElementById('previewEscudo2').src = base64String; // Atualiza preview
+                    writeStateToFirebase(currentState);
+                });
+            } else {
+                currentState.escudo2 = '';
+                document.getElementById('previewEscudo2').src = '';
+                writeStateToFirebase(currentState);
+            }
+        });
+
+        document.getElementById('overlayLogo').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                fileToBase64(file, (base64String) => {
+                    currentState.logoOverlay = base64String;
+                    document.getElementById('previewLogoOverlay').src = base64String; // Atualiza preview
+                    writeStateToFirebase(currentState);
+                });
+            } else {
+                currentState.logoOverlay = '';
+                document.getElementById('previewLogoOverlay').src = '';
+                writeStateToFirebase(currentState);
+            }
+        });
+
+        // Placar - Agora com animação de gol
+        document.getElementById('score1Plus').addEventListener('click', () => {
+            currentState.placar['1']++;
+            currentState.activeAnimation = { type: 'goalAnimation', team: '1' }; // Ativa animação + time
+            writeStateToFirebase(currentState);
+            setTimeout(() => {
+                // Só reseta se a animação atual ainda for 'goalAnimation' do time 1
+                if (currentState.activeAnimation && currentState.activeAnimation.type === 'goalAnimation' && currentState.activeAnimation.team === '1') {
+                    currentState.activeAnimation = null;
+                    writeStateToFirebase(currentState);
+                }
+            }, 2500); // Duração da animação é 2.2s + um pequeno buffer
+        });
+        document.getElementById('score1Minus').addEventListener('click', () => {
+            currentState.placar['1'] = Math.max(0, currentState.placar['1'] - 1);
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('score2Plus').addEventListener('click', () => {
+            currentState.placar['2']++;
+            currentState.activeAnimation = { type: 'goalAnimation', team: '2' }; // Ativa animação + time
+            writeStateToFirebase(currentState);
+            setTimeout(() => {
+                // Só reseta se a animação atual ainda for 'goalAnimation' do time 2
+                if (currentState.activeAnimation && currentState.activeAnimation.type === 'goalAnimation' && currentState.activeAnimation.team === '2') {
+                    currentState.activeAnimation = null;
+                    writeStateToFirebase(currentState);
+                }
+            }, 2500); // Duração da animação é 2.2s + um pequeno buffer
+        });
+        document.getElementById('score2Minus').addEventListener('click', () => {
+            currentState.placar['2'] = Math.max(0, currentState.placar['2'] - 1);
+            writeStateToFirebase(currentState);
+        });
+
+        // Cartões
+        document.getElementById('card1Yellow').addEventListener('click', () => {
+            currentState.cards['1'].amarelo = (currentState.cards['1'].amarelo || 0) + 1;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('card1Red').addEventListener('click', () => {
+            currentState.cards['1'].vermelho = (currentState.cards['1'].vermelho || 0) + 1;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('card1Clear').addEventListener('click', () => {
+            currentState.cards['1'].amarelo = 0;
+            currentState.cards['1'].vermelho = 0;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('card2Yellow').addEventListener('click', () => {
+            currentState.cards['2'].amarelo = (currentState.cards['2'].amarelo || 0) + 1;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('card2Red').addEventListener('click', () => {
+            currentState.cards['2'].vermelho = (currentState.cards['2'].vermelho || 0) + 1;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('card2Clear').addEventListener('click', () => {
+            currentState.cards['2'].amarelo = 0;
+            currentState.cards['2'].vermelho = 0;
+            writeStateToFirebase(currentState);
+        });
+
+        // Cronômetro
+        document.getElementById('startTimer').addEventListener('click', () => {
+            currentState.timerRunning = true;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('pauseTimer').addEventListener('click', () => {
+            currentState.timerRunning = false;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('resetTimer').addEventListener('click', () => {
+            currentState.seconds = 0;
+            currentState.timerRunning = false;
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('applyTimer').addEventListener('click', () => {
+            const seconds = parseInt(document.getElementById('setTimer').value);
+            if (!isNaN(seconds) && seconds >= 0) {
+                currentState.seconds = seconds;
+                writeStateToFirebase(currentState);
+            }
+        });
+
+        // Período
+        document.getElementById('applyPeriod').addEventListener('click', () => {
+            currentState.currentPeriod = parseInt(document.getElementById('periodSelect').value);
+            writeStateToFirebase(currentState);
+        });
+
+        // Modo Pênaltis
+        document.getElementById('penaltyModeToggle').addEventListener('change', (e) => {
+            currentState.penaltyModeActive = e.target.checked;
+            writeStateToFirebase(currentState);
+        });
+
+        // Pênaltis
+        function handlePenalty(teamId, resultType) {
+            if (!Array.isArray(currentState.penalties[teamId])) {
+                currentState.penalties[teamId] = [];
+            }
+            if (resultType === 'undo') {
+                currentState.penalties[teamId].pop();
+            } else if (resultType === 'clear') {
+                currentState.penalties[teamId] = [];
+            } else {
+                currentState.penalties[teamId].push(resultType);
+            }
+            writeStateToFirebase(currentState);
         }
 
-        function saveLineups() {
-            localState.lineups = getLineupsFromInputs();
-            updateFirebase(); // Envia as escalações atualizadas para o Firebase
-            console.log("Escalações salvas!");
-        }
+        document.getElementById('penalty1Goal').addEventListener('click', () => handlePenalty('1', 'green'));
+        document.getElementById('penalty1Miss').addEventListener('click', () => handlePenalty('1', 'red'));
+        document.getElementById('penalty1Undo').addEventListener('click', () => handlePenalty('1', 'undo'));
+        document.getElementById('penalty1ClearAll').addEventListener('click', () => handlePenalty('1', 'clear'));
 
+        document.getElementById('penalty2Goal').addEventListener('click', () => handlePenalty('2', 'green'));
+        document.getElementById('penalty2Miss').addEventListener('click', () => handlePenalty('2', 'red'));
+        document.getElementById('penalty2Undo').addEventListener('click', () => handlePenalty('2', 'undo'));
+        document.getElementById('penalty2ClearAll').addEventListener('click', () => handlePenalty('2', 'clear'));
+
+        // Temas e Cores
+        document.getElementById('applyTheme').addEventListener('click', () => {
+            currentState.placarThemeIndex = parseInt(document.getElementById('themeSelect').value);
+            writeStateToFirebase(currentState);
+        });
+        // Layouts
+        document.getElementById('applyLayout').addEventListener('click', () => {
+            currentState.currentLayoutIndex = parseInt(document.getElementById('layoutSelect').value);
+            writeStateToFirebase(currentState);
+        });
+
+        document.getElementById('opacitySlider').addEventListener('input', (e) => {
+            document.getElementById('opacityValue').innerText = `${e.target.value}%`;
+        });
+        document.getElementById('applyOpacity').addEventListener('click', () => {
+            currentState.placarOpacity = parseInt(document.getElementById('opacitySlider').value);
+            writeStateToFirebase(currentState);
+        });
+        document.getElementById('applyFontColor').addEventListener('click', () => {
+            currentState.fontColor = document.getElementById('fontColorPicker').value;
+            writeStateToFirebase(currentState);
+        });
     </script>
 </body>
-                            </html>
+                </html>
