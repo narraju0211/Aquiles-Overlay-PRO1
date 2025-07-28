@@ -30,16 +30,16 @@
       justify-content: center;
       /* Ajuste a altura para posicionar a overlay mais para cima ou para baixo.
          'flex-start' para o topo, 'center' para o meio, 'flex-end' para o rodapé.
-         Ou use 'align-items: flex-start; padding-top: 15px;' para um pequeno espaçamento do topo. */
+         Ou use 'align-items: flex-start; padding-top: 5px;' para um pequeno espaçamento do topo. */
       align-items: flex-start; /* Alinha o placar ao topo do container */
-      padding-top: 10px; /* Adiciona um pequeno padding do topo para descolar da borda (Reduzido) */
+      padding-top: 5px; /* Reduzido para um espaçamento mínimo do topo */
       box-sizing: border-box;
     }
 
     .visual-overlay-container {
       width: 100%;
-      /* Largura máxima para o placar, ajuste se precisar que ele seja mais estreito */
-      max-width: 650px; /* Reduzido de 700px para 650px */
+      /* Largura máxima para o placar, bem menor agora */
+      max-width: 500px; /* **REDUZIDO DRÁSTICAMENTE PARA 500px (antes 650px)** */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -50,7 +50,7 @@
       position: relative;
       z-index: 2;
       height: fit-content;
-      min-height: unset; /* Removido altura mínima para não forçar espaço */
+      min-height: unset;
       justify-content: flex-start;
     }
 
@@ -66,15 +66,15 @@
       flex-direction: column;
       align-items: center;
       background: rgba(var(--placar-bg-rgb), var(--placar-opacity));
-      padding: 3px 8px; /* Padding reduzido ainda mais */
-      border-radius: 10px; /* Borda levemente menor */
+      padding: 2px 5px; /* **Padding bem reduzido** */
+      border-radius: 8px; /* Borda menor */
       width: 100%;
       box-sizing: border-box;
       border: 1px solid var(--placar-border);
       color: var(--placar-text);
       position: relative;
       overflow: hidden;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4); /* Sombra mais suave */
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); /* Sombra mais suave */
       min-height: unset;
       height: fit-content;
       justify-content: center;
@@ -103,29 +103,29 @@
       align-items: center;
       justify-content: center;
       width: 100%;
-      gap: 5px;
+      gap: 3px; /* **Espaçamento reduzido** */
       flex-wrap: nowrap;
-      padding: 4px 0; /* Padding reduzido */
+      padding: 3px 0; /* **Padding reduzido** */
     }
 
     .placar-group {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-end; /* Alinha o conteúdo ao fundo do grupo */
-      gap: 2px; /* Espaçamento reduzido */
+      justify-content: flex-end;
+      gap: 1px; /* **Espaçamento bem reduzido** */
       flex-shrink: 0;
-      min-height: 55px; /* Altura mínima ajustada */
+      min-height: 45px; /* **Altura mínima reduzida** */
       box-sizing: border-box;
       flex-grow: 0;
       flex-basis: auto;
-      padding-bottom: 3px; /* Adiciona um pequeno padding na parte inferior */
+      padding-bottom: 2px; /* **Padding reduzido** */
     }
 
     .placar-group-score {
       display: flex;
       align-items: center;
-      gap: 4px; /* Espaçamento reduzido */
+      gap: 3px; /* **Espaçamento reduzido** */
       flex-shrink: 0;
       justify-content: center;
     }
@@ -135,44 +135,44 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      padding: 0 4px; /* Padding reduzido */
-      min-width: calc(55px * var(--global-shield-size) / 100); /* Ajustado */
-      min-height: calc(65px * var(--global-shield-size) / 100); /* Ajustado */
+      padding: 0 3px; /* **Padding reduzido** */
+      min-width: calc(45px * var(--global-shield-size) / 100); /* **Ajustado** */
+      min-height: calc(55px * var(--global-shield-size) / 100); /* **Ajustado** */
       box-sizing: border-box;
     }
     .logo-central img {
-      width: calc(55px * var(--global-shield-size) / 100); /* Ajustado */
-      height: calc(55px * var(--global-shield-size) / 100); /* Ajustado */
+      width: calc(45px * var(--global-shield-size) / 100); /* **Ajustado** */
+      height: calc(45px * var(--global-shield-size) / 100); /* **Ajustado** */
       object-fit: contain;
-      filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.6)); /* Sombra mais suave */
+      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.6));
     }
 
     .escudo {
-      width: calc(38px * var(--global-shield-size) / 100); /* Reduzido de 40px */
-      height: calc(38px * var(--global-shield-size) / 100); /* Reduzido de 40px */
+      width: calc(32px * var(--global-shield-size) / 100); /* **Reduzido de 38px** */
+      height: calc(32px * var(--global-shield-size) / 100); /* **Reduzido de 38px** */
       object-fit: contain;
       flex-shrink: 0;
-      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5)); /* Sombra mais suave */
+      filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5));
       transition: transform 0.2s ease-out;
     }
     .placar-numero {
-      font-size: 30px; /* Reduzido de 32px */
+      font-size: 26px; /* **Reduzido de 30px** */
       font-weight: 800;
-      margin: 0 2px; /* Margem reduzida */
-      min-width: 32px; /* Reduzido de 35px */
+      margin: 0 2px;
+      min-width: 28px; /* **Reduzido de 32px** */
       text-align: center;
       flex-shrink: 0;
-      text-shadow: 0 0 4px rgba(0, 0, 0, 0.6); /* Sombra mais suave */
+      text-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
       font-family: 'Roboto Mono', monospace;
       color: var(--placar-text);
     }
 
     .team-name-abbr {
-      font-size: 18px; /* Reduzido de 20px */
+      font-size: 16px; /* **Reduzido de 18px** */
       font-weight: 600;
       background: rgba(0, 0, 0, 0.4);
-      padding: 2px 5px; /* Padding reduzido */
-      border-radius: 3px; /* Borda mais suave */
+      padding: 1px 4px; /* **Padding reduzido** */
+      border-radius: 2px; /* Borda mais suave */
       text-transform: uppercase;
       flex-shrink: 0;
       white-space: nowrap;
@@ -181,19 +181,19 @@
 
     #cronometro_display,
     #periodoDisplay_display {
-      font-size: 16px; /* Reduzido de 18px */
+      font-size: 14px; /* **Reduzido de 16px** */
       font-weight: 700;
       color: var(--placar-timer-color);
       background: rgba(0, 0, 0, 0.6);
-      padding: 2px 6px; /* Padding reduzido */
-      border-radius: 5px; /* Borda mais suave */
+      padding: 1px 5px; /* **Padding reduzido** */
+      border-radius: 4px;
       white-space: nowrap;
-      text-shadow: 0 0 4px rgba(0, 0, 0, 0.6); /* Sombra mais suave */
+      text-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
       flex-shrink: 0;
       font-family: 'Roboto Mono', monospace;
     }
     #periodoDisplay_display {
-        font-size: 14px; /* Reduzido de 16px */
+        font-size: 12px; /* **Reduzido de 14px** */
         background: rgba(0, 0, 0, 0.4);
         color: var(--placar-text);
         font-family: 'Montserrat', sans-serif;
@@ -201,8 +201,8 @@
     /* Estilos específicos para o grupo do cronômetro/período */
     .timer-period-section {
         display: flex;
-        gap: 8px; /* Espaço entre cronômetro e período (Reduzido) */
-        margin-top: 3px; /* Pequeno espaçamento do placar principal (Reduzido) */
+        gap: 6px; /* **Espaço reduzido** */
+        margin-top: 2px; /* **Espaçamento reduzido** */
         justify-content: center;
         align-items: center;
         width: 100%;
@@ -212,20 +212,20 @@
     /* Cartões */
     .cards-display {
       display: flex;
-      min-height: 16px; /* Ajustado */
+      min-height: 14px; /* **Ajustado** */
       align-items: center;
       justify-content: center;
       width: unset;
       flex-shrink: 0;
-      gap: 1px; /* Espaçamento menor */
+      gap: 1px; /* Espaçamento mínimo */
     }
     .card-indicator {
-      width: 14px; /* Ajustado */
-      height: 14px; /* Ajustado */
-      border-radius: 3px; /* Ajustado */
+      width: 12px; /* **Ajustado** */
+      height: 12px; /* **Ajustado** */
+      border-radius: 2px;
       margin: 0;
       border: 1px solid #777;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Sombra mais suave */
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     }
     .card-indicator.yellow-card { background-color: #ffc107; }
     .card-indicator.red-card { background-color: #dc3545; }
@@ -233,31 +233,30 @@
 
     /* --- Layout Compacto (Ainda mais compacto) --- */
     .placar-main-line.compact-layout {
-        gap: 2px; /* Ainda mais compacto */
-        padding: 2px 0;
+        gap: 1px; /* **Ainda mais compacto** */
+        padding: 1px 0;
     }
     .placar-main-line.compact-layout .placar-group-score {
-        gap: 2px;
+        gap: 1px;
     }
     .placar-main-line.compact-layout .placar-numero {
-        font-size: 26px; /* Reduzido de 28px */
-        min-width: 28px; /* Reduzido de 30px */
+        font-size: 22px; /* **Reduzido de 26px** */
+        min-width: 24px; /* **Reduzido de 28px** */
     }
     .placar-main-line.compact-layout .team-name-abbr {
-        font-size: 16px; /* Reduzido de 18px */
-        padding: 1px 4px;
+        font-size: 14px; /* **Reduzido de 16px** */
+        padding: 0px 3px;
     }
     .placar-main-line.compact-layout .escudo {
-        width: calc(32px * var(--global-shield-size) / 100); /* Reduzido de 35px */
-        height: calc(32px * var(--global-shield-size) / 100); /* Reduzido de 35px */
+        width: calc(28px * var(--global-shield-size) / 100); /* **Reduzido de 32px** */
+        height: calc(28px * var(--global-shield-size) / 100); /* **Reduzido de 32px** */
     }
     .placar-main-line.compact-layout .logo-central img {
-        width: calc(45px * var(--global-shield-size) / 100); /* Reduzido de 50px */
-        height: calc(45px * var(--global-shield-size) / 100); /* Reduzido de 50px */
+        width: calc(38px * var(--global-shield-size) / 100); /* **Reduzido de 45px** */
+        height: calc(38px * var(--global-shield-size) / 100); /* **Reduzido de 45px** */
     }
-    /* No layout compacto, o cronômetro e período já são menores na section normal, então mantemos assim */
     .placar-main-line.compact-layout .cards-display {
-        margin-top: -2px; /* Ajuste para não empurrar muito */
+        margin-top: -1px; /* Ajuste mínimo */
     }
 
 
@@ -268,74 +267,74 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        gap: 8px; /* Reduzido */
-        padding: 4px 0; /* Reduzido */
+        gap: 6px; /* **Reduzido** */
+        padding: 3px 0; /* **Reduzido** */
     }
     .penalty-team-display {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 2px; /* Reduzido */
-        min-width: 90px; /* Ajustado */
+        gap: 1px; /* **Reduzido** */
+        min-width: 80px; /* **Ajustado** */
         justify-content: center;
         flex-grow: 1;
     }
     .penalty-team-display .team-name-display {
-        font-size: 14px; /* Reduzido de 15px */
+        font-size: 12px; /* **Reduzido de 14px** */
         font-weight: 600;
-        margin-top: 2px; /* Reduzido */
+        margin-top: 1px; /* **Reduzido** */
         background: rgba(0, 0, 0, 0.4);
-        padding: 2px 6px; /* Reduzido */
-        border-radius: 4px; /* Reduzido */
+        padding: 1px 5px; /* **Reduzido** */
+        border-radius: 3px;
         white-space: nowrap;
         color: var(--placar-text);
     }
     .penalty-team-display .escudo {
-        width: calc(35px * var(--global-shield-size) / 100); /* Mantido com o tamanho normal ajustado */
-        height: calc(35px * var(--global-shield-size) / 100); /* Mantido com o tamanho normal ajustado */
+        width: calc(30px * var(--global-shield-size) / 100); /* **Reduzido** */
+        height: calc(30px * var(--global-shield-size) / 100); /* **Reduzido** */
     }
     .penalty-balls-container {
         display: flex;
         flex-wrap: wrap;
-        gap: 3px; /* Espaçamento menor */
-        margin-top: 2px; /* Reduzido */
+        gap: 2px; /* **Espaçamento menor** */
+        margin-top: 1px; /* **Reduzido** */
         justify-content: center;
     }
     .penalty-ball {
-        width: 14px; /* Reduzido de 16px */
-        height: 14px; /* Reduzido de 16px */
+        width: 12px; /* **Reduzido de 14px** */
+        height: 12px; /* **Reduzido de 14px** */
         border-radius: 50%;
         border: 1px solid white;
         background-color: transparent;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         transition: width 0.3s ease, height 0.3s ease, border-width 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
     }
     .penalty-ball.green {
         background-color: #28a745;
         border-color: #28a745;
-        width: 18px; /* Reduzido de 20px */
-        height: 18px; /* Reduzido de 20px */
+        width: 16px; /* **Reduzido de 18px** */
+        height: 16px; /* **Reduzido de 18px** */
         border-width: 2px;
     }
     .penalty-ball.red {
         background-color: #dc3545;
         border-color: #dc3545;
-        width: 18px; /* Reduzido de 20px */
-        height: 18px; /* Reduzido de 20px */
+        width: 16px; /* **Reduzido de 18px** */
+        height: 16px; /* **Reduzido de 18px** */
         border-width: 2px;
     }
 
     /* --- Animações --- */
     @keyframes jumpAndBounce {
       0% { transform: translateY(0) scale(1); }
-      25% { transform: translateY(-15px) scale(1.08); } /* Ajustado para menos salto */
-      50% { transform: translateY(0) scale(1.03); }
-      75% { transform: translateY(-6px) scale(1.01); } /* Ajustado */
+      25% { transform: translateY(-10px) scale(1.06); } /* **Menos salto** */
+      50% { transform: translateY(0) scale(1.02); }
+      75% { transform: translateY(-5px) scale(1.01); }
       100% { transform: translateY(0) scale(1); }
     }
 
     .escudo.jump-animation {
-      animation: jumpAndBounce 0.6s ease-out forwards; /* Duração um pouco menor */
+      animation: jumpAndBounce 0.5s ease-out forwards; /* **Duração ainda menor** */
     }
 
     /* Animação GOOOOL! com Escudo */
@@ -343,11 +342,11 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.4); /* Escala inicial menor */
-      font-size: 50px; /* Reduzido de 60px */
+      transform: translate(-50%, -50%) scale(0.3); /* **Escala inicial ainda menor** */
+      font-size: 40px; /* **Reduzido de 50px** */
       font-weight: 900;
       color: var(--highlight-color);
-      text-shadow: 0 0 12px var(--highlight-color), 0 0 6px rgba(0, 0, 0, 0.6); /* Sombra mais suave */
+      text-shadow: 0 0 10px var(--highlight-color), 0 0 5px rgba(0, 0, 0, 0.6);
       opacity: 0;
       visibility: hidden;
       animation-fill-mode: forwards;
@@ -355,117 +354,67 @@
       pointer-events: none;
       white-space: nowrap;
       font-family: 'Montserrat', sans-serif;
-      display: flex; /* Para alinhar o escudo e o texto */
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px; /* Espaço entre escudo e texto (reduzido de 10px) */
+      gap: 5px; /* **Espaço reduzido** */
     }
 
     .animated-goal-container img {
-        height: 50px; /* Tamanho do escudo na animação (reduzido de 60px) */
-        width: 50px;
+        height: 40px; /* **Reduzido de 50px** */
+        width: 40px;
         object-fit: contain;
-        filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.7));
+        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.7));
     }
 
     @keyframes fadeInScaleOut {
-      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); visibility: hidden; }
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); visibility: hidden; }
       1% { visibility: visible; }
-      20% { opacity: 1; transform: translate(-50%, -50%) scale(1); } /* Escala final 1.0 (ou 1.05 se quiser um "pop" maior) */
-      80% { opacity: 1; transform: translate(-50%, -50%) scale(0.95); } /* Pequena retração */
+      20% { opacity: 1; transform: translate(-50%, -50%) scale(0.9); } /* **Escala final menor** */
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(0.85); }
       99% { opacity: 0; visibility: visible; }
-      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); visibility: hidden;}
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.75); visibility: hidden;}
     }
 
     .animated-goal-container.active {
-      animation: fadeInScaleOut 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* Duração levemente menor */
+      animation: fadeInScaleOut 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; /* **Duração mais curta** */
     }
 
     /* --- Media Queries para Responsividade (ajustadas para tamanhos ainda menores) --- */
-    @media (max-width: 550px) { /* Novo breakpoint mais baixo */
+    @media (max-width: 450px) { /* **Novo breakpoint mais baixo** */
         .visual-overlay-container {
-            max-width: 95%; /* Ocupa quase toda a largura para telas muito pequenas */
-            padding-top: 8px; /* Menos padding do topo */
+            max-width: 98%; /* Quase toda a largura */
+            padding-top: 3px; /* Menos padding do topo */
         }
         .placar-numero {
-            font-size: 26px; /* Ajustado */
-            min-width: 28px;
+            font-size: 24px;
+            min-width: 26px;
         }
         .team-name-abbr {
-            font-size: 16px; /* Ajustado */
+            font-size: 15px;
         }
         #cronometro_display, #periodoDisplay_display {
-            font-size: 14px; /* Ajustado */
-            padding: 2px 5px;
-        }
-        .escudo {
-            width: calc(32px * var(--global-shield-size) / 100);
-            height: calc(32px * var(--global-shield-size) / 100);
-        }
-        .logo-central img {
-            width: calc(45px * var(--global-shield-size) / 100);
-            height: calc(45px * var(--global-shield-size) / 100);
-        }
-        .animated-goal-container {
-            font-size: 45px; /* Ajustado */
-            gap: 6px;
-        }
-        .animated-goal-container img {
-            height: 45px;
-            width: 45px;
-        }
-        .penalty-team-display .team-name-display {
             font-size: 13px;
-        }
-        .penalty-ball {
-            width: 13px;
-            height: 13px;
-        }
-        .penalty-ball.green, .penalty-ball.red {
-            width: 17px;
-            height: 17px;
-        }
-    }
-
-    @media (max-width: 400px) { /* Para celulares na vertical ou muito pequenos */
-        .placar {
-            padding: 2px 5px; /* Reduzir ainda mais o padding */
-        }
-        .placar-numero {
-            font-size: 22px; /* Ainda menor */
-            min-width: 22px;
-        }
-        .team-name-abbr {
-            font-size: 14px; /* Ainda menor */
-            padding: 1px 3px;
-        }
-        #cronometro_display, #periodoDisplay_display {
-            font-size: 12px;
             padding: 1px 4px;
         }
         .escudo {
-            width: calc(28px * var(--global-shield-size) / 100);
-            height: calc(28px * var(--global-shield-size) / 100);
+            width: calc(30px * var(--global-shield-size) / 100);
+            height: calc(30px * var(--global-shield-size) / 100);
         }
         .logo-central img {
-            width: calc(35px * var(--global-shield-size) / 100);
-            height: calc(35px * var(--global-shield-size) / 100);
+            width: calc(40px * var(--global-shield-size) / 100);
+            height: calc(40px * var(--global-shield-size) / 100);
         }
         .animated-goal-container {
-            font-size: 35px;
+            font-size: 38px;
             gap: 4px;
         }
         .animated-goal-container img {
-            height: 35px;
-            width: 35px;
-        }
-        .card-indicator {
-            width: 10px;
-            height: 10px;
+            height: 38px;
+            width: 38px;
         }
         .penalty-team-display .team-name-display {
             font-size: 11px;
-            padding: 1px 4px;
         }
         .penalty-ball {
             width: 11px;
@@ -474,6 +423,56 @@
         .penalty-ball.green, .penalty-ball.red {
             width: 15px;
             height: 15px;
+        }
+    }
+
+    @media (max-width: 350px) { /* Para celulares muito pequenos */
+        .placar {
+            padding: 1px 3px; /* Reduzir ainda mais o padding */
+        }
+        .placar-numero {
+            font-size: 20px; /* **Ainda menor** */
+            min-width: 20px;
+        }
+        .team-name-abbr {
+            font-size: 12px; /* **Ainda menor** */
+            padding: 0px 2px;
+        }
+        #cronometro_display, #periodoDisplay_display {
+            font-size: 11px;
+            padding: 0px 3px;
+        }
+        .escudo {
+            width: calc(25px * var(--global-shield-size) / 100);
+            height: calc(25px * var(--global-shield-size) / 100);
+        }
+        .logo-central img {
+            width: calc(30px * var(--global-shield-size) / 100);
+            height: calc(30px * var(--global-shield-size) / 100);
+        }
+        .animated-goal-container {
+            font-size: 30px;
+            gap: 3px;
+        }
+        .animated-goal-container img {
+            height: 30px;
+            width: 30px;
+        }
+        .card-indicator {
+            width: 8px;
+            height: 8px;
+        }
+        .penalty-team-display .team-name-display {
+            font-size: 10px;
+            padding: 0px 3px;
+        }
+        .penalty-ball {
+            width: 10px;
+            height: 10px;
+        }
+        .penalty-ball.green, .penalty-ball.red {
+            width: 13px;
+            height: 13px;
         }
     }
 
@@ -770,7 +769,7 @@
             // Remove a classe após a animação para que possa ser acionada novamente
             setTimeout(() => {
                 escudoElement.classList.remove('jump-animation');
-            }, 600); // Ajuste para a nova duração da animação (0.6s)
+            }, 500); // Ajuste para a nova duração da animação (0.5s)
         }
     }
 
