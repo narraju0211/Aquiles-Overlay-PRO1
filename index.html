@@ -144,10 +144,10 @@
             padding: 10px;
             border-radius: 5px;
         }
-        #narratorIdSalvo, #firebaseStatus {
+        #firebaseStatus {
             color: green;
             font-weight: bold;
-            display: none;
+            display: block;
             margin-top: 5px;
         }
         #firebaseStatus.error {
@@ -187,22 +187,13 @@
     <div class="container">
         <h1>Aquiles Overlay PRO - Painel de Controle</h1>
 
-        <div class="control-group">
-            <h2>Configuração de Conexão</h2>
-            <label for="narratorId">ID Único do Narrador:</label>
-            <input type="text" id="narratorId" value="SEU_ID_UNICO_AQUI" placeholder="Ex: meuJogoFutebol123">
-            <button onclick="salvarNarratorId()">Salvar ID do Narrador e Conectar</button>
-            <p id="narratorIdSalvo">ID do Narrador Salvo! Recarregue a Overlay para aplicar.</p>
-            <p id="firebaseStatus"></p>
-            <p style="font-size: 0.9em; color: #666;">Use este mesmo ID na URL da sua overlay: `sua_overlay.html?narratorId=SEU_ID_UNICO_AQUI`.</p>
-        </div>
-
         <div class="tab-buttons">
             <button class="tab-button active" onclick="showTab('tab1', this)">Placar & Cronômetro</button>
             <button class="tab-button" onclick="showTab('tab2', this)">Logo Central</button>
             <button class="tab-button" onclick="showTab('tab3', this)">Pênaltis</button>
             <button class="tab-button" onclick="showTab('tab4', this)">Design & Animações</button>
         </div>
+        <div id="firebaseStatus">Conectando...</div>
 
         <div id="tab1" class="tab-content active">
             <div class="control-group">
@@ -358,11 +349,11 @@
                 </select>
                 <label for="themeIndex">Tema de Cores:</label>
                 <select id="themeIndex" onchange="definirTema()">
-                    <option value="0">Padrão (Escuro)</option>
-                    <option value="1">Azul</option>
-                    <option value="2">Verde</option>
-                    <option value="3">Vermelho</option>
-                    <option value="4">Amarelo</option>
+                        <option value="0">Padrão (Escuro)</option>
+                        <option value="1">Azul</option>
+                        <option value="2">Verde</option>
+                        <option value="3">Vermelho</option>
+                        <option value="4">Amarelo</option>
                 </select>
                 <label for="placarOpacity">Opacidade do Fundo do Placar (%):</label>
                 <input type="number" id="placarOpacity" value="90" min="0" max="100" onchange="definirOpacidade()">
@@ -402,17 +393,15 @@
         };
         const app = firebase.initializeApp(firebaseConfig);
         const database = app.database();
-        let NARRATOR_ID = localStorage.getItem('aquiles_narrator_id') || 'SEU_ID_UNICO_AQUI';
+        
+        // ID ÚNICO E FIXO - NÃO PRECISA MAIS DE LOGIN
+        let NARRATOR_ID = 'aquiles_placar_pro_unico';
+        
         let overlayStateRef;
         const firebaseStatusElement = document.getElementById('firebaseStatus');
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('narratorId').value = NARRATOR_ID;
-            if (NARRATOR_ID && NARRATOR_ID !== 'SEU_ID_UNICO_AQUI') {
-                connectFirebase();
-            } else {
-                displayFirebaseStatus('Por favor, defina e salve seu ID de Narrador.', 'error');
-            }
+            connectFirebase();
         });
 
         function showTab(tabId, tabButton) {
@@ -422,46 +411,27 @@
             tabButton.classList.add('active');
         }
 
-        function salvarNarratorId() {
-            NARRATOR_ID = document.getElementById('narratorId').value.trim();
-            if (NARRATOR_ID && NARRATOR_ID !== 'SEU_ID_UNICO_AQUI') {
-                localStorage.setItem('aquiles_narrator_id', NARRATOR_ID);
-                document.getElementById('narratorIdSalvo').style.display = 'block';
-                setTimeout(() => { document.getElementById('narratorIdSalvo').style.display = 'none'; }, 3000);
-                connectFirebase();
-            } else {
-                alert('Por favor, insira um ID de Narrador válido.');
-                displayFirebaseStatus('ID inválido. Por favor, insira um ID.', 'error');
-            }
-        }
-
         function connectFirebase() {
-            if (NARRATOR_ID && NARRATOR_ID !== 'SEU_ID_UNICO_AQUI') {
-                overlayStateRef = database.ref(`narrators/${NARRATOR_ID}/overlayState`);
-                displayFirebaseStatus(`Conectando ao Firebase com ID: ${NARRATOR_ID}...`);
+            overlayStateRef = database.ref(`narrators/${NARRATOR_ID}/overlayState`);
+            displayFirebaseStatus(`Conectado ao Firebase com ID fixo: ${NARRATOR_ID}`);
 
-                overlayStateRef.off();
-                overlayStateRef.on('value', (snapshot) => {
-                    if (snapshot.exists()) {
-                        displayFirebaseStatus('Conectado ao Firebase e dados sincronizados.', 'success');
-                        carregarEstadoInicialDosCampos(snapshot.val());
-                    } else {
-                        displayFirebaseStatus(`Nenhum dado encontrado para o ID "${NARRATOR_ID}". O nó será criado no primeiro envio de dados.`, 'warning');
-                    }
-                }, (error) => {
-                    console.error("Erro ao conectar ou ler dados do Firebase:", error);
-                    displayFirebaseStatus(`Erro: ${error.message}. Verifique a conexão e permissões.`, 'error');
-                    overlayStateRef = null;
-                });
-            } else {
-                displayFirebaseStatus('ID do Narrador não configurado. Por favor, insira um ID e salve.', 'error');
+            overlayStateRef.off();
+            overlayStateRef.on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    displayFirebaseStatus('Conectado ao Firebase e dados sincronizados.', 'success');
+                    carregarEstadoInicialDosCampos(snapshot.val());
+                } else {
+                    displayFirebaseStatus(`Nenhum dado encontrado para o ID "${NARRATOR_ID}". O nó será criado no primeiro envio de dados.`, 'warning');
+                }
+            }, (error) => {
+                console.error("Erro ao conectar ou ler dados do Firebase:", error);
+                displayFirebaseStatus(`Erro: ${error.message}. Verifique a conexão e permissões.`, 'error');
                 overlayStateRef = null;
-            }
+            });
         }
 
         function displayFirebaseStatus(message, type) {
             firebaseStatusElement.innerText = message;
-            firebaseStatusElement.style.display = 'block';
             firebaseStatusElement.className = '';
             if (type) {
                 firebaseStatusElement.classList.add(type);
@@ -515,13 +485,13 @@
                         displayFirebaseStatus(`Falha ao enviar dados: ${error.message}`, 'error');
                     });
             } else {
-                displayFirebaseStatus('Erro: Conecte-se ao Firebase primeiro (defina o ID do Narrador)!', 'error');
+                displayFirebaseStatus('Erro: Conecte-se ao Firebase primeiro!', 'error');
             }
         }
 
         function runFirebaseTransaction(transactionCallback, successMessage, errorMessage) {
             if (!overlayStateRef) {
-                displayFirebaseStatus('Erro: Conecte-se ao Firebase primeiro (defina o ID do Narrador)!', 'error');
+                displayFirebaseStatus('Erro: Conecte-se ao Firebase primeiro!', 'error');
                 return;
             }
             overlayStateRef.transaction(transactionCallback)
@@ -532,7 +502,7 @@
                 });
         }
 
-        // --- Novas Funções ---
+        // --- Funções ---
         function uploadImage(fileInputId, firebaseKey) {
             const fileInput = document.getElementById(fileInputId);
             const file = fileInput.files[0];
@@ -545,26 +515,28 @@
                 reader.readAsDataURL(file);
             }
         }
-
+        
         function triggerGoalAnimation(teamId) {
             updateFirebase({ activeAnimation: { type: 'goalAnimation', team: `${teamId}` } });
             setTimeout(() => {
                 clearAnimation();
             }, 4000);
         }
-
+        
         function clearAnimation() {
             updateFirebase({ activeAnimation: null });
         }
         
-        // --- Funções Existentes (Modificadas) ---
+        // --- Funções para o Placar (agora com animação de gol automática) ---
         let oldPlacar = { '1': 0, '2': 0 };
+        
         function alterarPlacar(timeId, incremento) {
             const placarInput = document.getElementById(`placar${timeId}`);
             const newValue = Math.max(0, parseInt(placarInput.value || 0) + incremento);
             placarInput.value = newValue;
             definirPlacar();
         }
+        
         function definirPlacar() {
             const novoPlacar1 = parseInt(document.getElementById('placar1').value) || 0;
             const novoPlacar2 = parseInt(document.getElementById('placar2').value) || 0;
@@ -588,6 +560,7 @@
                 }, 4000);
             }
         }
+
         function resetarPlacar() {
             document.getElementById('placar1').value = 0;
             document.getElementById('placar2').value = 0;
@@ -629,7 +602,7 @@
         }
         function limparCartoes(timeId) { updateFirebase({ [`cards/${timeId}`]: { 'amarelo': 0, 'vermelho': 0 } }); }
 
-        // Times e Logos (Modificado)
+        // Times e Logos
         function atualizarTimesLogos() {
             const escudo1Value = document.getElementById('escudo1-file').files[0] ? '' : document.getElementById('escudo1-url').value;
             const escudo2Value = document.getElementById('escudo2-file').files[0] ? '' : document.getElementById('escudo2-url').value;
@@ -679,4 +652,4 @@
 
     </script>
 </body>
-                        </html>
+                            </html>
