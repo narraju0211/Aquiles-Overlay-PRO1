@@ -24,14 +24,13 @@
         }
 
         #overlayContainer {
-            position: relative; /* Isso é crucial para que a animação fique dentro dele */
+            position: relative;
             top: 20px;
             display: flex;
             align-items: center;
             gap: 20px;
             padding: 15px 30px;
             border-radius: 12px;
-            min-width: 600px;
             transition: all 0.5s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             background-color: rgba(0, 0, 0, 0.4);
@@ -80,6 +79,7 @@
             width: 80px;
             height: 80px;
             object-fit: contain;
+            margin: 0 20px; /* Espaçamento da logo central */
         }
         
         .separator {
@@ -125,12 +125,16 @@
             <span id="score2">0</span>
         </div>
         
+        <img id="centralLogo" src="" alt="Logo Central">
+        
         <div class="team">
             <div class="team-name" id="nomeTime2">TIME 2</div>
             <img id="logoTime2" class="team-logo" src="" alt="">
         </div>
         
-        <div id="goalAnimation">GOOOOL!</div> </div>
+        <div id="goalAnimation">GOOOOL!</div>
+
+    </div>
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -169,6 +173,9 @@
                     document.getElementById('logoTime1').src = data.escudo1 || '';
                     document.getElementById('logoTime2').src = data.escudo2 || '';
                     
+                    // Atualiza a logo central
+                    document.getElementById('centralLogo').src = data.logoOverlay || '';
+
                     // Lógica para a animação de gol
                     const goalAnim = document.getElementById('goalAnimation');
                     if (data.activeAnimation && data.activeAnimation.type === 'goalAnimation') {
