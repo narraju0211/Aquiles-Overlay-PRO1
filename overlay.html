@@ -136,7 +136,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
-        // ** SUAS CONFIGURAÇÕES DO FIREBASE AQUI - PRECISAM SER AS MESMAS DO SEU CONTROLADOR **
+        // ** SUAS CONFIGURAÇÕES DO FIREBASE AQUI - PRECISAM SER AS MESMAS DA SUA OVERLAY **
         const firebaseConfig = {
             apiKey: "AIzaSyAFp_iujrtqjiTU5yq2yNSBIpwgjQZZyns",
             authDomain: "aquilesplacarpro.firebaseapp.com",
@@ -150,7 +150,7 @@
 
         let narratorId;
         const urlParams = new URLSearchParams(window.location.search);
-        narratorId = urlParams.get('narratorId');
+        narratorId = urlParams.get('narratorId'); // <-- A overlay ainda precisa pegar o ID da URL
 
         if (narratorId) {
             const overlayStateRef = database.ref(`narrators/${narratorId}/overlayState`);
@@ -199,7 +199,7 @@
                 document.getElementById('overlayContainer').style.display = 'none';
             });
         } else {
-            document.body.innerHTML = '<h1>ERRO: ID do Narrador não encontrado na URL.</h1><p>Verifique se você adicionou `?narratorId=SEU_ID_UNICO` ao final do link da sua overlay.</p>';
+            document.body.innerHTML = '<h1>ERRO: ID do Narrador não encontrado na URL.</h1><p>Verifique se você adicionou `?narratorId=aquiles_placar_pro_unico` ao final do link da sua overlay.</p>';
         }
     </script>
 </body>
