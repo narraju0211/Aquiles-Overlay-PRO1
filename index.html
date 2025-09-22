@@ -199,55 +199,14 @@
 
         <div class="tab-buttons">
             <button class="tab-button active" onclick="showTab('tab1', this)">Placar & Cronômetro</button>
-            <button class="tab-button" onclick="showTab('tab2', this)">Times & Logos</button>
-            <button class="tab-button" onclick="showTab('tab3', this)">Cartões & Pênaltis</button>
+            <button class="tab-button" onclick="showTab('tab2', this)">Logo Central</button>
+            <button class="tab-button" onclick="showTab('tab3', this)">Pênaltis</button>
             <button class="tab-button" onclick="showTab('tab4', this)">Design & Animações</button>
         </div>
 
         <div id="tab1" class="tab-content active">
             <div class="control-group">
-                <h2>Placar</h2>
-                <div class="inline-controls">
-                    <label for="placar1">Time 1:</label>
-                    <input type="number" id="placar1" value="0">
-                    <button onclick="alterarPlacar(1, 1)">+1</button>
-                    <button onclick="alterarPlacar(1, -1)">-1</button>
-                </div>
-                <div class="inline-controls">
-                    <label for="placar2">Time 2:</label>
-                    <input type="number" id="placar2" value="0">
-                    <button onclick="alterarPlacar(2, 1)">+1</button>
-                    <button onclick="alterarPlacar(2, -1)">-1</button>
-                </div>
-                <button onclick="definirPlacar()">Aplicar Placar Manualmente</button>
-                <button class="danger" onclick="resetarPlacar()">Resetar Placar</button>
-            </div>
-            <div class="control-group">
-                <h2>Cronômetro</h2>
-                <label for="timerSeconds">Segundos Totais:</label>
-                <input type="number" id="timerSeconds" value="0" onchange="definirCronometro()">
-                <button onclick="iniciarCronometro()">Iniciar</button>
-                <button onclick="pausarCronometro()">Pausar</button>
-                <button class="danger" onclick="resetarCronometro()">Resetar</button>
-            </div>
-            <div class="control-group">
-                <h2>Período</h2>
-                <label for="periodo">Período Atual:</label>
-                <select id="periodo">
-                    <option value="0">Parado</option>
-                    <option value="1">1º Tempo</option>
-                    <option value="2">2º Tempo</option>
-                    <option value="3">Prorrogação</option>
-                    <option value="4">Intervalo</option>
-                    <option value="5">Tempo Extra</option>
-                </select>
-                <button onclick="definirPeriodo()">Aplicar Período</button>
-            </div>
-        </div>
-
-        <div id="tab2" class="tab-content">
-            <div class="control-group">
-                <h2>Nomes, Abreviações e Escudos</h2>
+                <h2>Times e Placar</h2>
                 <div class="separator">
                     <h3>Time 1</h3>
                     <label for="nome1">Nome Completo:</label>
@@ -260,6 +219,12 @@
                         <label for="escudo1-file">OU Enviar do Celular/PC:</label>
                         <input type="file" id="escudo1-file" accept="image/*" onchange="uploadImage('escudo1-file', 'escudo1')">
                         <img id="escudo1-preview" src="" alt="Prévia do Escudo" style="display: none;">
+                    </div>
+                    <div class="inline-controls">
+                        <label for="placar1">Placar:</label>
+                        <input type="number" id="placar1" value="0">
+                        <button onclick="alterarPlacar(1, 1)">+1</button>
+                        <button onclick="alterarPlacar(1, -1)">-1</button>
                     </div>
                 </div>
                 <div class="separator">
@@ -275,22 +240,17 @@
                         <input type="file" id="escudo2-file" accept="image/*" onchange="uploadImage('escudo2-file', 'escudo2')">
                         <img id="escudo2-preview" src="" alt="Prévia do Escudo" style="display: none;">
                     </div>
-                </div>
-                <div class="separator">
-                    <h3>Logo Central da Overlay</h3>
-                    <label for="logoOverlay-url">URL da Logo:</label>
-                    <input type="text" id="logoOverlay-url" placeholder="http://exemplo.com/logo.png">
-                    <div class="image-upload-area">
-                        <label for="logoOverlay-file">OU Enviar do Celular/PC:</label>
-                        <input type="file" id="logoOverlay-file" accept="image/*" onchange="uploadImage('logoOverlay-file', 'logoOverlay')">
-                        <img id="logoOverlay-preview" src="" alt="Prévia da Logo" style="display: none;">
+                    <div class="inline-controls">
+                        <label for="placar2">Placar:</label>
+                        <input type="number" id="placar2" value="0">
+                        <button onclick="alterarPlacar(2, 1)">+1</button>
+                        <button onclick="alterarPlacar(2, -1)">-1</button>
                     </div>
                 </div>
-                <button onclick="atualizarTimesLogos()">Aplicar Nomes, Escudos e Logo</button>
+                <button onclick="definirPlacar()">Aplicar Tudo</button>
+                <button class="danger" onclick="resetarPlacar()">Resetar Placar</button>
             </div>
-        </div>
 
-        <div id="tab3" class="tab-content">
             <div class="control-group">
                 <h2>Cartões</h2>
                 <div class="separator">
@@ -314,6 +274,44 @@
                     <button class="danger" onclick="limparCartoes(2)">Limpar Cartões Time 2</button>
                 </div>
             </div>
+
+            <div class="control-group">
+                <h2>Cronômetro & Período</h2>
+                <label for="timerSeconds">Segundos Totais:</label>
+                <input type="number" id="timerSeconds" value="0" onchange="definirCronometro()">
+                <button onclick="iniciarCronometro()">Iniciar</button>
+                <button onclick="pausarCronometro()">Pausar</button>
+                <button class="danger" onclick="resetarCronometro()">Resetar</button>
+                <div class="separator">
+                    <label for="periodo">Período Atual:</label>
+                    <select id="periodo">
+                        <option value="0">Parado</option>
+                        <option value="1">1º Tempo</option>
+                        <option value="2">2º Tempo</option>
+                        <option value="3">Prorrogação</option>
+                        <option value="4">Intervalo</option>
+                        <option value="5">Tempo Extra</option>
+                    </select>
+                    <button onclick="definirPeriodo()">Aplicar Período</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab2" class="tab-content">
+            <div class="control-group">
+                <h2>Logo Central da Overlay</h2>
+                <label for="logoOverlay-url">URL da Logo:</label>
+                <input type="text" id="logoOverlay-url" placeholder="http://exemplo.com/logo.png">
+                <div class="image-upload-area">
+                    <label for="logoOverlay-file">OU Enviar do Celular/PC:</label>
+                    <input type="file" id="logoOverlay-file" accept="image/*" onchange="uploadImage('logoOverlay-file', 'logoOverlay')">
+                    <img id="logoOverlay-preview" src="" alt="Prévia da Logo" style="display: none;">
+                </div>
+                <button onclick="atualizarTimesLogos()">Aplicar Logo Central</button>
+            </div>
+        </div>
+
+        <div id="tab3" class="tab-content">
             <div class="control-group">
                 <h2>Modo Pênaltis</h2>
                 <label>
@@ -535,8 +533,6 @@
         }
 
         // --- Novas Funções ---
-
-        // Função de Upload de Imagem
         function uploadImage(fileInputId, firebaseKey) {
             const fileInput = document.getElementById(fileInputId);
             const file = fileInput.files[0];
@@ -550,23 +546,18 @@
             }
         }
 
-        // Função para Disparar Animação
         function triggerGoalAnimation(teamId) {
             updateFirebase({ activeAnimation: { type: 'goalAnimation', team: `${teamId}` } });
-            // Limpa a animação após 4 segundos
             setTimeout(() => {
                 clearAnimation();
             }, 4000);
         }
 
-        // Função para Limpar Animação
         function clearAnimation() {
             updateFirebase({ activeAnimation: null });
         }
         
         // --- Funções Existentes (Modificadas) ---
-
-        // Placar (Modificado para Animação Automática)
         let oldPlacar = { '1': 0, '2': 0 };
         function alterarPlacar(timeId, incremento) {
             const placarInput = document.getElementById(`placar${timeId}`);
@@ -580,7 +571,6 @@
             
             const updates = { placar: { '1': novoPlacar1, '2': novoPlacar2 } };
 
-            // Verifica se um gol foi marcado para disparar a animação
             if (novoPlacar1 > oldPlacar['1']) {
                 updates.activeAnimation = { type: 'goalAnimation', team: '1' };
             } else if (novoPlacar2 > oldPlacar['2']) {
@@ -592,7 +582,6 @@
 
             updateFirebase(updates);
 
-            // Limpa a animação após 4 segundos se ela foi disparada
             if (updates.activeAnimation) {
                  setTimeout(() => {
                     clearAnimation();
@@ -690,4 +679,4 @@
 
     </script>
 </body>
-    </html>
+                        </html>
