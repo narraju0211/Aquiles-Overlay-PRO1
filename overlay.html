@@ -5,32 +5,36 @@
     <title>Aquiles Overlay PRO - Live</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: transparent; /* A overlay deve ter fundo transparente */
-            color: #E0E0E0; /* Cor padrão da fonte */
+        /* ESTILOS REVISADOS PARA GARANTIR O PREENCHIMENTO DA TELA */
+        html, body {
+            width: 100%;
+            height: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            background-color: transparent;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #E0E0E0;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            height: 100vh;
+            overflow: hidden;
         }
 
         #overlayContainer {
-            /* ESTILOS REVISADOS PARA CORRIGIR O LAYOUT ESTREITO */
             position: relative;
-            top: 20px; /* Posição na tela */
+            top: 20px;
             display: flex;
             align-items: center;
-            gap: 20px; /* Aumenta o espaçamento entre os elementos */
-            padding: 15px 30px; /* Aumenta o padding para dar mais espaço interno */
+            gap: 20px;
+            padding: 15px 30px;
             border-radius: 12px;
-            min-width: 600px; /* Garante que o container tenha uma largura mínima */
+            min-width: 600px;
             transition: all 0.5s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            background-color: rgba(0, 0, 0, 0.4); /* Fundo semi-transparente para o container */
+            background-color: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
         }
@@ -39,7 +43,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            flex-grow: 1; /* Permite que o time expanda para ocupar o espaço disponível */
+            flex-grow: 1;
         }
 
         .team-logo {
@@ -55,7 +59,7 @@
             padding: 5px 15px;
             border-radius: 8px;
             background-color: rgba(0, 0, 0, 0.6);
-            min-width: 80px; /* Garante que a caixa do placar não colapse */
+            min-width: 80px;
             text-align: center;
         }
         
@@ -66,7 +70,7 @@
         .team-name {
             font-size: 1.5em;
             font-weight: 600;
-            max-width: 200px; /* Limita a largura do nome para evitar quebra de linha */
+            max-width: 200px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -105,7 +109,6 @@
             80% { opacity: 1; transform: scale(1.1); }
             100% { opacity: 0; transform: scale(1.0); }
         }
-
     </style>
 </head>
 <body>
