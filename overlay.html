@@ -24,7 +24,7 @@
         }
 
         #overlayContainer {
-            position: relative;
+            position: relative; /* Isso é crucial para que a animação fique dentro dele */
             top: 20px;
             display: flex;
             align-items: center;
@@ -129,10 +129,9 @@
             <div class="team-name" id="nomeTime2">TIME 2</div>
             <img id="logoTime2" class="team-logo" src="" alt="">
         </div>
-    </div>
+        
+        <div id="goalAnimation">GOOOOL!</div> </div>
     
-    <div id="goalAnimation">GOOOOL!</div>
-
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
@@ -150,7 +149,7 @@
 
         let narratorId;
         const urlParams = new URLSearchParams(window.location.search);
-        narratorId = urlParams.get('narratorId'); // <-- A overlay ainda precisa pegar o ID da URL
+        narratorId = urlParams.get('narratorId');
 
         if (narratorId) {
             const overlayStateRef = database.ref(`narrators/${narratorId}/overlayState`);
@@ -199,7 +198,7 @@
                 document.getElementById('overlayContainer').style.display = 'none';
             });
         } else {
-            document.body.innerHTML = '<h1>ERRO: ID do Narrador não encontrado na URL.</h1><p>Verifique se você adicionou `?narratorId=aquiles_placar_pro_unico` ao final do link da sua overlay.</p>';
+            document.body.innerHTML = '<h1>ERRO: ID do Narrador não encontrado na URL.</h1><p>Verifique se você adicionou `?narratorId=SEU_ID_UNICO` ao final do link da sua overlay.</p>';
         }
     </script>
 </body>
