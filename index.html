@@ -144,7 +144,7 @@
             padding: 10px;
             border-radius: 5px;
         }
-        #narratorIdSalvo, #firebaseStatus {
+        #narratorIdSalvo, #firebaseStatus, #linkOverlayGerado {
             color: green;
             font-weight: bold;
             display: none;
@@ -194,7 +194,17 @@
             <button onclick="salvarNarratorId()">Salvar ID do Narrador e Conectar</button>
             <p id="narratorIdSalvo">ID do Narrador Salvo! Recarregue a Overlay para aplicar.</p>
             <p id="firebaseStatus"></p>
-            <p style="font-size: 0.9em; color: #666;">Use este mesmo ID na URL da sua overlay: `sua_overlay.html?narratorId=SEU_ID_UNICO_AQUI`.</p>
+        </div>
+
+        <div class="control-group">
+            <h2>Link da sua Overlay</h2>
+            <p>Insira seus dados do GitHub para gerar o link da sua overlay.</p>
+            <label for="githubUser">Usuário do GitHub:</label>
+            <input type="text" id="githubUser" placeholder="Ex: rraju0211">
+            <label for="githubRepo">Nome do Repositório:</label>
+            <input type="text" id="githubRepo" placeholder="Ex: placar-pro">
+            <button onclick="gerarLinkOverlay()">Gerar Link</button>
+            <textarea id="linkOverlayGerado" style="width: 100%; height: 60px; margin-top: 10px; display: none;" readonly></textarea>
         </div>
 
         <div class="tab-buttons">
@@ -406,6 +416,7 @@
         let NARRATOR_ID = localStorage.getItem('aquiles_narrator_id') || 'SEU_ID_UNICO_AQUI';
         let overlayStateRef;
         const firebaseStatusElement = document.getElementById('firebaseStatus');
+        const linkOverlayGeradoElement = document.getElementById('linkOverlayGerado');
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('narratorId').value = NARRATOR_ID;
@@ -434,6 +445,23 @@
                 alert('Por favor, insira um ID de Narrador válido.');
                 displayFirebaseStatus('ID inválido. Por favor, insira um ID.', 'error');
             }
+        }
+        
+        function gerarLinkOverlay() {
+            const githubUser = document.getElementById('githubUser').value.trim();
+            const githubRepo = document.getElementById('githubRepo').value.trim();
+            const narratorId = document.getElementById('narratorId').value.trim();
+
+            if (!githubUser || !githubRepo || !narratorId) {
+                alert('Por favor, preencha o Usuário do GitHub, o Nome do Repositório e o ID do Narrador para gerar o link.');
+                return;
+            }
+
+            const link = `https://${githubUser}.github.io/${githubRepo}/overlay.html?narratorId=${narratorId}`;
+            linkOverlayGeradoElement.value = link;
+            linkOverlayGeradoElement.style.display = 'block';
+            linkOverlayGeradoElement.focus();
+            linkOverlayGeradoElement.select();
         }
 
         function connectFirebase() {
