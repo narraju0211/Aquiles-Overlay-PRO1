@@ -19,16 +19,18 @@
         }
 
         #overlayContainer {
-            display: none; /* Inicia invisível para carregar o placar */
+            /* ESTILOS REVISADOS PARA CORRIGIR O LAYOUT ESTREITO */
             position: relative;
             top: 20px; /* Posição na tela */
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 10px 20px;
+            gap: 20px; /* Aumenta o espaçamento entre os elementos */
+            padding: 15px 30px; /* Aumenta o padding para dar mais espaço interno */
             border-radius: 12px;
+            min-width: 600px; /* Garante que o container tenha uma largura mínima */
             transition: all 0.5s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background-color: rgba(0, 0, 0, 0.4); /* Fundo semi-transparente para o container */
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
         }
@@ -37,6 +39,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-grow: 1; /* Permite que o time expanda para ocupar o espaço disponível */
         }
 
         .team-logo {
@@ -52,7 +55,7 @@
             padding: 5px 15px;
             border-radius: 8px;
             background-color: rgba(0, 0, 0, 0.6);
-            min-width: 60px;
+            min-width: 80px; /* Garante que a caixa do placar não colapse */
             text-align: center;
         }
         
@@ -63,7 +66,7 @@
         .team-name {
             font-size: 1.5em;
             font-weight: 600;
-            max-width: 150px;
+            max-width: 200px; /* Limita a largura do nome para evitar quebra de linha */
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
